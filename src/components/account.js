@@ -6,10 +6,10 @@ import { useNavigate } from 'react-router-dom';
 function Account() {
   const navigate = useNavigate();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [openSaveDialog, setOpenSaveDialog] = useState(false); // New state for save dialog
+  const [openSaveDialog, setOpenSaveDialog] = useState(false);
 
   const handleSaveClick = () => {
-    setOpenSaveDialog(true); // Open the save confirmation dialog
+    setOpenSaveDialog(true);
   };
 
   const handleSignOut = () => {
