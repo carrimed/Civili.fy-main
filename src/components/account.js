@@ -59,12 +59,19 @@ function Account() {
         </Toolbar>
       </AppBar>
 
-      {/* Profile Picture and Greeting */}
-      <Box display="flex" flexDirection="column" alignItems="center" padding="20px">
+      {/* Profile Picture and Greeting (Horizontally aligned) */}
+      <Box 
+        display="flex" 
+        flexDirection="row" 
+        alignItems="center" 
+        justifyContent="center" 
+        marginTop="50px" 
+        marginBottom="20px"
+      >
         <Avatar
           src="/images/pfp1.jpg" 
           alt="Profile Picture"
-          style={{ width: '80px', height: '80px', marginTop: '30px' }}
+          style={{ width: '80px', height: '80px', marginRight: '10px' }}
         />
         <Typography variant="h6">Hello, <strong>my idol</strong></Typography>
       </Box>
@@ -84,6 +91,7 @@ function Account() {
             borderRadius: '15px', 
             backgroundColor: 'white',
           }}>
+            {/* Account Settings Form */}
             <Box display="flex" flexDirection="column" alignItems="center">
               <Typography variant="h5" style={{ marginBottom: '20px' }}>Account Settings</Typography>
               <TextField
