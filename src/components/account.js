@@ -1,13 +1,15 @@
-import React from 'react';
-import { Grid, TextField, Button, Paper, Box, Typography, AppBar, Toolbar, IconButton, Avatar } from '@mui/material';
+import React, { useState } from 'react';
+import { Grid, TextField, Button, Paper, Box, Typography, AppBar, Toolbar, IconButton, Avatar, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
 
 function Account() {
   const navigate = useNavigate();
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openSaveDialog, setOpenSaveDialog] = useState(false); // New state for save dialog
 
   const handleSaveClick = () => {
-    alert('Account details saved!');
+    setOpenSaveDialog(true); // Open the save confirmation dialog
   };
 
   const handleSignOut = () => {
@@ -22,6 +24,18 @@ function Account() {
     navigate('/home-page');
   };
 
+  const handleDeleteClick = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleCloseSaveDialog = () => {
+    setOpenSaveDialog(false); // Close the save dialog
+  };
+
   return (
     <div
       style={{
@@ -30,6 +44,7 @@ function Account() {
         flexDirection: 'column',
         alignItems: 'center',
         backgroundColor: '#f5f5f5',
+        overflow: 'hidden', 
       }}
     >
       {/* AppBar Section with Clickable Logo */}
@@ -59,7 +74,7 @@ function Account() {
         </Toolbar>
       </AppBar>
 
-      {/* Profile Picture and Greeting (Horizontally aligned) */}
+      {/* Profile Picture and Greeting */}
       <Box 
         display="flex" 
         flexDirection="row" 
@@ -73,7 +88,7 @@ function Account() {
           alt="Profile Picture"
           style={{ width: '80px', height: '80px', marginRight: '10px' }}
         />
-        <Typography variant="h6">Hello, <strong>my idol</strong></Typography>
+        <Typography variant="h6">Hello, <strong>my idol</strong></Typography>  {/* ilisdi ni */}
       </Box>
 
       {/* Centered Account Settings Content */}
@@ -98,20 +113,20 @@ function Account() {
                 label="Name *"
                 variant="outlined"
                 fullWidth
-                margin="normal"
+                margin="normal" /* ang placeholder ani dapat ang sa account */
               />
               <TextField
                 label="Username *"
                 variant="outlined"
                 fullWidth
-                margin="normal"
+                margin="normal" /* ang placeholder ani dapat ang sa account */
               />
               <TextField
                 label="Password *"
                 type="password"
                 variant="outlined"
                 fullWidth
-                margin="normal"
+                margin="normal" /* ang placeholder ani dapat ang sa account */
               />
               <Button
                 variant="contained"
@@ -121,10 +136,52 @@ function Account() {
               >
                 Save
               </Button>
+
+              {/* Delete Account Text Inside the Box */}
+              <Typography 
+                variant="body2" 
+                style={{ cursor: 'pointer', color: 'darkorange', marginTop: '20px' }}
+                onClick={handleDeleteClick}
+                onMouseEnter={(e) => e.target.style.color = 'orange'}
+                onMouseLeave={(e) => e.target.style.color = 'darkorange'}
+              >
+                Delete account
+              </Typography>
             </Box>
           </Paper>
         </Grid>
       </Box>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogContent>
+          <Typography>
+            Deleting this account will erase all your data. Are you sure?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} style={{ color: 'black' }}>
+            YES
+          </Button>
+          <Button onClick={handleCloseDeleteDialog} style={{ color: 'black' }}>
+            NO
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Save Confirmation Dialog */}
+      <Dialog open={openSaveDialog} onClose={handleCloseSaveDialog}>
+        <DialogContent>
+          <Typography>
+            Your account details have been successfully saved.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseSaveDialog} style={{ color: 'black' }}>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
