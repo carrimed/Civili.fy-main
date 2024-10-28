@@ -9,9 +9,6 @@ import civilify.com.example.demo.repository.ClientRepository;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import javax.naming.NameNotFoundException;
-
-
 @Service
 public class ClientService {
 
@@ -26,37 +23,37 @@ public class ClientService {
         return urepo.findAll();
     }
 
-    public List<ClientEntity> getClientsByUsername(String username) {
-        return urepo.findByUsername(username);
+    public ClientEntity getClientByUsername(String username) {
+        return urepo.findByUsername(username).stream().findFirst().orElse(null);
     }
 
-    @SuppressWarnings("finally")
-    public ClientEntity putClientDetails(int client_id, ClientEntity newClientDetails) {
-        ClientEntity user = new ClientEntity();
-        try {
-            user = urepo.findById(client_id).orElseThrow(() -> 
-                new NoSuchElementException("User with ID " + client_id + " not found."));
-            
-            user.setName(newClientDetails.getName());
-            user.setUsername(newClientDetails.getUsername());
-            user.setContactNumber(newClientDetails.getContactNumber());
-            user.setPassword(newClientDetails.getPassword());
-        } catch (NoSuchElementException nex) {
-            throw new NameNotFoundException("Client with ID " + client_id + " not found.");
-        } finally {
-            return urepo.save(user);
-        }
+    public ClientEntity updateClientDetails(int clientId, ClientEntity newClientDetails) {
+        ClientEntity user = urepo.findById(clientId)
+            .orElseThrow(() -> new NoSuchElementException("Client with ID " + clientId + " not found."));
+        
+        user.setName(newClientDetails.getName());
+        user.setUsername(newClientDetails.getUsername());
+        user.setContactNumber(newClientDetails.getContactNumber());
+        user.setPassword(newClientDetails.getPassword());
+
+        return urepo.save(user);
     }
 
     public String deleteClient(int userId) {
-        String msg;
-        if (urepo.existsById(userId)) {  // Check if the user exists
-            urepo.deleteById(userId);    // Pass the correct userId
-            msg = "User with ID " + userId + " successfully deleted!";
+        if (urepo.existsById(userId)) {
+            urepo.deleteById(userId);
+            return "User with ID " + userId + " successfully deleted!";
         } else {
-            msg = "User with ID " + userId + " NOT found!";
+            return "User with ID " + userId + " NOT found!";
         }
-        return msg;
     }
 
+    public boolean validateUser(String username, String password) {
+        ClientEntity client = getClientByUsername(username);
+        if (client == null) {
+            return false; 
+        } else {
+            return client.getPassword().equals(password); 
+        }
+    }
 }
