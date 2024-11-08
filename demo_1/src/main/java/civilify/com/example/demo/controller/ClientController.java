@@ -87,5 +87,5 @@ public class ClientController {
         ClientEntity client = clientService.getClientByUsername(username);
         return client != null ? ResponseEntity.ok(client) : ResponseEntity.notFound().build();
     }
-}
+} //heloo?
 
