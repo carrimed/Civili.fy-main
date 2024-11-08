@@ -45,17 +45,19 @@ public class ClientController {
         return updatedClient != null ? ResponseEntity.ok(updatedClient) : ResponseEntity.notFound().build();
     }
     
+    //hello
     /*@DeleteMapping("/deleteClients")
     public ResponseEntity<String> deleteClient(@RequestBody List<Integer> client_id) {
         String message = clientService.deleteClient(client_id);
         return ResponseEntity.ok(message);
     }*/
 
-    /*@DeleteMapping("/deleteClient/{client_id}")
+    //deletebyclientid
+    @DeleteMapping("/deleteClient/{client_id}")
     public ResponseEntity<String> deleteClient(@PathVariable("client_id") int client_id) {
         String message = clientService.deleteClient(client_id);
         return ResponseEntity.ok(message);
-    } */
+    } 
     
     /*@DeleteMapping("/deleteClient/{client_id}")
     public ResponseEntity<String> deleteClient(@PathVariable("client_id") int client_id) {
@@ -63,6 +65,7 @@ public class ClientController {
         return ResponseEntity.ok(message);
     }*/
     
+    //deletebyusername
     @DeleteMapping("/deleteClientByUsername/{username}")
     public ResponseEntity<String> deleteClientByUsername(@PathVariable("username") String username) {
         String message = clientService.deleteClientByUsername(username);
