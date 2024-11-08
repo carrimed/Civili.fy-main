@@ -7,17 +7,12 @@ import org.springframework.web.bind.annotation.*;
 
 import civilify.com.example.demo.entity.ClientEntity;
 import civilify.com.example.demo.service.ClientService;
-import civilify.com.example.demo.model.LoginRequest; // Assuming you have created this model
-import civilify.com.example.demo.model.LoginResponse; // Assuming you have created this model
-import civilify.com.example.demo.model.ErrorResponse; // Assuming you have created this model
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/Client")
-//@CrossOrigin(origins = "http://localhost:3000")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "*"})
-
 public class ClientController {
 
     @Autowired
@@ -34,58 +29,21 @@ public class ClientController {
         return clientService.getAllClients();
     }
 
-    @GetMapping("/findByUsername")
-    public ClientEntity getClientByUsername(@RequestParam String username) {
-        return clientService.getClientByUsername(username);
+    @GetMapping("/findById")
+    public ResponseEntity<ClientEntity> getClientById(@RequestParam int clientId) {
+        ClientEntity client = clientService.getClientById(clientId);
+        return client != null ? ResponseEntity.ok(client) : ResponseEntity.notFound().build();
     }
-    
+
     @PutMapping("/putClientDetails/{client_id}")
     public ResponseEntity<ClientEntity> updateClientDetails(@PathVariable("client_id") int clientId, @RequestBody ClientEntity newClientDetails) {
         ClientEntity updatedClient = clientService.updateClientDetails(clientId, newClientDetails);
         return updatedClient != null ? ResponseEntity.ok(updatedClient) : ResponseEntity.notFound().build();
     }
-    
-    //hello
-    /*@DeleteMapping("/deleteClients")
-    public ResponseEntity<String> deleteClient(@RequestBody List<Integer> client_id) {
-        String message = clientService.deleteClient(client_id);
-        return ResponseEntity.ok(message);
-    }*/
 
-    //deletebyclientid
     @DeleteMapping("/deleteClient/{client_id}")
-    public ResponseEntity<String> deleteClient(@PathVariable("client_id") int client_id) {
-        String message = clientService.deleteClient(client_id);
-        return ResponseEntity.ok(message);
-    } 
-    
-    /*@DeleteMapping("/deleteClient/{client_id}")
-    public ResponseEntity<String> deleteClient(@PathVariable("client_id") int client_id) {
-        String message = clientService.deleteClient(client_id);
-        return ResponseEntity.ok(message);
-    }*/
-    
-    //deletebyusername
-    @DeleteMapping("/deleteClientByUsername/{username}")
-    public ResponseEntity<String> deleteClientByUsername(@PathVariable("username") String username) {
-        String message = clientService.deleteClientByUsername(username);
+    public ResponseEntity<String> deleteClient(@PathVariable("client_id") int clientId) {
+        String message = clientService.deleteClient(clientId);
         return ResponseEntity.ok(message);
     }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        boolean isValidUser = clientService.validateUser(loginRequest.getUsername(), loginRequest.getPassword());
-        if (isValidUser) {
-            return ResponseEntity.ok(new LoginResponse(true, "Login successful"));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Invalid username or password"));
-        }
-    }
-
-    @GetMapping("/getCurrentAccount")
-    public ResponseEntity<ClientEntity> getCurrentAccount(@RequestParam String username) {
-        ClientEntity client = clientService.getClientByUsername(username);
-        return client != null ? ResponseEntity.ok(client) : ResponseEntity.notFound().build();
-    }
-} //heloo?yugfugigiu
-
+}

@@ -23,10 +23,9 @@ public class ClientService {
         return urepo.findAll();
     }
 
-    //wamiy paki sa error mo gana ra 
-    public ClientEntity getClientByUsername(String username) {
-        return urepo.findByUsername(username).stream().findFirst().orElse(null);
-    } 
+    public ClientEntity getClientById(int clientId) {
+        return urepo.findById(clientId).orElse(null);
+    }
 
     public ClientEntity updateClientDetails(int clientId, ClientEntity newClientDetails) {
         ClientEntity user = urepo.findById(clientId)
@@ -38,29 +37,19 @@ public class ClientService {
         user.setPassword(newClientDetails.getPassword());
 
         return urepo.save(user);
-    } 
-    
-    public String deleteClientByUsername(String username) {
-        ClientEntity client = urepo.findByUsername(username);
-        if (client != null) {
-            urepo.delete(client);
-            return "Client deleted successfully";
+    }
+
+    public String deleteClient(int clientId) {
+        if (urepo.existsById(clientId)) {
+            urepo.deleteById(clientId);
+            return "User with ID " + clientId + " successfully deleted!";
         } else {
-            return "Client not found";
+            return "User with ID " + clientId + " NOT found!";
         }
     }
 
-    public String deleteClient(int userId) {
-        if (urepo.existsById(userId)) {
-            urepo.deleteById(userId);
-            return "User with ID " + userId + " successfully deleted!";
-        } else {
-            return "User with ID " + userId + " NOT found!";
-        }
-    }
-
-    public boolean validateUser(String username, String password) {
-        ClientEntity client = getClientByUsername(username);
+    public boolean validateUser(int clientId, String password) {
+        ClientEntity client = getClientById(clientId);
         if (client == null) {
             return false; 
         } else {
