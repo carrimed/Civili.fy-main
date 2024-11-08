@@ -5,7 +5,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.CascadeType;
 
 @Entity
 @Table(name = "REVIEW")
@@ -13,70 +15,57 @@ public class ReviewEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int reviewId;
+    private int review_id;
 
-    @Column(nullable = false)
-    private int clientId; // Now using an int for client ID
+    @ManyToOne
+    @JoinColumn(name = "clientId")
+    private ClientEntity client;
 
-    @Column(nullable = false)
-    private int lawyerId; // Now using an int for lawyer ID
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "lawyerId", nullable = false)
+    private LawyerEntity lawyer;
 
-    @Column(nullable = false)
-    private int rating; // Rating given in review
-
-    private String comment; // Review comment
-
-    // Default constructor
-    public ReviewEntity() {
-        super();
-    }
-
-    // Parameterized constructor
-    public ReviewEntity(int clientId, int lawyerId, int rating, String comment) {
-        this.clientId = clientId; // Set client ID
-        this.lawyerId = lawyerId; // Set lawyer ID
-        this.rating = rating; // Set rating
-        this.comment = comment; // Set comment
-    }
+    private int rating;
+    private String comment;
 
     // Getters and Setters
     public int getReviewId() {
-        return reviewId;
+        return review_id;
     }
 
-    public void setReviewId(int reviewId) {
-        this.reviewId = reviewId;
+    public void setReviewId(int review_id) {
+        this.review_id = review_id;
     }
 
-    public int getClientId() {
-        return clientId; // Return client ID
+    public ClientEntity getClient() {
+        return client;
     }
 
-    public void setClientId(int clientId) {
-        this.clientId = clientId; // Set client ID
+    public void setClient(ClientEntity client) {
+        this.client = client;
     }
 
-    public int getLawyerId() {
-        return lawyerId; // Return lawyer ID
+    public LawyerEntity getLawyer() {
+        return lawyer;
     }
 
-    public void setLawyerId(int lawyerId) {
-        this.lawyerId = lawyerId; // Set lawyer ID
+    public void setLawyer(LawyerEntity lawyer) {
+        this.lawyer = lawyer;
     }
 
     public int getRating() {
-        return rating; // Return rating
+        return rating;
     }
 
     public void setRating(int rating) {
-        this.rating = rating; // Set rating
+        this.rating = rating;
     }
 
     public String getComment() {
-        return comment; // Return comment
+        return comment;
     }
 
     public void setComment(String comment) {
-        this.comment = comment; // Set comment
+        this.comment = comment;
     }
 }
