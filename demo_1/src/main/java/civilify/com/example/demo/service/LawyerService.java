@@ -25,6 +25,19 @@ public class LawyerService {
     public List<LawyerEntity> getAllLawyers() {
         return lawyerRepo.findAll();
     }
+    
+    //deletelawyerbyname
+    public String deleteLawyerByName(String name) {
+        List<LawyerEntity> lawyers = lawyerRepo.findByName(name); // Assume findByName is implemented
+        if (!lawyers.isEmpty()) {
+            for (LawyerEntity lawyer : lawyers) {
+                lawyerRepo.delete(lawyer); // Delete each lawyer with the given name
+            }
+            return "Lawyer(s) with name " + name + " successfully deleted!";
+        } else {
+            return "Lawyer with name " + name + " NOT found!";
+        }
+    }
 
     // Update operation
     public LawyerEntity updateLawyer(int lawyer_id, LawyerEntity updatedLawyer) {
@@ -53,3 +66,5 @@ public class LawyerService {
         return msg;
     }
 }
+
+

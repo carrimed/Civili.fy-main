@@ -23,9 +23,10 @@ public class ClientService {
         return urepo.findAll();
     }
 
+    //wamiy paki sa error mo gana ra 
     public ClientEntity getClientByUsername(String username) {
         return urepo.findByUsername(username).stream().findFirst().orElse(null);
-    }
+    } 
 
     public ClientEntity updateClientDetails(int clientId, ClientEntity newClientDetails) {
         ClientEntity user = urepo.findById(clientId)
@@ -37,6 +38,16 @@ public class ClientService {
         user.setPassword(newClientDetails.getPassword());
 
         return urepo.save(user);
+    } 
+    
+    public String deleteClientByUsername(String username) {
+        ClientEntity client = urepo.findByUsername(username);
+        if (client != null) {
+            urepo.delete(client);
+            return "Client deleted successfully";
+        } else {
+            return "Client not found";
+        }
     }
 
     public String deleteClient(int userId) {

@@ -1,5 +1,6 @@
 package civilify.com.example.demo.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
@@ -13,9 +14,12 @@ public class ClientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int client_id;
+    
+    @Column(unique = true) // Ensure the username is unique
+    private String username;
 
     private String name;
-    private String username;
+    //private String username;
     private String contact_number;
     private String password;
 

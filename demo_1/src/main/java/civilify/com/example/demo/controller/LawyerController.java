@@ -44,4 +44,11 @@ public class LawyerController {
     public void deleteLawyer(@PathVariable int lawyer_id) {
         lawyerService.deleteLawyer(lawyer_id);
     }
+    
+    //new Delete
+ // Delete functionality (DELETE by name)
+    @DeleteMapping("/deleteLawyerByName/{name}")
+    public String deleteLawyerByName(@PathVariable String name) {
+        return lawyerService.deleteLawyerByName(name);
+    }
 }

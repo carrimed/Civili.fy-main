@@ -16,10 +16,10 @@ public class CaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Makes caseId auto-increment
     private int case_id;
 
-
     //@ManyToOne
     //@JoinColumn(name = "client_id", nullable = false)
-    //private ClientEntity client;
+    private int client_id;
+
     
     private String description;
     private String status;
@@ -29,12 +29,12 @@ public class CaseEntity {
         super();
     }
 
-    // Parameterized constructor
-    public CaseEntity(int case_id, String description, String status) {
-        super();
+    // Parameterized constructor with ClientEntity parameter
+    public CaseEntity(int case_id, String description, String status, int client_id) {
         this.case_id = case_id;
         this.description = description;
         this.status = status;
+        this.client_id = client_id;  // Assign client to ensure it is not null
     }
 
     // Getters and Setters
@@ -44,6 +44,14 @@ public class CaseEntity {
 
     public void setCaseId(int case_id) {
         this.case_id = case_id;
+    }
+
+    public int getClient() {
+        return client_id;
+    }
+
+    public void setClient(int client_id) {
+        this.client_id = client_id;
     }
 
     public String getDescription() {

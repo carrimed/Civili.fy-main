@@ -15,7 +15,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/Client")
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "*"})
+
 public class ClientController {
 
     @Autowired
@@ -42,10 +44,28 @@ public class ClientController {
         ClientEntity updatedClient = clientService.updateClientDetails(clientId, newClientDetails);
         return updatedClient != null ? ResponseEntity.ok(updatedClient) : ResponseEntity.notFound().build();
     }
+    
+    /*@DeleteMapping("/deleteClients")
+    public ResponseEntity<String> deleteClient(@RequestBody List<Integer> client_id) {
+        String message = clientService.deleteClient(client_id);
+        return ResponseEntity.ok(message);
+    }*/
 
-    @DeleteMapping("/deleteClient/{client_id}")
+    /*@DeleteMapping("/deleteClient/{client_id}")
     public ResponseEntity<String> deleteClient(@PathVariable("client_id") int client_id) {
         String message = clientService.deleteClient(client_id);
+        return ResponseEntity.ok(message);
+    } */
+    
+    /*@DeleteMapping("/deleteClient/{client_id}")
+    public ResponseEntity<String> deleteClient(@PathVariable("client_id") int client_id) {
+        String message = clientService.deleteClient(client_id);
+        return ResponseEntity.ok(message);
+    }*/
+    
+    @DeleteMapping("/deleteClientByUsername/{username}")
+    public ResponseEntity<String> deleteClientByUsername(@PathVariable("username") String username) {
+        String message = clientService.deleteClientByUsername(username);
         return ResponseEntity.ok(message);
     }
 

@@ -45,7 +45,7 @@ public class CaseService {
         }
     }
 
-    public String deleteCase(int case_id) {
+    /*public String deleteCase(int case_id) {
         String msg;
         if (crepo.existsById(case_id)) {  // Check if the case record exists
             crepo.deleteById(case_id);    // Pass the correct caseId
@@ -54,5 +54,14 @@ public class CaseService {
             msg = "Case record with ID " + case_id + " NOT found!";
         }
         return msg;
+    }*/
+    
+    public String deleteCase(int case_id) {
+        if (crepo.existsById(case_id)) {  // Check if the case record exists
+            crepo.deleteById(case_id);    // Delete by caseId
+            return "Case record with ID " + case_id + " successfully deleted!";
+        } else {
+            return "Case record with ID " + case_id + " NOT found!";
+        }
     }
 }
