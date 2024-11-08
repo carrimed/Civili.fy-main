@@ -9,16 +9,18 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/review")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "*"})
 public class ReviewController {
 
     @Autowired
     private ReviewService reviewService;
 
-    // Create a new review
+    // Create a new review with client and lawyer IDs
     @PostMapping("/postReview")
-    public ReviewEntity postReview(@RequestBody ReviewEntity review) {
-        return reviewService.postReview(review);
+    public ReviewEntity postReview(
+            @RequestBody ReviewEntity review,
+            @RequestParam int clientId,
+            @RequestParam int lawyerId) {
+        return reviewService.postReview(review, clientId, lawyerId);
     }
 
     // Get all reviews
@@ -27,22 +29,16 @@ public class ReviewController {
         return reviewService.getAllReviews();
     }
 
-    // Get reviews by client ID
-   /* @GetMapping("/findByClientId")
-    public List<ReviewEntity> getReviewsByClientId(@RequestParam int client_id) {
-        return reviewService.getReviewsByClientId(client_id);
-    } */
-
     // Update review details
     @PutMapping("/putReviewDetails")
-    public ReviewEntity updateReview(@RequestParam int review_id, @RequestBody ReviewEntity newReviewDetails) {
-        return reviewService.updateReview(review_id, newReviewDetails);
+    public ReviewEntity updateReview(@RequestParam int reviewId, @RequestBody ReviewEntity newReviewDetails) {
+        return reviewService.updateReview(reviewId, newReviewDetails);
     }
 
     // Delete a review by ID
-    @DeleteMapping("/deleteReview/{review_id}")
-    public String deleteReview(@PathVariable("review_id") int review_id) {
-        reviewService.deleteReview(review_id);
-        return "Review with ID " + review_id + " has been deleted.";
+    @DeleteMapping("/deleteReview/{reviewId}")
+    public String deleteReview(@PathVariable("reviewId") int reviewId) {
+        reviewService.deleteReview(reviewId);
+        return "Review with ID " + reviewId + " has been deleted.";
     }
 }
