@@ -1,162 +1,161 @@
-import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, TextField, IconButton, Box, Button, Paper, Grid } from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import React from 'react';
+import { AppBar, Toolbar, Typography, TextField, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import SearchIcon from '@mui/icons-material/Search';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function ClientHome() {
   const navigate = useNavigate();
-  const [showForm, setShowForm] = useState(false);
-  const [caseId, setCaseId] = useState('');
-  const [description, setDescription] = useState('');
-  const [status, setStatus] = useState('Pending');
-  const [cases, setCases] = useState([]);
-  const username = localStorage.getItem('username');
-
-  const handleSignOut = () => {
-    localStorage.removeItem('username');
-    navigate('/client-login-page');
-  };
-
-  const handleShowForm = () => {
-    setShowForm(!showForm);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newCase = { id: Date.now(), description, status };
-    setCases([...cases, newCase]);
-    resetForm();
-  };
-
-  const resetForm = () => {
-    setDescription('');
-    setStatus('Pending');
-    setShowForm(false);
-  };
-
-  const handleEdit = (caseDetail) => {
-    setDescription(caseDetail.description);
-    setStatus(caseDetail.status);
-    setShowForm(true);
-    setCaseId(caseDetail.id);
-  };
-
-  const handleDelete = (id) => {
-    setCases(cases.filter(caseDetail => caseDetail.id !== id));
-  };
 
   return (
-    <div>
-      <AppBar position="static" style={{ backgroundColor: 'white', color: 'black' }}>
+    <div style={{ backgroundColor: '#A54C17', minHeight: '100vh' }}>
+      {/* App Bar */}
+      <AppBar position="static" style={{ backgroundColor: '#212121', boxShadow: 'none' }}>
         <Toolbar>
           <Typography
             component="div"
             style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
             onClick={() => navigate('/')}
           >
-            <img src="/images/civilifyicon.png" alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
+            <img src="/images/logoiconwhite.png" alt="Logo" style={{ width: '40px', marginLeft: '10px', marginRight: '10px' }} />
           </Typography>
-          <Typography variant="h6" style={{ flexGrow: 1, textAlign: 'center' }}>
-            Hello, {username}
-          </Typography>
-          <Box display="flex" alignItems="center" marginLeft="auto">
-            <IconButton onClick={() => navigate('/client-account-page', { state: { username } })} style={{ color: 'black' }}>
-              <AccountCircleIcon />
-            </IconButton>
-            <Typography
-              variant="body1"
-              style={{ cursor: 'pointer', marginLeft: '15px' }}
-              onClick={handleSignOut}
-              onMouseEnter={(e) => (e.target.style.color = 'orange')}
-              onMouseLeave={(e) => (e.target.style.color = 'black')}
-            >
-              Sign out
-            </Typography>
+          <Box display="flex" justifyContent="flex-end" alignItems="center" flexGrow={1}>
+            {['Requests', 'Notifications', 'Profile'].map((text, idx) => (
+              <Typography
+                key={idx}
+                variant="body1"
+                onClick={() => navigate(`/${text.toLowerCase()}`)}
+                style={{
+                  cursor: 'pointer',
+                  marginLeft: '50px',
+                  color: '#FFFFFF',
+                  fontSize: '16px',
+                  fontFamily: 'Faculty Glyphic',
+                }}
+              >
+                {text}
+              </Typography>
+            ))}
           </Box>
         </Toolbar>
       </AppBar>
 
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '80vh', padding: '20px' }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleShowForm}
-          style={{ width: '200px', marginBottom: '20px' }}
+      {/* Main Content */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '80px', paddingBottom: '40px', backgroundColor: '#B65A23' }}>
+        
+        {/* Centered Search Bar */}
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="Search..."
+          style={{ width: '500px', marginBottom: '40px', backgroundColor: '#F5F5F5' }}
+          InputProps={{
+            startAdornment: <SearchIcon style={{ color: 'white' }} />, 
+          }}
+        />
+
+        {/* Tagline Text */}
+        <Typography
+          variant="h4"
+          style={{
+            fontFamily: 'Faculty Glyphic',
+            color: 'white',
+            marginBottom: '80px',
+          }}
         >
-          Enter Case Details
-        </Button>
+          The search for justice starts here
+        </Typography>
 
-        {showForm && (
-          <Paper style={{ padding: '20px', maxWidth: '400px', width: '100%', marginBottom: '20px' }}>
-            <form onSubmit={handleSubmit}>
-              <Typography variant="h6" gutterBottom>
-                Case Form
-              </Typography>
-              <TextField
-                label="Case ID"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={caseId}
-                InputProps={{
-                  readOnly: true,
-                }}
-              />
-              <TextField
-                label="Description"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-              />
-              <TextField
-                label="Status"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              />
-              <Button type="submit" variant="contained" color="primary" style={{ marginTop: '10px' }}>
-                Submit
-              </Button>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={resetForm}
-                style={{ marginTop: '10px', marginLeft: '10px' }}
-              >
-                Cancel
-              </Button>
-            </form>
-          </Paper>
-        )}
+        {/* Icons and Descriptions */}
+        <Box display="flex" justifyContent="space-around" width="80%" marginTop="40px">
+          {/* Search Section */}
+          <Box display="flex" alignItems="center" flexDirection="column" maxWidth="300px">
+            <SearchIcon style={{ fontSize: 40, color: 'white' }} /> 
+            <Typography
+              variant="body1"
+              style={{
+                fontFamily: 'Outfit',
+                fontWeight: 500,
+                color: 'white', 
+                marginTop: '10px',
+                textAlign: 'justified', 
+              }}
+            >
+              Search
+            </Typography>
+            <Typography
+              variant="body2"
+              style={{
+                fontFamily: 'Outfit',
+                fontWeight: 300,
+                color: 'white', 
+                marginTop: '10px',
+                textAlign: 'justified', 
+              }}
+            >
+              In the search bar, type in details of your case or the type of practitioner that you had in mind. The algorithm will search through our list of qualified professionals and suggest ideal people to work with, starting with the best match based on specific criteria. For a more tailored experience, use the filter feature to refine your search, so you get the most suitable talent for your needs.
+            </Typography>
+          </Box>
 
-        <Grid container spacing={2} justifyContent="center">
-          {cases.length === 0 ? (
-            <Typography variant="h6" gutterBottom>No cases submitted yet.</Typography>
-          ) : (
-            cases.map((caseDetail) => (
-              <Grid item xs={12} sm={6} md={4} key={caseDetail.id}>
-                <Paper style={{ padding: '20px', margin: '10px' }}>
-                  <Typography variant="h6">Case ID: {caseDetail.id}</Typography>
-                  <Typography variant="body1">Description: {caseDetail.description}</Typography>
-                  <Typography variant="body1">Status: {caseDetail.status}</Typography>
-                  <Box marginTop={2}>
-                    <Button variant="contained" color="primary" onClick={() => handleEdit(caseDetail)}>
-                      Edit
-                    </Button>
-                    <Button variant="outlined" color="secondary" onClick={() => handleDelete(caseDetail.id)} style={{ marginLeft: '10px' }}>
-                      Delete
-                    </Button>
-                  </Box>
-                </Paper>
-              </Grid>
-            ))
-          )}
-        </Grid>
+          {/* Requests Section */}
+          <Box display="flex" alignItems="center" flexDirection="column" maxWidth="300px">
+            <NotificationsIcon style={{ fontSize: 40, color: 'white' }} /> {/* White icon */}
+            <Typography
+              variant="body1"
+              style={{
+                fontFamily: 'Outfit',
+                fontWeight: 500,
+                color: 'white', // White text
+                marginTop: '10px',
+                textAlign: 'center',
+              }}
+            >
+              Requests
+            </Typography>
+            <Typography
+              variant="body2"
+              style={{
+                fontFamily: 'Outfit',
+                fontWeight: 300,
+                color: 'white', // White text
+                marginTop: '10px',
+                textAlign: 'justified', // Justified text
+              }}
+            >
+              Manage recent requests sent to lawyers, view your request history, and track which lawyers you’ve worked with in the past. This feature allows you to monitor the status of each request and keep organized records for future reference.
+            </Typography>
+          </Box>
+
+          {/* Profile Section */}
+          <Box display="flex" alignItems="center" flexDirection="column" maxWidth="300px">
+            <AccountCircleIcon style={{ fontSize: 40, color: 'white' }} /> {/* White icon */}
+            <Typography
+              variant="body1"
+              style={{
+                fontFamily: 'Outfit',
+                fontWeight: 500,
+                color: 'white',
+                marginTop: '10px',
+                textAlign: 'center',
+              }}
+            >
+              Profile
+            </Typography>
+            <Typography
+              variant="body2"
+              style={{
+                fontFamily: 'Outfit',
+                fontWeight: 300,
+                color: 'white',
+                marginTop: '10px',
+                textAlign: 'justified', 
+              }}
+            >
+              View and update your profile details to make a great first impression on lawyers. Keeping your profile clean and up-to-date helps lawyers understand your needs better. You can also view your ratings and ensure your profile accurately reflects your experience and requirements.
+            </Typography>
+          </Box>
+        </Box>
       </div>
     </div>
   );

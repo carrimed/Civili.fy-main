@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { Grid, TextField, Button, Paper, Box, Typography, IconButton, Snackbar } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Import the back arrow icon
+import {
+  Grid, TextField, Button, Paper, Box, Typography, IconButton, Snackbar, Alert, Container, CircularProgress
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import GoogleIcon from '@mui/icons-material/Google';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -10,6 +14,8 @@ function ClientLogin() {
   const [password, setPassword] = useState('');
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [backLoading, setBackLoading] = useState(false);
 
   const handleLoginClick = async () => {
     if (!username || !password) {
@@ -17,18 +23,24 @@ function ClientLogin() {
       setOpenSnackbar(true);
       return;
     }
-  
+
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailPattern.test(username)) {
+      setSnackbarMessage("Please enter a valid email.");
+      setOpenSnackbar(true);
+      return;
+    }
+
     try {
+      setLoading(true);
       const response = await axios.post('http://localhost:8080/api/Client/login', {
         username,
         password,
       });
-  
-      // Assuming the backend returns a success message or token upon successful login
+
       if (response.data.success) {
-        // Store username in localStorage
         localStorage.setItem('username', username);
-        navigate('/client-home-page'); // Redirect to the client home page
+        navigate('/civilify/client-home-page');
       } else {
         setSnackbarMessage("Invalid username or password.");
         setOpenSnackbar(true);
@@ -37,33 +49,38 @@ function ClientLogin() {
       console.error("Login error:", error.response?.data || error.message);
       setSnackbarMessage("Login failed: " + (error.response?.data?.message || "Please try again."));
       setOpenSnackbar(true);
+    } finally {
+      setLoading(false);
     }
   };
-  
 
-  const handleSignUpClick = (event) => {
-    navigate('/client-signup-page');
+  const handleSignUpClick = () => {
+    navigate('/civilify/client-signup-page');
   };
 
   const handleBackClick = () => {
-    navigate('/landing-page');
+    setBackLoading(true);
+    setTimeout(() => {
+      navigate('/civilify/landing-page');
+      setBackLoading(false);
+    }, 500);
   };
 
   return (
     <div
       style={{
         position: 'relative',
-        backgroundImage: 'url(/images/loginpagebg.jpg)',
+        backgroundImage: 'url(/images/bg2.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         minHeight: '100vh',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        margin: 0,
+        overflow: 'hidden',
+        width: '100vw',
       }}
     >
-      {/* Background overlay */}
       <div
         style={{
           position: 'absolute',
@@ -71,18 +88,14 @@ function ClientLogin() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          background: 'linear-gradient(to bottom, #D9641E, #A54C17)',
+          opacity: 0.7,
+          zIndex: 0,
         }}
       />
 
-      <Grid item xs={12} sm={10} md={8} lg={6} style={{ margin: '0 auto', position: 'relative' }}>
-        <Paper elevation={3} style={{ 
-          padding: '40px 20px', 
-          borderRadius: '15px', 
-          backgroundColor: 'white', 
-          position: 'relative',
-        }}>
-          {/* Back arrow at the top left */}
+      <Grid item xs={12} sm={10} md={8} lg={6} style={{ zIndex: 1 }}>
+        <Paper elevation={3} style={{ padding: '40px 20px', borderRadius: '15px', backgroundColor: 'white', position: 'relative' }}>
           <IconButton
             onClick={handleBackClick}
             style={{
@@ -92,66 +105,141 @@ function ClientLogin() {
               color: 'black',
             }}
           >
-            <ArrowBackIcon />
+            {backLoading ? (
+              <CircularProgress size={24} style={{ color: 'black' }} />
+            ) : (
+              <ArrowBackIcon />
+            )}
           </IconButton>
 
-          <Box display="flex" flexDirection="column" alignItems="center">
-            <img src="/images/civilifyicon.png" alt="Logo" style={{ width: '100px', marginBottom: '20px' }} />
-            <Typography variant="h6" style={{ marginBottom: '20px' }}>
-              Logging in as client
-            </Typography>
+          <Box display="flex" flexDirection="column" alignItems="center" style={{ fontFamily: 'Outfit' }}>
+            <img src="/images/logoiconblack.png" alt="Logo" style={{ width: '100px', marginBottom: '20px' }} />
+
             <TextField
-              label="Username *"
               variant="outlined"
               fullWidth
               margin="normal"
+              label="Email"
+              placeholder="Enter your email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              InputLabelProps={{ style: { fontFamily: 'Outfit', fontWeight: '500' } }}
             />
+
             <TextField
-              label="Password *"
               type="password"
               variant="outlined"
               fullWidth
               margin="normal"
+              label="Password"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              InputLabelProps={{ style: { fontFamily: 'Outfit', fontWeight: '500' } }}
             />
+
+            <Typography
+              variant="body2"
+              style={{
+                color: '#D95F0E',
+                cursor: 'pointer',
+                fontSize: '12px',
+                textAlign: 'center',
+                marginTop: '10px',
+              }}
+              onClick={() => navigate('/forgot-password')}
+            >
+              Forgot Password?
+            </Typography>
+
             <Button
               variant="contained"
-              style={{ backgroundColor: 'black', color: 'white', marginTop: '20px' }}
+              style={{ backgroundColor: 'black', color: 'white', marginTop: '20px', fontFamily: 'Outfit', fontWeight: '600' }}
               fullWidth
               onClick={handleLoginClick}
+              disabled={loading}
             >
-              Login
+              {loading ? <CircularProgress size={24} style={{ color: 'white' }} /> : 'Login'}
             </Button>
-            <Typography 
-              variant="body2" 
-              style={{ 
-                color: '#D95F0E', 
-                marginTop: '20px', 
+
+            <Box style={{ width: '100%', marginTop: '10px', textAlign: 'center' }}>
+              <Typography variant="body2" style={{ color: 'black', fontSize: '12px', textShadow: '0 0 5px white', marginTop: '15px' }}>
+                or sign in with
+              </Typography>
+            </Box>
+
+            <Box display="flex" justifyContent="center" style={{ marginTop: '10px' }}>
+              <IconButton
+                style={{
+                  backgroundColor: '#3b5998',
+                  color: 'white',
+                  marginRight: '10px',
+                }}
+              >
+                <FacebookIcon />
+              </IconButton>
+              <IconButton
+                style={{
+                  backgroundColor: '#db4437',
+                  color: 'white',
+                }}
+              >
+                <GoogleIcon />
+              </IconButton>
+            </Box>
+
+            <Typography
+              variant="body2"
+              style={{
+                color: '#D95F0E',
+                marginTop: '20px',
                 cursor: 'pointer',
                 transition: 'color 0.3s',
-                position: 'relative',
-                zIndex: 1 
-              }} 
+              }}
               onClick={handleSignUpClick}
-              onMouseEnter={(e) => e.target.style.color = 'orange'}
-              onMouseLeave={(e) => e.target.style.color = '#D95F0E'}
-              onMouseDown={(e) => e.target.style.color = 'orange'}
-              onMouseUp={(e) => e.target.style.color = '#D95F0E'}
+              onMouseEnter={(e) => (e.target.style.color = 'orange')}
+              onMouseLeave={(e) => (e.target.style.color = '#D95F0E')}
             >
               No account? Sign up
             </Typography>
           </Box>
         </Paper>
       </Grid>
-      <Snackbar 
-        open={openSnackbar} 
-        autoHideDuration={3000} 
-        onClose={() => setOpenSnackbar(false)} 
-        message={snackbarMessage} 
-      />
+
+      <Box
+        style={{
+          color: '#FFFFFF',
+          padding: '10px 20px',
+          position: 'absolute',
+          bottom: '0',
+          left: '0',
+          zIndex: 1,
+          width: '100%',
+          textAlign: 'left',
+        }}
+      >
+        <Container style={{ paddingLeft: 0 }}>
+          <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+            <Typography variant="body2" style={{ fontFamily: 'Faculty Glyphic', fontSize: '10px' }}>
+              © The Civilify Company, Cebu City
+            </Typography>
+          </Box>
+        </Container>
+      </Box>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <Alert
+          severity="error"
+          style={{ backgroundColor: 'white', color: '#D32F2F' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
