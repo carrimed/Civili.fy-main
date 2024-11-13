@@ -26,6 +26,8 @@ function ProfileDisplay() {
     } else if (action === 'deleteProfile') {
       // Add your delete profile logic here
       console.log('Delete Profile');
+    } else if (action === 'logout'){
+        console.log('Logged Out');
     }
   };
 
@@ -42,8 +44,8 @@ function ProfileDisplay() {
     container: {
       backgroundColor: '#FFFFFF',
       borderRadius: '10px',
-      width: '350px',
-      padding: '20px',
+      padding: '10px',
+      width: '1000px',  // Increased width for more spacious layout
       boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
       fontFamily: 'Arial, sans-serif',
       color: '#41423A',
@@ -71,20 +73,20 @@ function ProfileDisplay() {
     },
     bannerImage: {
       width: '100%',
-      height: '150px',
+      height: '200px',
       objectFit: 'cover',
       borderRadius: '10px 10px 0 0',
     },
     profilePicContainer: {
       position: 'relative',
       display: 'flex',
-      justifyContent: 'center',
+      justifyContent: 'center   ',
       marginTop: '-40px',
       width: '100%',
     },
     profilePic: {
-      width: '80px',
-      height: '80px',
+      width: '150px',
+      height: '150px',
       borderRadius: '50%',
       border: '3px solid white',
       overflow: 'hidden',
@@ -124,10 +126,12 @@ function ProfileDisplay() {
     },
     label: {
       fontWeight: 'bold',
+      fontSize: '16px',
       color: '#D9641E',
     },
     infoText: {
       color: '#ED7D27',
+      fontSize: '16px',
     },
     editButton: {
       marginTop: '20px',
@@ -204,6 +208,7 @@ function ProfileDisplay() {
         >
           <MenuItem onClick={() => handleMenuItemClick('updateProfile')}>Update Profile</MenuItem>
           <MenuItem onClick={() => handleMenuItemClick('deleteProfile')}>Delete Profile</MenuItem>
+          <MenuItem onClick={() => handleMenuItemClick('Logged Out')}>Log out</MenuItem>
         </Menu>
 
         {/* Banner Image */}
@@ -238,6 +243,12 @@ function ProfileDisplay() {
           </div>
           <div>
             <span style={styles.label}>Contact:</span> <span style={styles.infoText}>+123 456 7890</span>
+          </div>
+          <div>
+            <span style={styles.label}>Birthday:</span> <span style={styles.infoText}>January 1, 1990</span>
+          </div>
+          <div>
+            <span style={styles.label}>Sex:</span> <span style={styles.infoText}>Male</span>
           </div>
         </div>
       </div>
