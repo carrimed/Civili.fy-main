@@ -34,7 +34,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#F5F5F5', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
+    <div style={{ backgroundColor: '#F1F1F1', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
 
       {/* AppBar */}
       <AppBar position="fixed" style={{ backgroundColor: 'white', boxShadow: 'none', padding: '0px 0', height: '0px 0'
@@ -165,7 +165,7 @@ const LandingPage = () => {
             </Button>
           </Grid>
           <Grid item xs={12} md={6}>
-            <img src="/images/bg1.png" alt="Legal professionals at work" style={{ width: '100%', borderRadius: '8px' }} />
+            <img src="/images/bg1.png" alt="none" style={{ width: '100%', borderRadius: '8px' }} />
           </Grid>
         </Grid>
       </Container>
@@ -224,7 +224,7 @@ const LandingPage = () => {
               color: '#41423A',
             }}
           >
-            Get the legal support that you need today!
+            and get the legal support that you need today!
           </Typography>
           <Button
             variant="contained"
@@ -242,15 +242,15 @@ const LandingPage = () => {
       </Box>
 
       {/* Footer Section */}
-<Box style={{ backgroundColor: '#4A4A4A', color: '#FFFFFF', padding: '40px 0' }}>
-  <Container>
-    <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <Box style={{ backgroundColor: '#4A4A4A', color: '#FFFFFF', padding: '40px 0' }}>
+      <Container>
+      <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
 
       {/* Left: Logo and QR Code */}
       <Box style={{ flex: 1 }}>
         <img src="/images/logotextwhite.png" alt="Civilify Logo" style={{ width: '150px', marginBottom: '10px' }} />
         
-        {/* The Civilify Company Text */}
+        {/* The Civilify Company Text Footer */}
         <Typography 
           style={{
             fontSize: '12px',
@@ -263,7 +263,7 @@ const LandingPage = () => {
           The Civilify Company, Cebu City
         </Typography>
 
-        {/* QR Code Image */}
+        {/* QR Code Image (bwahahha suwayig scan) */}
         <Box style={{ textAlign: 'left', marginBottom: '20px' }}>
           <img src="/images/qr.png" alt="QR Code" style={{ width: '50px', height: '50px' }} />
         </Box>
@@ -272,7 +272,7 @@ const LandingPage = () => {
       {/* Center: Horizontal Sections (Site, Products, Help) */}
       <Box style={{ flex: 2, display: 'flex', justifyContent: 'space-between' }}>
 
-        {/* Site Links */}
+        {/* Site Links (non functional) */}
         <Box style={{ display: 'flex', flexDirection: 'column' }}>
           <Typography style={{ fontSize: '18px', fontWeight: '700', marginBottom: '15px' }}>Site</Typography>
           <a href="#about-us" style={{ color: '#FFFFFF', textDecoration: 'none', fontSize: '16px', marginBottom: '10px' }}>About Us</a>
@@ -280,7 +280,7 @@ const LandingPage = () => {
           <a href="#contact" style={{ color: '#FFFFFF', textDecoration: 'none', fontSize: '16px', marginBottom: '10px' }}>Contact</a>
         </Box>
 
-        {/* Products Links */}
+        {/* Products Links (non functional) */}
         <Box style={{ display: 'flex', flexDirection: 'column' }}>
           <Typography style={{ fontSize: '18px', fontWeight: '700', marginBottom: '15px' }}>Products</Typography>
           <a href="#how-our-system-works" style={{ color: '#FFFFFF', textDecoration: 'none', fontSize: '16px', marginBottom: '10px' }}>How our system works</a>
@@ -288,7 +288,7 @@ const LandingPage = () => {
           <a href="#customer-protection" style={{ color: '#FFFFFF', textDecoration: 'none', fontSize: '16px', marginBottom: '10px' }}>Customer Protection</a>
         </Box>
 
-        {/* Help Links */}
+        {/* Help Links (non functional) */}
         <Box style={{ display: 'flex', flexDirection: 'column' }}>
           <Typography style={{ fontSize: '18px', fontWeight: '700', marginBottom: '15px' }}>Help</Typography>
           <a href="#getting-started" style={{ color: '#FFFFFF', textDecoration: 'none', fontSize: '16px', marginBottom: '10px' }}>Getting Started</a>
@@ -300,7 +300,7 @@ const LandingPage = () => {
   </Container>
 </Box>
 
-      {/* Loading Spinner */}
+      {/* Loading Spinner (pachuy2) */}
       {loading && (
         <Box
           style={{

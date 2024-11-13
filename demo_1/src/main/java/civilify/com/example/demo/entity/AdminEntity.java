@@ -16,7 +16,9 @@ public class AdminEntity {
     private String password;
 
     // Constructors
-    public AdminEntity() {}
+    public AdminEntity() {
+    	
+    }
 
     public AdminEntity(String username, String password) {
         this.username = username;

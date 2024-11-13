@@ -1,27 +1,58 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, TextField, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, TextField, Box, Paper, Container } from '@mui/material';
+import Carousel from 'react-material-ui-carousel';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function ClientHome() {
   const navigate = useNavigate();
+  const carouselItems = [
+    { image: '/images/bgg.png' },
+    { image: '/images/bgg.png' },
+    { image: '/images/bgg.png' }
+  ];
 
   return (
-    <div style={{ backgroundColor: '#A54C17', minHeight: '100vh' }}>
-      {/* App Bar */}
-      <AppBar position="static" style={{ backgroundColor: '#212121', boxShadow: 'none' }}>
+    <div
+      style={{
+        backgroundColor: '#F1F1F1',
+        minHeight: '100vh',
+        paddingBottom: '40px',
+        background: 'linear-gradient(to bottom, #F1F1F1, #F1F1F1, #F1F1F1, #F1F1F1, #F1F1F1, #D9641E)', // Adding gradient
+      }}
+    >
+      {/* App Bar with Search Bar beside the Logo */}
+      <AppBar position="static" style={{ backgroundColor: 'white', boxShadow: 'none' }}>
         <Toolbar>
           <Typography
             component="div"
             style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
             onClick={() => navigate('/')}
           >
-            <img src="/images/logoiconwhite.png" alt="Logo" style={{ width: '40px', marginLeft: '10px', marginRight: '10px' }} />
+            <img
+              src="/images/logoiconblack.png"
+              alt="Logo"
+              style={{ width: '40px', marginLeft: '10px', marginRight: '10px' }}
+            />
           </Typography>
-          <Box display="flex" justifyContent="flex-end" alignItems="center" flexGrow={1}>
-            {['Requests', 'Notifications', 'Profile'].map((text, idx) => (
+          {/* Search Bar next to the logo */}
+          <Box display="flex" alignItems="center" style={{ flexGrow: 1 }}>
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Search for practitioners..."
+              style={{
+                width: '300px', // Adjust the width as needed
+                marginLeft: '30px', // Add some margin left to separate it from the logo
+                backgroundColor: '#F5F5F5',
+              }}
+              InputProps={{
+                startAdornment: <SearchIcon style={{ color: 'grey' }} />,
+              }}
+            />
+          </Box>
+          <Box display="flex" justifyContent="flex-end" alignItems="center">
+            {['Requests', 'Profile'].map((text, idx) => (
               <Typography
                 key={idx}
                 variant="body1"
@@ -29,7 +60,7 @@ function ClientHome() {
                 style={{
                   cursor: 'pointer',
                   marginLeft: '50px',
-                  color: '#FFFFFF',
+                  color: '#41423A',
                   fontSize: '16px',
                   fontFamily: 'Faculty Glyphic',
                 }}
@@ -41,122 +72,77 @@ function ClientHome() {
         </Toolbar>
       </AppBar>
 
-      {/* Main Content */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '80px', paddingBottom: '40px', backgroundColor: '#B65A23' }}>
-        
-        {/* Centered Search Bar */}
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="Search..."
-          style={{ width: '500px', marginBottom: '40px', backgroundColor: '#F5F5F5' }}
-          InputProps={{
-            startAdornment: <SearchIcon style={{ color: 'white' }} />, 
-          }}
-        />
-
-        {/* Tagline Text */}
-        <Typography
-          variant="h4"
+      {/* Main Content in White Container with Rounded Edges */}
+      <Box
+        component={Paper}
+        style={{
+          backgroundColor: 'white',
+          marginTop: '20px',
+          marginBottom: '20px',
+          padding: '30px',
+          borderRadius: '12px',
+          maxWidth: '1350px',
+          margin: 'auto',
+          textAlign: 'center',
+          minHeight: 'calc(100vh - 70px)', // Adjust to leave space for AppBar
+        }}
+      >
+        {/* Carousel */}
+        <Carousel
+          indicators={true}
+          navButtonsAlwaysVisible={true}
           style={{
-            fontFamily: 'Faculty Glyphic',
-            color: 'white',
-            marginBottom: '80px',
+            marginTop: '40px', // Adjust the top margin to push the carousel down
+            margin: 'auto', // Center the carousel
+            maxWidth: '1200px', // Match width of search bar container
+            borderRadius: '12px',
+            height: '200px', // Set height to 200px
+            overflow: 'hidden',
+          }}
+          navButtonsProps={{
+            style: {
+              backgroundColor: 'rgba(0, 0, 0, 0.3)', // Optional: adds background color to nav buttons
+              borderRadius: '50%', // Makes nav buttons circular
+              padding: '8px', // Adjusts the size of the nav buttons
+              marginTop: '-50px', // Moves nav buttons closer to carousel
+            }
           }}
         >
-          The search for justice starts here
-        </Typography>
+          {carouselItems.map((item, index) => (
+            <Box
+              key={index}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              style={{
+                height: '100%', // Ensure the carousel content fills the container height
+              }}
+            >
+              <Box
+                component="img"
+                src={item.image}
+                alt={`Carousel ${index + 1}`}
+                style={{
+                  width: '1350px', // Ensure image doesn’t exceed container width
+                  height: '50%', // Ensure image fills the container's height
+                  borderRadius: '12px',
+                  objectFit: 'contain', // Center the image and keep it within bounds without cropping
+                }}
+              />
+            </Box>
+          ))}
+        </Carousel>
+      </Box>
 
-        {/* Icons and Descriptions */}
-        <Box display="flex" justifyContent="space-around" width="80%" marginTop="40px">
-          {/* Search Section */}
-          <Box display="flex" alignItems="center" flexDirection="column" maxWidth="300px">
-            <SearchIcon style={{ fontSize: 40, color: 'white' }} /> 
-            <Typography
-              variant="body1"
-              style={{
-                fontFamily: 'Outfit',
-                fontWeight: 500,
-                color: 'white', 
-                marginTop: '10px',
-                textAlign: 'justified', 
-              }}
-            >
-              Search
-            </Typography>
-            <Typography
-              variant="body2"
-              style={{
-                fontFamily: 'Outfit',
-                fontWeight: 300,
-                color: 'white', 
-                marginTop: '10px',
-                textAlign: 'justified', 
-              }}
-            >
-              In the search bar, type in details of your case or the type of practitioner that you had in mind. The algorithm will search through our list of qualified professionals and suggest ideal people to work with, starting with the best match based on specific criteria. For a more tailored experience, use the filter feature to refine your search, so you get the most suitable talent for your needs.
-            </Typography>
-          </Box>
-
-          {/* Requests Section */}
-          <Box display="flex" alignItems="center" flexDirection="column" maxWidth="300px">
-            <NotificationsIcon style={{ fontSize: 40, color: 'white' }} /> {/* White icon */}
-            <Typography
-              variant="body1"
-              style={{
-                fontFamily: 'Outfit',
-                fontWeight: 500,
-                color: 'white', // White text
-                marginTop: '10px',
-                textAlign: 'center',
-              }}
-            >
-              Requests
-            </Typography>
-            <Typography
-              variant="body2"
-              style={{
-                fontFamily: 'Outfit',
-                fontWeight: 300,
-                color: 'white', // White text
-                marginTop: '10px',
-                textAlign: 'justified', // Justified text
-              }}
-            >
-              Manage recent requests sent to lawyers, view your request history, and track which lawyers you’ve worked with in the past. This feature allows you to monitor the status of each request and keep organized records for future reference.
-            </Typography>
-          </Box>
-
-          {/* Profile Section */}
-          <Box display="flex" alignItems="center" flexDirection="column" maxWidth="300px">
-            <AccountCircleIcon style={{ fontSize: 40, color: 'white' }} /> {/* White icon */}
-            <Typography
-              variant="body1"
-              style={{
-                fontFamily: 'Outfit',
-                fontWeight: 500,
-                color: 'white',
-                marginTop: '10px',
-                textAlign: 'center',
-              }}
-            >
-              Profile
-            </Typography>
-            <Typography
-              variant="body2"
-              style={{
-                fontFamily: 'Outfit',
-                fontWeight: 300,
-                color: 'white',
-                marginTop: '10px',
-                textAlign: 'justified', 
-              }}
-            >
-              View and update your profile details to make a great first impression on lawyers. Keeping your profile clean and up-to-date helps lawyers understand your needs better. You can also view your ratings and ensure your profile accurately reflects your experience and requirements.
-            </Typography>
-          </Box>
+      {/* Footer Section (moved below the content) */}
+      <Box style={{ marginTop: '20px' }}>
+        <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+          <Typography variant="body2" style={{ fontFamily: 'Faculty Glyphic', fontSize: '10px', color: 'white' }}>
+            © The Civilify Company, Cebu City
+          </Typography>
         </Box>
-      </div>
+      </Box>
+
     </div>
   );
 }
