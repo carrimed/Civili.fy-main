@@ -145,7 +145,7 @@ function ClientReview() {
   };
 
   return (
-    <div style={{ backgroundColor: '#292929', minHeight: '100vh', color: 'white' }}>
+    <div style={{ backgroundColor: '#D9641E', minHeight: '100vh', color: 'white' }}>
       <AppBar position="static" style={{ backgroundColor: 'white', color: 'black' }}>
         <Toolbar>
           <Typography
@@ -153,7 +153,7 @@ function ClientReview() {
             style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
             onClick={handleLogoClick}
           >
-            <img src="/images/civilifyicon.png" alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
+            <img src="/images/logoiconblack.png" alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
           </Typography>
           <Box display="flex" alignItems="center" marginLeft="auto">
             <IconButton onClick={handleAccountClick} style={{ color: 'black' }}>
