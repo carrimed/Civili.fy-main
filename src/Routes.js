@@ -13,7 +13,6 @@ import LandingPage from './landingpage';
 import AdminLogin from './admin/adminlogin';
 import AdminHome from './admin/adminhome';
 
-import Landing from './landingpage';
 
 function AppRoutes() {
   return (
