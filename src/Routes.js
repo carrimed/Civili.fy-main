@@ -8,16 +8,12 @@ import ClientCase from './client/clientcase';
 import ClientReview from './client/clientreview';
 import ClientAppointment from './client/clientappointment';
 import ProfileDisplay from './client/profile';
+import UpdatePersonalInfo from './client/updatepersonalinfo';
+
 import LandingPage from './landingpage';
 
 import AdminLogin from './admin/adminlogin';
 import AdminHome from './admin/adminhome';
-<<<<<<< Updated upstream
-import UpdatePersonalInfo from './client/UpdatePersonalInfo';
-=======
-import LawyerProfileDisplay from './lawyer/lawyerprofile';
->>>>>>> Stashed changes
-
 
 function AppRoutes() {
   return (
@@ -37,7 +33,6 @@ function AppRoutes() {
 
       <Route path="/civilify/admin-login-page" element={<AdminLogin />} />
       <Route path="/civilify/admin-home-page" element={<AdminHome />} />
-      <Route path="/civilify/lawyer-profile" element={<LawyerProfileDisplay />} />
 
     </Routes>
   )
