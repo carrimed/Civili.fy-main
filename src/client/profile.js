@@ -187,7 +187,7 @@ function ProfileDisplay() {
             {/* Profile Section */}
             <div style={styles.container}>
                 {/* Back Button */}
-                <FaArrowLeft style={styles.backIcon} onClick={() => window.history.back()} />
+                <FaArrowLeft style={styles.backIcon} onClick={() => navigate('/civilify/landing-page')} />
 
                 {/* Settings Icon with Menu */}
                 <FaCog
