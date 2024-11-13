@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, TextField, Box, IconButton, Menu, MenuItem, Divider } from '@mui/material';
+import { AppBar, Toolbar, Typography, TextField, Box, IconButton, Menu, MenuItem, Divider, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import MessageIcon from '@mui/icons-material/Message';
@@ -8,6 +8,7 @@ import PersonIcon from '@mui/icons-material/Person';
 function ClientHome() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [selectedOption, setSelectedOption] = useState('search'); // Default to 'search'
 
   const handleProfileClick = (event) => {
@@ -23,9 +24,14 @@ function ClientHome() {
   };
   
   const handleLogout = () => {
+    setLoading(true);
+    setTimeout(() => {
+      navigate('/civilify/client-login-page');
+    }, 2000); 
     handleClose();
-    navigate('/civilify/client-login-page');
   };
+
+
 
   const descriptions = {
     search: (
@@ -354,6 +360,24 @@ function ClientHome() {
       >
         © The Civilify Company, Cebu City
       </Box>
+
+    {/* Loading Spinner (pachuy2) */}
+    {loading && (
+        <Box
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            padding: '20px',
+            borderRadius: '8px',
+          }}
+        >
+          <CircularProgress size={50} style={{ color: '#D9641E' }} />
+        </Box>
+      )}
+
     </div>
   );
 }
