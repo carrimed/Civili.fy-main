@@ -8,6 +8,5 @@ import civilify.com.example.demo.entity.ClientEntity;
 import java.util.List;
 @Repository
 public interface ClientRepository extends JpaRepository<ClientEntity, Integer> {
-    //List<ClientEntity> findByUsername(String username);
-	ClientEntity findByUsername(String username);
+    
 }
