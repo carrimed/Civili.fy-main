@@ -208,7 +208,7 @@ function ClientHome() {
               Profile ▾
             </Typography>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-              <MenuItem onClick={() => { handleClose(); navigate('/profile'); }}>My Profile</MenuItem>
+              <MenuItem onClick={() => { handleClose(); navigate('/civilify/profile-page'); }}>My Profile</MenuItem>
               <MenuItem onClick={() => { handleClose(); navigate('/settings'); }}>Settings</MenuItem>
               <MenuItem onClick={() => { handleClose(); navigate('/logout'); }}>Logout</MenuItem>
             </Menu>
