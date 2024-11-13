@@ -1,212 +1,82 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, TextField, Box, IconButton, Menu, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, Typography, TextField, Box, IconButton, Menu, MenuItem, Card, CardContent, Avatar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
-import MessageIcon from '@mui/icons-material/Message';
-import PersonIcon from '@mui/icons-material/Person';
 
 function ClientHome() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedOption, setSelectedOption] = useState('search'); // Default to 'search'
+  const [selectedOption, setSelectedOption] = useState('search');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredLawyers, setFilteredLawyers] = useState([]);
 
-  const handleProfileClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const handleProfileClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleIconClick = (option) => {
-    setSelectedOption(option); // Update the selected option
-  };
+  const handleIconClick = (option) => setSelectedOption(option);
 
   const descriptions = {
     search: (
       <>
-        <Typography
-          variant="h6"
-          style={{
-            color: 'white',
-            fontFamily: 'Outfit',
-            fontSize: '20px',
-            marginBottom: '10px',
-          }}
-        >
-          Search
-        </Typography>
-        <hr
-          style={{
-            width: '100%',
-            borderTop: '1px solid #white', // Dark line below the title
-            margin: '10px 0', // Margin for spacing
-          }}
-        />
-        <Typography
-          variant="body1"
-          style={{
-            color: 'white',
-            fontFamily: 'Outfit',
-            fontSize: '16px',
-          }}
-        >
-          Enter the details of your case into the search bar, and our intelligent algorithm will match you with the most suitable lawyers from our extensive database. To fine-tune your results and find exactly what you're looking for, use our advanced filter feature to personalize your search based on your specific needs and preferences.
+        <Typography variant="h6" style={{ color: 'white', fontFamily: 'Outfit', fontSize: '20px', marginBottom: '10px' }}>Search</Typography>
+        <hr style={{ width: '100%', borderTop: '1px solid white', margin: '10px 0' }} />
+        <Typography variant="body1" style={{ color: 'white', fontFamily: 'Outfit', fontSize: '16px' }}>
+          Enter the details of your case into the search bar, and our intelligent algorithm will match you with the most suitable lawyers.
         </Typography>
       </>
     ),
     requests: (
       <>
-        <Typography
-          variant="h6"
-          style={{
-            color: 'white',
-            fontFamily: 'Outfit',
-            fontSize: '20px',
-            marginBottom: '10px',
-          }}
-        >
-          Requests
-        </Typography>
-        <hr
-          style={{
-            width: '100%',
-            borderTop: '1px solid white', // Dark line below the title
-            margin: '10px 0', // Margin for spacing
-          }}
-        />
-        <Typography
-          variant="body1"
-          style={{
-            color: 'white',
-            fontFamily: 'Outfit',
-            fontSize: '16px',
-          }}
-        >
-          Keep track of all your appointment requests, including the ones you've sent to potential legal practitioners. Monitor the status of your requests, see if a practitioner has been assigned to your case, and stay updated on the progress of each request in real-time.
+        <Typography variant="h6" style={{ color: 'white', fontFamily: 'Outfit', fontSize: '20px', marginBottom: '10px' }}>Requests</Typography>
+        <hr style={{ width: '100%', borderTop: '1px solid white', margin: '10px 0' }} />
+        <Typography variant="body1" style={{ color: 'white', fontFamily: 'Outfit', fontSize: '16px' }}>
+          Keep track of all your appointment requests and stay updated on each request in real-time.
         </Typography>
       </>
     ),
     profile: (
       <>
-        <Typography
-          variant="h6"
-          style={{
-            color: 'white',
-            fontFamily: 'Outfit',
-            fontSize: '20px',
-            marginBottom: '10px',
-          }}
-        >
-          Profile
-        </Typography>
-        <hr
-          style={{
-            width: '100%',
-            borderTop: '1px solid white', // Dark line below the title
-            margin: '10px 0', // Margin for spacing
-          }}
-        />
-        <Typography
-          variant="body1"
-          style={{
-            color: 'white',
-            fontFamily: 'Outfit',
-            fontSize: '16px',
-          }}
-        >
-          View and update your personal profile to ensure it's optimized for potential legal practitioners. Customize your profile to highlight key information, make your case stand out, and tailor your settings to suit your preferences for a more seamless experience with the platform.
+        <Typography variant="h6" style={{ color: 'white', fontFamily: 'Outfit', fontSize: '20px', marginBottom: '10px' }}>Profile</Typography>
+        <hr style={{ width: '100%', borderTop: '1px solid white', margin: '10px 0' }} />
+        <Typography variant="body1" style={{ color: 'white', fontFamily: 'Outfit', fontSize: '16px' }}>
+          View and update your profile to ensure it's optimized for potential legal practitioners.
         </Typography>
       </>
     ),
   };
 
+  //Manipulated since, not connected yet to backened
+  const lawyerProfiles = [
+    { name: 'Kent M. Delos Cientos', specialization: 'Criminal Lawyer', email: 'kent@example.com', contact: '123-456-7890', imageUrl: '/images/kent.jpg' },
+    { name: 'Keith Ruezyl Tagarao', specialization: 'Family Lawyer', email: 'keith@example.com', contact: '234-567-8901', imageUrl: '/images/keith.jpg' },
+    { name: 'Arnel P. Paden', specialization: 'Corporate Lawyer', email: 'arnel@example.com', contact: '345-678-9012', imageUrl: '/images/arnel.jpg' },
+    { name: 'Franco C. Magno', specialization: 'Immigration Lawyer', email: 'franco@example.com', contact: '456-789-0123', imageUrl: '/images/franco.jpg' },
+  ];
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    const results = lawyerProfiles.filter(
+      (lawyer) =>
+        lawyer.name.toLowerCase().includes(query) ||
+        lawyer.specialization.toLowerCase().includes(query)
+    );
+    setFilteredLawyers(results);
+  };
+
   return (
-    <div
-      style={{
-        position: 'relative',
-        overflow: 'hidden', // Prevent scrolling
-        backgroundColor: 'transparent',
-        height: '100vh', // Full viewport height
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}
-    >
-      {/* Background Image */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage: 'url("/images/bg2.png")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 1,
-          zIndex: -1, // Places it behind content
-        }}
-      />
-
-      {/* Orange Gradient Overlay with 0.7 opacity */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'linear-gradient(to bottom, #D9641E, #A54C17)', // Gradient applied here
-          opacity: 0.7, // 70% opacity
-          zIndex: -1, // Places it behind content
-        }}
-      />
-
-      {/* App Bar with Logo, Search Bar, and Right-Aligned "Requests" and "Profile" */}
+    <div style={{ position: 'relative', overflow: 'hidden', backgroundColor: 'transparent', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: 'url("/images/bg2.png")', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 1, zIndex: -1 }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(to bottom, #D9641E, #A54C17)', opacity: 0.7, zIndex: -1 }} />
+      
       <AppBar position="static" style={{ backgroundColor: 'white', boxShadow: 'none', width: '100%' }}>
         <Toolbar>
-          <Typography
-            component="div"
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-            onClick={() => navigate('/')}
-          >
-            <img
-              src="/images/logoiconblack.png"
-              alt="Logo"
-              style={{ width: '40px', marginLeft: '10px', marginRight: '10px' }}
-            />
+          <Typography component="div" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => navigate('/')}>
+            <img src="/images/logoiconblack.png" alt="Logo" style={{ width: '40px', marginLeft: '10px', marginRight: '10px' }} />
           </Typography>
           <Box display="flex" justifyContent="flex-end" alignItems="center" style={{ flexGrow: 1 }}>
-            <Typography
-              variant="body1"
-              onClick={() => navigate('/requests')}
-              style={{
-                cursor: 'pointer',
-                marginLeft: '20px',
-                color: '#41423A',
-                fontSize: '16px',
-                fontFamily: 'Faculty Glyphic',
-              }}
-            >
-              Requests
-            </Typography>
-            <Typography
-              variant="body1"
-              onClick={handleProfileClick}
-              style={{
-                cursor: 'pointer',
-                marginLeft: '20px',
-                color: '#41423A',
-                fontSize: '16px',
-                fontFamily: 'Faculty Glyphic',
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              Profile ▾
-            </Typography>
+            <Typography variant="body1" onClick={() => navigate('/requests')} style={{ cursor: 'pointer', marginLeft: '20px', color: '#41423A', fontSize: '16px', fontFamily: 'Faculty Glyphic' }}>Requests</Typography>
+            <Typography variant="body1" onClick={handleProfileClick} style={{ cursor: 'pointer', marginLeft: '20px', color: '#41423A', fontSize: '16px', fontFamily: 'Faculty Glyphic', display: 'flex', alignItems: 'center' }}>Profile ▾</Typography>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
               <MenuItem onClick={() => { handleClose(); navigate('/profile'); }}>My Profile</MenuItem>
               <MenuItem onClick={() => { handleClose(); navigate('/settings'); }}>Settings</MenuItem>
@@ -216,37 +86,20 @@ function ClientHome() {
         </Toolbar>
       </AppBar>
 
-      {/* Main Title */}
-      <Typography
-        variant="h4"
-        style={{
-          color: 'white',
-          fontFamily: 'Faculty Glyphic',
-          fontSize: '28px',
-          marginTop: '40px',
-          marginBottom: '10px',
-          textAlign: 'center',
-        }}
-      >
-        The search for justice starts here
-      </Typography>
-
-      {/* Search Bar with Rounded Edges */}
-      <Box
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginTop: '5px',
-          marginBottom: '5px',
-          padding: '0 20px',
-          width: '100%',
-        }}
-      >
+      <Box style={{ display: 'flex', justifyContent: 'center', marginTop: '5px', marginBottom: '5px', padding: '0 20px', width: '100%' }}>
         <TextField
           variant="standard"
           size="medium"
           placeholder="Search for practitioners..."
+          value={searchQuery}
+          onChange={handleSearch}
           style={{
+            position: 'fixed',
+            top: '80px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1000,
+            backgroundColor: 'white',
             width: '100%',
             maxWidth: '500px',
             backgroundColor: '#F5F5F5',
@@ -264,78 +117,19 @@ function ClientHome() {
         />
       </Box>
 
-      {/* Icons Row */}
-      <Box display="flex" justifyContent="center" gap="20px" marginTop="10px">
-        <IconButton
-          style={{
-            backgroundColor: 'white',
-            width: '35px',
-            height: '35px',
-            color: 'black',
-            borderRadius: '50%',
-          }}
-          onClick={() => handleIconClick('search')}
-        >
-          <SearchIcon />
-        </IconButton>
-        <IconButton
-          style={{
-            backgroundColor: 'white',
-            width: '35px',
-            height: '35px',
-            color: 'black',
-            borderRadius: '50%',
-          }}
-          onClick={() => handleIconClick('requests')}
-        >
-          <MessageIcon />
-        </IconButton>
-        <IconButton
-          style={{
-            backgroundColor: 'white',
-            width: '35px',
-            height: '35px',
-            color: 'black',
-            borderRadius: '50%',
-          }}
-          onClick={() => handleIconClick('profile')}
-        >
-          <PersonIcon />
-        </IconButton>
-      </Box>
+            {filteredLawyers.map((lawyer) => (
+        <Card key={lawyer.name} style={{ width: '500px', margin: '10px', display: 'flex', alignItems: 'center', padding: '10px' }}>
+          <Avatar src={lawyer.imageUrl} alt={lawyer.name} style={{ width: 60, height: 60, marginRight: '15px' }} />
+          <CardContent>
+            <Typography variant="h6" style={{ fontFamily: 'Outfit' }}>{lawyer.name}</Typography>
+            <Typography variant="body2" color="textSecondary" style={{ fontFamily: 'Outfit' }}>{lawyer.specialization}</Typography>
+            <Typography variant="body2" style={{ fontFamily: 'Outfit' }}>Email: {lawyer.email}</Typography>
+            <Typography variant="body2" style={{ fontFamily: 'Outfit' }}>Contact: {lawyer.contact}</Typography>
+          </CardContent>
+        </Card>
+      ))}
 
-      {/* White Rounded Square Box */}
-      <Box
-        style={{
-          width: '500px', // Ensuring the width is correct
-          height: '200px', // The height you specified
-          borderRadius: '12px',
-          marginTop: '20px',
-          marginBottom: '70px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '20px',
-        }}
-      >
-        {descriptions[selectedOption]}
-      </Box>
-
-      {/* Footer Section */}
-      <Box
-        style={{
-          backgroundColor: '#41423A',
-          width: '100%',
-          height: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          paddingLeft: '10px',
-          color: 'white',
-          fontFamily: 'Faculty Glyphic',
-          fontSize: '10px',
-        }}
-      >
+      <Box style={{ backgroundColor: '#41423A', width: '100%', height: '20px', display: 'flex', alignItems: 'center', paddingLeft: '10px', color: 'white', fontFamily: 'Faculty Glyphic', fontSize: '10px' }}>
         © The Civilify Company, Cebu City
       </Box>
     </div>

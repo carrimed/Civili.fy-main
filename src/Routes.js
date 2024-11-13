@@ -9,6 +9,7 @@ import ClientReview from './client/clientreview';
 import ClientAppointment from './client/clientappointment';
 
 import Landing from './landingpage';
+import AppointmentForm from './client/appointmentform';
 
 function AppRoutes() {
   return (
@@ -22,7 +23,7 @@ function AppRoutes() {
       <Route path="/civilify/client-case-page" element={<ClientCase />} />
       <Route path="/civilify/client-review-page" element={<ClientReview />} />
       <Route path="/civilify/client-appointment-page" element={<ClientAppointment />} />
-
+      <Route path="/civilify/client-appointmentform" element={<AppointmentForm/>} />
     </Routes>
   )
 }
