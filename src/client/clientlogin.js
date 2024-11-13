@@ -17,6 +17,12 @@ function ClientLogin() {
   const [loading, setLoading] = useState(false);
   const [backLoading, setBackLoading] = useState(false);
 
+  // Function to handle Snackbar close
+  const handleClose = () => {
+    setOpenSnackbar(false);
+  };
+
+  // Handle the login click event
   const handleLoginClick = async () => {
     if (!username || !password) {
       setSnackbarMessage("Please fill in both fields.");
@@ -54,10 +60,12 @@ function ClientLogin() {
     }
   };
 
+  // Navigate to signup page
   const handleSignUpClick = () => {
     navigate('/civilify/client-signup-page');
   };
 
+  // Handle back navigation with loading indicator
   const handleBackClick = () => {
     setBackLoading(true);
     setTimeout(() => {
@@ -230,7 +238,7 @@ function ClientLogin() {
       <Snackbar
         open={openSnackbar}
         autoHideDuration={3000}
-        onClose={() => setOpenSnackbar(false)}
+        onClose={handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Alert
@@ -240,6 +248,24 @@ function ClientLogin() {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+    {/* Loading Spinner */}
+    {loading && (
+        <Box
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            padding: '20px',
+            borderRadius: '8px',
+          }}
+        >
+          <CircularProgress size={50} style={{ color: '#D9641E' }} />
+        </Box>
+      )}
+
     </div>
   );
 }
