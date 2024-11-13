@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography } from '@mui/material';
+import { Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 function AdminLogin() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false); // New state to track loading
 
   const handleLogin = () => {
-    // Add your login functionality here
-    console.log('Logging in with', username, password);
-    navigate('/admin-dashboard'); // Example redirect after login
+    // Start loading
+    setLoading(true);
+    
+    // Simulate a login process (e.g., API call)
+    setTimeout(() => {
+      console.log('Logging in with', username, password);
+      navigate('/civilify/admin-home-page'); // Redirect after login
+      setLoading(false); // Stop loading
+    }, 2000); // Simulate 2 seconds loading time (replace with actual login logic)
   };
 
   return (
@@ -99,6 +106,23 @@ function AdminLogin() {
           LOGIN
         </Button>
       </Box>
+
+      {/* Loading Spinner */}
+      {loading && (
+        <Box
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            padding: '20px',
+            borderRadius: '8px',
+          }}
+        >
+          <CircularProgress size={50} style={{ color: '#D9641E' }} />
+        </Box>
+      )}
     </div>
   );
 }

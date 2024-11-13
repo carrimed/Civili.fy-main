@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, IconButton, Snackbar, Menu, MenuItem, Divider } from '@mui/material';
+import { Box, TextField, Button, Typography, IconButton, Snackbar, Menu, MenuItem, Divider, CircularProgress } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -34,6 +34,7 @@ function AdminHome() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null); // For profile menu
+  const [loading, setLoading] = useState(false); // Loading state for logout
   const navigate = useNavigate(); // For redirecting to login page
 
   // Retrieve practitioners data from localStorage if available
@@ -89,8 +90,12 @@ function AdminHome() {
   };
 
   const handleLogout = () => {
-    // Clear any session data if needed
-    navigate('/civilify/admin-login-page'); // Redirect to login page
+    setLoading(true); // Start loading when logout is clicked
+    setTimeout(() => {
+      // Simulate logout process (replace with actual logout logic if needed)
+      setLoading(false); // Stop loading
+      navigate('/civilify/admin-login-page'); // Redirect to login page
+    }, 2000); // Simulate a delay of 2 seconds
   };
 
   return (
@@ -203,6 +208,23 @@ function AdminHome() {
         autoHideDuration={3000}
         onClose={() => setOpenSnackbar(false)}
       />
+
+      {/* Loading Spinner */}
+      {loading && (
+        <Box
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            padding: '20px',
+            borderRadius: '8px',
+          }}
+        >
+          <CircularProgress size={50} style={{ color: '#D9641E' }} />
+        </Box>
+      )}
     </div>
   );
 }
