@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, TextField, Box, IconButton, Menu, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, Typography, TextField, Box, IconButton, Menu, MenuItem, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import MessageIcon from '@mui/icons-material/Message';
@@ -20,6 +20,11 @@ function ClientHome() {
 
   const handleIconClick = (option) => {
     setSelectedOption(option); // Update the selected option
+  };
+  
+  const handleLogout = () => {
+    handleClose();
+    navigate('/civilify/client-login-page');
   };
 
   const descriptions = {
@@ -205,12 +210,23 @@ function ClientHome() {
                 alignItems: 'center',
               }}
             >
-              Profile ▾
+            Profile ▾
             </Typography>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+              <Box style={{ display: 'flex', padding: '10px', alignItems: 'center' }}>
+                <img
+                  src="/images/pfp1.jpg"
+                  alt="Profile"
+                  style={{ width: '40px', height: '40px', borderRadius: '50%', marginRight: '10px' }}
+                />
+                <Typography variant="body1" style={{ fontSize: '16px', fontFamily: 'Faculty Glyphic' }}>
+                  Keith Tagarao
+                </Typography>
+              </Box>
+              <Divider />
               <MenuItem onClick={() => { handleClose(); navigate('/profile'); }}>My Profile</MenuItem>
               <MenuItem onClick={() => { handleClose(); navigate('/settings'); }}>Settings</MenuItem>
-              <MenuItem onClick={() => { handleClose(); navigate('/logout'); }}>Logout</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </Box>
         </Toolbar>
