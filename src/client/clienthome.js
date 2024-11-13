@@ -1,28 +1,171 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, TextField, Box, Paper, Container } from '@mui/material';
-import Carousel from 'react-material-ui-carousel';
+import React, { useState } from 'react';
+import { AppBar, Toolbar, Typography, TextField, Box, IconButton, Menu, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
+import MessageIcon from '@mui/icons-material/Message';
+import PersonIcon from '@mui/icons-material/Person';
 
 function ClientHome() {
   const navigate = useNavigate();
-  const carouselItems = [
-    { image: '/images/bgg.png' },
-    { image: '/images/bgg.png' },
-    { image: '/images/bgg.png' }
-  ];
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedOption, setSelectedOption] = useState('search'); // Default to 'search'
+
+  const handleProfileClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleIconClick = (option) => {
+    setSelectedOption(option); // Update the selected option
+  };
+
+  const descriptions = {
+    search: (
+      <>
+        <Typography
+          variant="h6"
+          style={{
+            color: 'white',
+            fontFamily: 'Outfit',
+            fontSize: '20px',
+            marginBottom: '10px',
+          }}
+        >
+          Search
+        </Typography>
+        <hr
+          style={{
+            width: '100%',
+            borderTop: '1px solid #white', // Dark line below the title
+            margin: '10px 0', // Margin for spacing
+          }}
+        />
+        <Typography
+          variant="body1"
+          style={{
+            color: 'white',
+            fontFamily: 'Outfit',
+            fontSize: '16px',
+          }}
+        >
+          Enter the details of your case into the search bar, and our intelligent algorithm will match you with the most suitable lawyers from our extensive database. To fine-tune your results and find exactly what you're looking for, use our advanced filter feature to personalize your search based on your specific needs and preferences.
+        </Typography>
+      </>
+    ),
+    requests: (
+      <>
+        <Typography
+          variant="h6"
+          style={{
+            color: 'white',
+            fontFamily: 'Outfit',
+            fontSize: '20px',
+            marginBottom: '10px',
+          }}
+        >
+          Requests
+        </Typography>
+        <hr
+          style={{
+            width: '100%',
+            borderTop: '1px solid white', // Dark line below the title
+            margin: '10px 0', // Margin for spacing
+          }}
+        />
+        <Typography
+          variant="body1"
+          style={{
+            color: 'white',
+            fontFamily: 'Outfit',
+            fontSize: '16px',
+          }}
+        >
+          Keep track of all your appointment requests, including the ones you've sent to potential legal practitioners. Monitor the status of your requests, see if a practitioner has been assigned to your case, and stay updated on the progress of each request in real-time.
+        </Typography>
+      </>
+    ),
+    profile: (
+      <>
+        <Typography
+          variant="h6"
+          style={{
+            color: 'white',
+            fontFamily: 'Outfit',
+            fontSize: '20px',
+            marginBottom: '10px',
+          }}
+        >
+          Profile
+        </Typography>
+        <hr
+          style={{
+            width: '100%',
+            borderTop: '1px solid white', // Dark line below the title
+            margin: '10px 0', // Margin for spacing
+          }}
+        />
+        <Typography
+          variant="body1"
+          style={{
+            color: 'white',
+            fontFamily: 'Outfit',
+            fontSize: '16px',
+          }}
+        >
+          View and update your personal profile to ensure it's optimized for potential legal practitioners. Customize your profile to highlight key information, make your case stand out, and tailor your settings to suit your preferences for a more seamless experience with the platform.
+        </Typography>
+      </>
+    ),
+  };
 
   return (
     <div
       style={{
-        backgroundColor: '#F1F1F1',
-        minHeight: '100vh',
-        paddingBottom: '40px',
-        background: 'linear-gradient(to bottom, #F1F1F1, #F1F1F1, #F1F1F1, #F1F1F1, #F1F1F1, #D9641E)', // Adding gradient
+        position: 'relative',
+        overflow: 'hidden', // Prevent scrolling
+        backgroundColor: 'transparent',
+        height: '100vh', // Full viewport height
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between',
       }}
     >
-      {/* App Bar with Search Bar beside the Logo */}
-      <AppBar position="static" style={{ backgroundColor: 'white', boxShadow: 'none' }}>
+      {/* Background Image */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: 'url("/images/bg2.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 1,
+          zIndex: -1, // Places it behind content
+        }}
+      />
+
+      {/* Orange Gradient Overlay with 0.7 opacity */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'linear-gradient(to bottom, #D9641E, #A54C17)', // Gradient applied here
+          opacity: 0.7, // 70% opacity
+          zIndex: -1, // Places it behind content
+        }}
+      />
+
+      {/* App Bar with Logo, Search Bar, and Right-Aligned "Requests" and "Profile" */}
+      <AppBar position="static" style={{ backgroundColor: 'white', boxShadow: 'none', width: '100%' }}>
         <Toolbar>
           <Typography
             component="div"
@@ -35,114 +178,166 @@ function ClientHome() {
               style={{ width: '40px', marginLeft: '10px', marginRight: '10px' }}
             />
           </Typography>
-          {/* Search Bar next to the logo */}
-          <Box display="flex" alignItems="center" style={{ flexGrow: 1 }}>
-            <TextField
-              variant="outlined"
-              size="small"
-              placeholder="Search for practitioners..."
+          <Box display="flex" justifyContent="flex-end" alignItems="center" style={{ flexGrow: 1 }}>
+            <Typography
+              variant="body1"
+              onClick={() => navigate('/requests')}
               style={{
-                width: '300px', // Adjust the width as needed
-                marginLeft: '30px', // Add some margin left to separate it from the logo
-                backgroundColor: '#F5F5F5',
+                cursor: 'pointer',
+                marginLeft: '20px',
+                color: '#41423A',
+                fontSize: '16px',
+                fontFamily: 'Faculty Glyphic',
               }}
-              InputProps={{
-                startAdornment: <SearchIcon style={{ color: 'grey' }} />,
+            >
+              Requests
+            </Typography>
+            <Typography
+              variant="body1"
+              onClick={handleProfileClick}
+              style={{
+                cursor: 'pointer',
+                marginLeft: '20px',
+                color: '#41423A',
+                fontSize: '16px',
+                fontFamily: 'Faculty Glyphic',
+                display: 'flex',
+                alignItems: 'center',
               }}
-            />
-          </Box>
-          <Box display="flex" justifyContent="flex-end" alignItems="center">
-            {['Requests', 'Profile'].map((text, idx) => (
-              <Typography
-                key={idx}
-                variant="body1"
-                onClick={() => navigate(`/${text.toLowerCase()}`)}
-                style={{
-                  cursor: 'pointer',
-                  marginLeft: '50px',
-                  color: '#41423A',
-                  fontSize: '16px',
-                  fontFamily: 'Faculty Glyphic',
-                }}
-              >
-                {text}
-              </Typography>
-            ))}
+            >
+              Profile ▾
+            </Typography>
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+              <MenuItem onClick={() => { handleClose(); navigate('/profile'); }}>My Profile</MenuItem>
+              <MenuItem onClick={() => { handleClose(); navigate('/settings'); }}>Settings</MenuItem>
+              <MenuItem onClick={() => { handleClose(); navigate('/logout'); }}>Logout</MenuItem>
+            </Menu>
           </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Main Content in White Container with Rounded Edges */}
-      <Box
-        component={Paper}
+      {/* Main Title */}
+      <Typography
+        variant="h4"
         style={{
-          backgroundColor: 'white',
-          marginTop: '20px',
-          marginBottom: '20px',
-          padding: '30px',
-          borderRadius: '12px',
-          maxWidth: '1350px',
-          margin: 'auto',
+          color: 'white',
+          fontFamily: 'Faculty Glyphic',
+          fontSize: '28px',
+          marginTop: '40px',
+          marginBottom: '10px',
           textAlign: 'center',
-          minHeight: 'calc(100vh - 70px)', // Adjust to leave space for AppBar
         }}
       >
-        {/* Carousel */}
-        <Carousel
-          indicators={true}
-          navButtonsAlwaysVisible={true}
+        The search for justice starts here
+      </Typography>
+
+      {/* Search Bar with Rounded Edges */}
+      <Box
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginTop: '5px',
+          marginBottom: '5px',
+          padding: '0 20px',
+          width: '100%',
+        }}
+      >
+        <TextField
+          variant="standard"
+          size="medium"
+          placeholder="Search for practitioners..."
           style={{
-            marginTop: '40px', // Adjust the top margin to push the carousel down
-            margin: 'auto', // Center the carousel
-            maxWidth: '1200px', // Match width of search bar container
-            borderRadius: '12px',
-            height: '200px', // Set height to 200px
-            overflow: 'hidden',
+            width: '100%',
+            maxWidth: '500px',
+            backgroundColor: '#F5F5F5',
+            borderRadius: '30px',
+            padding: '10px 15px',
           }}
-          navButtonsProps={{
+          InputProps={{
+            disableUnderline: true,
+            startAdornment: <SearchIcon style={{ color: 'grey', marginLeft: '10px' }} />,
             style: {
-              backgroundColor: 'rgba(0, 0, 0, 0.3)', // Optional: adds background color to nav buttons
-              borderRadius: '50%', // Makes nav buttons circular
-              padding: '8px', // Adjusts the size of the nav buttons
-              marginTop: '-50px', // Moves nav buttons closer to carousel
-            }
+              fontSize: '18px',
+              height: '40px',
+            },
           }}
+        />
+      </Box>
+
+      {/* Icons Row */}
+      <Box display="flex" justifyContent="center" gap="20px" marginTop="10px">
+        <IconButton
+          style={{
+            backgroundColor: 'white',
+            width: '35px',
+            height: '35px',
+            color: 'black',
+            borderRadius: '50%',
+          }}
+          onClick={() => handleIconClick('search')}
         >
-          {carouselItems.map((item, index) => (
-            <Box
-              key={index}
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              style={{
-                height: '100%', // Ensure the carousel content fills the container height
-              }}
-            >
-              <Box
-                component="img"
-                src={item.image}
-                alt={`Carousel ${index + 1}`}
-                style={{
-                  width: '1350px', // Ensure image doesn’t exceed container width
-                  height: '50%', // Ensure image fills the container's height
-                  borderRadius: '12px',
-                  objectFit: 'contain', // Center the image and keep it within bounds without cropping
-                }}
-              />
-            </Box>
-          ))}
-        </Carousel>
+          <SearchIcon />
+        </IconButton>
+        <IconButton
+          style={{
+            backgroundColor: 'white',
+            width: '35px',
+            height: '35px',
+            color: 'black',
+            borderRadius: '50%',
+          }}
+          onClick={() => handleIconClick('requests')}
+        >
+          <MessageIcon />
+        </IconButton>
+        <IconButton
+          style={{
+            backgroundColor: 'white',
+            width: '35px',
+            height: '35px',
+            color: 'black',
+            borderRadius: '50%',
+          }}
+          onClick={() => handleIconClick('profile')}
+        >
+          <PersonIcon />
+        </IconButton>
       </Box>
 
-      {/* Footer Section (moved below the content) */}
-      <Box style={{ marginTop: '20px' }}>
-        <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-          <Typography variant="body2" style={{ fontFamily: 'Faculty Glyphic', fontSize: '10px', color: 'white' }}>
-            © The Civilify Company, Cebu City
-          </Typography>
-        </Box>
+      {/* White Rounded Square Box */}
+      <Box
+        style={{
+          width: '500px', // Ensuring the width is correct
+          height: '200px', // The height you specified
+          borderRadius: '12px',
+          marginTop: '20px',
+          marginBottom: '70px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '20px',
+        }}
+      >
+        {descriptions[selectedOption]}
       </Box>
 
+      {/* Footer Section */}
+      <Box
+        style={{
+          backgroundColor: '#41423A',
+          width: '100%',
+          height: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          paddingLeft: '10px',
+          color: 'white',
+          fontFamily: 'Faculty Glyphic',
+          fontSize: '10px',
+        }}
+      >
+        © The Civilify Company, Cebu City
+      </Box>
     </div>
   );
 }
