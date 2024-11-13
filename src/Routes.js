@@ -8,6 +8,9 @@ import ClientCase from './client/clientcase';
 import ClientReview from './client/clientreview';
 import ClientAppointment from './client/clientappointment';
 
+import AdminLogin from './admin/adminlogin';
+import AdminHome from './admin/adminhome';
+
 import Landing from './landingpage';
 
 function AppRoutes() {
@@ -22,6 +25,9 @@ function AppRoutes() {
       <Route path="/civilify/client-case-page" element={<ClientCase />} />
       <Route path="/civilify/client-review-page" element={<ClientReview />} />
       <Route path="/civilify/client-appointment-page" element={<ClientAppointment />} />
+
+      <Route path="/civilify/admin-login-page" element={<AdminLogin />} />
+      <Route path="/civilify/admin-home-page" element={<AdminHome />} />
 
     </Routes>
   )
