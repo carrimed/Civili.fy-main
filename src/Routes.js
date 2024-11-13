@@ -12,14 +12,11 @@ import LandingPage from './landingpage';
 
 import AdminLogin from './admin/adminlogin';
 import AdminHome from './admin/adminhome';
-<<<<<<< Updated upstream
 import UpdatePersonalInfo from './client/UpdatePersonalInfo';
-=======
 import LawyerProfileDisplay from './lawyer/lawyerprofile';
->>>>>>> Stashed changes
 
 
-function AppRoutes() {
+function AppRoutes() {  
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/civilify/landing-page" />} />
