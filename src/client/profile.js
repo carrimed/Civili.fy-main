@@ -1,18 +1,43 @@
 import React from 'react';
-import { Box} from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Menu, MenuItem } from '@mui/material';
 import { FaArrowLeft, FaCog } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 function ProfileDisplay() {
-  const [isHovered, setIsHovered] = React.useState(false);
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = React.useState(null); // State to manage the menu anchor
+
+  // Open the menu
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  // Close the menu
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  // Handle menu item click
+  const handleMenuItemClick = (action) => {
+    handleClose();
+    if (action === 'updateProfile') {
+      // Add your update profile logic here
+      console.log('Update Profile');
+    } else if (action === 'deleteProfile') {
+      // Add your delete profile logic here
+      console.log('Delete Profile');
+    }
+  };
 
   const styles = {
     outerContainer: {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      height: '100vh',
-      backgroundColor: '#F1F1F1',
       flexDirection: 'column',
+      backgroundColor: '#D9641E',
+      minHeight: '100vh',
+      paddingTop: '64px', // Adding padding to avoid overlap with fixed AppBar
     },
     container: {
       backgroundColor: '#FFFFFF',
@@ -136,17 +161,54 @@ function ProfileDisplay() {
 
   return (
     <div style={styles.outerContainer}>
+      {/* App Bar */}
+      <AppBar position="fixed" style={{ backgroundColor: 'white', boxShadow: 'none', width: '100%' }}>
+        <Toolbar>
+          <Typography
+            component="div"
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            onClick={() => navigate('/')}
+          >
+            <img
+              src="/images/logoiconblack.png"
+              alt="Logo"
+              style={{ width: '40px', marginLeft: '10px', marginRight: '10px' }}
+            />
+          </Typography>
+          <Box display="flex" justifyContent="flex-end" alignItems="center" style={{ flexGrow: 1 }}></Box>
+        </Toolbar>
+      </AppBar>
+
       {/* Profile Section */}
       <div style={styles.container}>
         {/* Back Button */}
         <FaArrowLeft style={styles.backIcon} onClick={() => window.history.back()} />
 
-        {/* Settings Icon */}
-        <FaCog style={styles.settingsIcon} onClick={() => alert('Settings clicked!')} />
+        {/* Settings Icon with Menu */}
+        <FaCog
+          style={styles.settingsIcon}
+          onClick={handleClick} // Open menu on click
+        />
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        >
+          <MenuItem onClick={() => handleMenuItemClick('updateProfile')}>Update Profile</MenuItem>
+          <MenuItem onClick={() => handleMenuItemClick('deleteProfile')}>Delete Profile</MenuItem>
+        </Menu>
 
         {/* Banner Image */}
         <img
-          src="https://via.placeholder.com/350x150" // Replace with your banner image URL
+          src="/images/team-member-1.jpg" // Replace with your banner image URL
           alt="Banner"
           style={styles.bannerImage}
         />
@@ -155,7 +217,7 @@ function ProfileDisplay() {
         <div style={styles.profilePicContainer}>
           <div style={styles.profilePic}>
             <img
-              src="https://via.placeholder.com/80" // Replace with your profile picture URL
+              src="/images/pfp4.png" // Replace with your profile picture URL
               alt="Profile"
               style={styles.profilePicImage}
             />
@@ -178,25 +240,10 @@ function ProfileDisplay() {
             <span style={styles.label}>Contact:</span> <span style={styles.infoText}>+123 456 7890</span>
           </div>
         </div>
-
-        {/* Edit Profile Button */}
-        <button
-          style={{
-            ...styles.editButton,
-            ...(isHovered ? styles.editButtonHover : {}),
-          }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onClick={() => alert('Edit Profile clicked!')}
-        >
-          Edit Profile
-        </button>
       </div>
 
       {/* Footer Section */}
-      <Box style={styles.footer}>
-        © The Civilify Company, Cebu City
-      </Box>
+      <Box style={styles.footer}>© The Civilify Company, Cebu City</Box>
     </div>
   );
 }
