@@ -1,33 +1,28 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Box, Menu, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Menu, MenuItem, Button } from '@mui/material';
 import { FaArrowLeft, FaCog } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 function ProfileDisplay() {
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = React.useState(null); // State to manage the menu anchor
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  // Open the menu
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Close the menu
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  // Handle menu item click
   const handleMenuItemClick = (action) => {
     handleClose();
     if (action === 'updateProfile') {
-      // Add your update profile logic here
       console.log('Update Profile');
     } else if (action === 'deleteProfile') {
-      // Add your delete profile logic here
       console.log('Delete Profile');
-    } else if (action === 'logout'){
-        console.log('Logged Out');
+    } else if (action === 'logout') {
+      console.log('Logged Out');
     }
   };
 
@@ -39,15 +34,14 @@ function ProfileDisplay() {
       flexDirection: 'column',
       backgroundColor: '#D9641E',
       minHeight: '100vh',
-      paddingTop: '64px', // Adding padding to avoid overlap with fixed AppBar
+      paddingTop: '64px',
     },
     container: {
       backgroundColor: '#FFFFFF',
       borderRadius: '10px',
       padding: '10px',
-      width: '1000px',  // Increased width for more spacious layout
+      width: '1000px',
       boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-      fontFamily: 'Arial, sans-serif',
       color: '#41423A',
       position: 'relative',
       overflow: 'hidden',
@@ -80,7 +74,7 @@ function ProfileDisplay() {
     profilePicContainer: {
       position: 'relative',
       display: 'flex',
-      justifyContent: 'center   ',
+      justifyContent: 'center',
       marginTop: '-40px',
       width: '100%',
     },
@@ -133,8 +127,7 @@ function ProfileDisplay() {
       color: '#ED7D27',
       fontSize: '16px',
     },
-    editButton: {
-      marginTop: '20px',
+    bookButton: {
       padding: '10px 20px',
       backgroundColor: '#D9641E',
       color: '#FFFFFF',
@@ -143,9 +136,7 @@ function ProfileDisplay() {
       cursor: 'pointer',
       fontSize: '16px',
       transition: 'background-color 0.3s',
-    },
-    editButtonHover: {
-      backgroundColor: '#ED7D27',
+      marginTop: '15px', // Add some spacing above the button
     },
     footer: {
       backgroundColor: '#41423A',
@@ -155,7 +146,6 @@ function ProfileDisplay() {
       alignItems: 'center',
       paddingLeft: '10px',
       color: 'white',
-      fontFamily: 'Faculty Glyphic',
       fontSize: '10px',
       position: 'fixed',
       bottom: '0',
@@ -165,75 +155,38 @@ function ProfileDisplay() {
 
   return (
     <div style={styles.outerContainer}>
-      {/* App Bar */}
       <AppBar position="fixed" style={{ backgroundColor: 'white', boxShadow: 'none', width: '100%' }}>
         <Toolbar>
-          <Typography
-            component="div"
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-            onClick={() => navigate('/')}
-          >
-            <img
-              src="/images/logoiconblack.png"
-              alt="Logo"
-              style={{ width: '40px', marginLeft: '10px', marginRight: '10px' }}
-            />
+          <Typography component="div" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => navigate('/')}>
+            <img src="/images/logoiconblack.png" alt="Logo" style={{ width: '40px', marginLeft: '10px', marginRight: '10px' }} />
           </Typography>
-          <Box display="flex" justifyContent="flex-end" alignItems="center" style={{ flexGrow: 1 }}></Box>
         </Toolbar>
       </AppBar>
 
-      {/* Profile Section */}
       <div style={styles.container}>
-        {/* Back Button */}
         <FaArrowLeft style={styles.backIcon} onClick={() => window.history.back()} />
-
-        {/* Settings Icon with Menu */}
-        <FaCog
-          style={styles.settingsIcon}
-          onClick={handleClick} // Open menu on click
-        />
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-        >
+        <FaCog style={styles.settingsIcon} onClick={handleClick} />
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
           <MenuItem onClick={() => handleMenuItemClick('updateProfile')}>Update Profile</MenuItem>
           <MenuItem onClick={() => handleMenuItemClick('deleteProfile')}>Delete Profile</MenuItem>
-          <MenuItem onClick={() => handleMenuItemClick('Logged Out')}>Log out</MenuItem>
+          <MenuItem onClick={() => handleMenuItemClick('logout')}>Log out</MenuItem>
         </Menu>
 
-        {/* Banner Image */}
-        <img
-          src="https://rare-gallery.com/uploads/posts/219455-james-bond-2880x1800.jpg" // Replace with your banner image URL
-          alt="Banner"
-          style={styles.bannerImage}
-        />
+        <img src="https://rare-gallery.com/uploads/posts/219455-james-bond-2880x1800.jpg" alt="Banner" style={styles.bannerImage} />
 
-        {/* Profile Picture */}
         <div style={styles.profilePicContainer}>
           <div style={styles.profilePic}>
             <img
-              src="https://images.saymedia-content.com/.image/t_share/MTc0NTE0MDYyNzc0NzczNzA1/daniel-craigs-james-bond-films-ranked-from-worst-to-best.jpg" // Replace with your profile picture URL
+              src="https://images.saymedia-content.com/.image/t_share/MTc0NTE0MDYyNzc0NzczNzA1/daniel-craigs-james-bond-films-ranked-from-worst-to-best.jpg"
               alt="Profile"
               style={styles.profilePicImage}
             />
           </div>
         </div>
 
-        {/* User Name and Bio */}
         <div style={styles.name}>James Bond</div>
         <div style={styles.bio}>Criminal Lawyer</div>
 
-        {/* Additional Info */}
         <div style={styles.infoContainer}>
           <div>
             <span style={styles.label}>Username:</span> <span style={styles.infoText}>@JamesBond</span>
@@ -256,9 +209,14 @@ function ProfileDisplay() {
           <div>
             <span style={styles.label}>Address:</span> <span style={styles.infoText}>Capitol Hills Cebu City</span>
           </div>
+
+          {/* Book Appointment Button */}
+          <Button style={styles.bookButton} onClick={() => console.log('Book Appointment')}>
+            Book Appointment
+          </Button>
         </div>
       </div>
-      {/* Footer Section */}
+      
       <Box style={styles.footer}>© The Civilify Company, Cebu City</Box>
     </div>
   );

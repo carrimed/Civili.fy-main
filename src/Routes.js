@@ -14,6 +14,7 @@ import AdminLogin from './admin/adminlogin';
 import AdminHome from './admin/adminhome';
 import UpdatePersonalInfo from './client/UpdatePersonalInfo';
 import LawyerProfileDisplay from './lawyer/lawyerprofile';
+import BrowsePage from './client/clientbrowsepage';
 
 
 function AppRoutes() {  
@@ -35,7 +36,7 @@ function AppRoutes() {
       <Route path="/civilify/admin-login-page" element={<AdminLogin />} />
       <Route path="/civilify/admin-home-page" element={<AdminHome />} />
       <Route path="/civilify/lawyer-profile" element={<LawyerProfileDisplay />} />
-
+      <Route path="/civilify/browse-page" element={<BrowsePage />} />
     </Routes>
   )
 }
