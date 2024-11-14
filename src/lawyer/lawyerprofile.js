@@ -1,31 +1,54 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Box, Menu, MenuItem, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { AppBar, Toolbar, Typography, Box, Menu, MenuItem, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { FaArrowLeft, FaCog } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { DesktopDatePicker, TimePicker } from '@mui/x-date-pickers';
 
 function ProfileDisplay() {
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [appointmentData, setAppointmentData] = useState({
+    date: null,
+    time: null,
+    message: '',
+  });
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
+  // Menu Handlers
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
   const handleMenuItemClick = (action) => {
     handleClose();
-    if (action === 'updateProfile') {
-      console.log('Update Profile');
-    } else if (action === 'deleteProfile') {
-      console.log('Delete Profile');
-    } else if (action === 'logout') {
-      console.log('Logged Out');
+    switch (action) {
+      case 'updateProfile':
+        console.log('Update Profile');
+        break;
+      case 'deleteProfile':
+        console.log('Delete Profile');
+        break;
+      case 'logout':
+        console.log('Logged Out');
+        break;
+      default:
+        break;
     }
   };
 
+  // Appointment Modal Handlers
+  const handleBookAppointment = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
+  const handleSubmit = () => {
+    console.log('Appointment Data:', appointmentData);
+    setOpenModal(false);
+  };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAppointmentData((prevState) => ({ ...prevState, [name]: value }));
+  };
+  const handleDateChange = (newDate) => setAppointmentData((prevState) => ({ ...prevState, date: newDate }));
+  const handleTimeChange = (newTime) => setAppointmentData((prevState) => ({ ...prevState, time: newTime }));
+
+  // Styles
   const styles = {
     outerContainer: {
       display: 'flex',
@@ -136,7 +159,7 @@ function ProfileDisplay() {
       cursor: 'pointer',
       fontSize: '16px',
       transition: 'background-color 0.3s',
-      marginTop: '15px', // Add some spacing above the button
+      marginTop: '15px',
     },
     footer: {
       backgroundColor: '#41423A',
@@ -155,6 +178,7 @@ function ProfileDisplay() {
 
   return (
     <div style={styles.outerContainer}>
+      {/* AppBar */}
       <AppBar position="fixed" style={{ backgroundColor: 'white', boxShadow: 'none', width: '100%' }}>
         <Toolbar>
           <Typography component="div" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => navigate('/')}>
@@ -163,61 +187,63 @@ function ProfileDisplay() {
         </Toolbar>
       </AppBar>
 
+      {/* Profile Display */}
       <div style={styles.container}>
+        {/* Back and Settings Icons */}
         <FaArrowLeft style={styles.backIcon} onClick={() => window.history.back()} />
         <FaCog style={styles.settingsIcon} onClick={handleClick} />
+        
+        {/* Menu */}
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
           <MenuItem onClick={() => handleMenuItemClick('updateProfile')}>Update Profile</MenuItem>
           <MenuItem onClick={() => handleMenuItemClick('deleteProfile')}>Delete Profile</MenuItem>
           <MenuItem onClick={() => handleMenuItemClick('logout')}>Log out</MenuItem>
         </Menu>
 
+        {/* Banner and Profile Picture */}
         <img src="https://rare-gallery.com/uploads/posts/219455-james-bond-2880x1800.jpg" alt="Banner" style={styles.bannerImage} />
-
         <div style={styles.profilePicContainer}>
           <div style={styles.profilePic}>
-            <img
-              src="https://images.saymedia-content.com/.image/t_share/MTc0NTE0MDYyNzc0NzczNzA1/daniel-craigs-james-bond-films-ranked-from-worst-to-best.jpg"
-              alt="Profile"
-              style={styles.profilePicImage}
-            />
+            <img src="https://images.saymedia-content.com/.image/t_share/MTc0NTE0MDYyNzc0NzczNzA1/daniel-craigs-james-bond-films-ranked-from-worst-to-best.jpg" alt="Profile" style={styles.profilePicImage} />
           </div>
         </div>
 
+        {/* Profile Name and Bio */}
         <div style={styles.name}>James Bond</div>
         <div style={styles.bio}>Criminal Lawyer</div>
 
+        {/* Profile Info */}
         <div style={styles.infoContainer}>
-          <div>
-            <span style={styles.label}>Username:</span> <span style={styles.infoText}>@JamesBond</span>
-          </div>
-          <div>
-            <span style={styles.label}>Email:</span> <span style={styles.infoText}>JamesBond@example.com</span>
-          </div>
-          <div>
-            <span style={styles.label}>Contact:</span> <span style={styles.infoText}>+123 456 7890</span>
-          </div>
-          <div>
-            <span style={styles.label}>Birthday:</span> <span style={styles.infoText}>November 11, 1920</span>
-          </div>
-          <div>
-            <span style={styles.label}>Age:</span> <span style={styles.infoText}>67</span>
-          </div>
-          <div>
-            <span style={styles.label}>Sex:</span> <span style={styles.infoText}>Male</span>
-          </div>
-          <div>
-            <span style={styles.label}>Address:</span> <span style={styles.infoText}>Capitol Hills Cebu City</span>
-          </div>
-
-          {/* Book Appointment Button */}
-          <Button style={styles.bookButton} onClick={() => console.log('Book Appointment')}>
-            Book Appointment
-          </Button>
+          <div><span style={styles.label}>Username:</span> <span style={styles.infoText}>@JamesBond</span></div>
+          <div><span style={styles.label}>Email:</span> <span style={styles.infoText}>JamesBond@example.com</span></div>
+          <div><span style={styles.label}>Contact:</span> <span style={styles.infoText}>+123 456 7890</span></div>
+          <div><span style={styles.label}>Birthday:</span> <span style={styles.infoText}>November 11, 1920</span></div>
+          <div><span style={styles.label}>Age:</span> <span style={styles.infoText}>67</span></div>
+          <div><span style={styles.label}>Sex:</span> <span style={styles.infoText}>Male</span></div>
         </div>
+
+        {/* Book Appointment Button */}
+        <Button style={styles.bookButton} onClick={handleBookAppointment}>Book Appointment</Button>
       </div>
-      
-      <Box style={styles.footer}>© The Civilify Company, Cebu City</Box>
+
+      {/* Appointment Modal */}
+      <Dialog open={openModal} onClose={handleCloseModal}>
+        <DialogTitle>Book Appointment</DialogTitle>
+        <DialogContent>
+          <DesktopDatePicker label="Date" value={appointmentData.date} onChange={handleDateChange} renderInput={(params) => <TextField {...params} />} />
+          <TimePicker label="Time" value={appointmentData.time} onChange={handleTimeChange} renderInput={(params) => <TextField {...params} />} />
+          <TextField label="Message" name="message" value={appointmentData.message} onChange={handleChange} fullWidth />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="primary">Cancel</Button>
+          <Button onClick={handleSubmit} color="primary">Submit</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Footer */}
+      <div style={styles.footer}>
+        <span>All rights reserved.</span>
+      </div>
     </div>
   );
 }

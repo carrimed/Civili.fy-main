@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import MessageIcon from '@mui/icons-material/Message';
 import PersonIcon from '@mui/icons-material/Person';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function ClientHome() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedOption, setSelectedOption] = useState('search');
   const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [loading, setLoading] = useState(false);
 
   const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -34,6 +36,14 @@ function ClientHome() {
       // Navigate to /civilify/browse-page with search query as a URL parameter
       navigate(`/civilify/browse-page?query=${encodeURIComponent(searchQuery)}`);
     }
+  };
+
+  const handleLogout = () => {
+    setLoading(true);
+    setTimeout(() => {
+      navigate('/civilify/client-login-page');
+    }, 2000); 
+    handleClose();
   };
 
   const descriptions = {
@@ -194,9 +204,7 @@ function ClientHome() {
       </Box>
 
       {/* Footer Section */}
-      <Box style={{ backgroundColor: '#41423A', width: '100%', height: '20px', display: 'flex', alignItems: 'center', paddingLeft: '10px', color: 'white', fontFamily: 'Faculty Glyphic', fontSize: '10px' }}>
-        © The Civilify Company, Cebu City
-      </Box>
+
       <Box
         style={{
           backgroundColor: '#41423A',
