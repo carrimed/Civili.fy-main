@@ -6,7 +6,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 function ClientLogin() {
   const navigate = useNavigate();
@@ -23,41 +22,19 @@ function ClientLogin() {
   };
 
   // Handle the login click event
-  const handleLoginClick = async () => {
+  const handleLoginClick = () => {
     if (!username || !password) {
       setSnackbarMessage("Please fill in both fields.");
       setOpenSnackbar(true);
       return;
     }
 
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    if (!emailPattern.test(username)) {
-      setSnackbarMessage("Please enter a valid email.");
-      setOpenSnackbar(true);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const response = await axios.post('http://localhost:8080/api/Client/login', {
-        username,
-        password,
-      });
-
-      if (response.data.success) {
-        localStorage.setItem('username', username);
-        navigate('/civilify/client-home-page');
-      } else {
-        setSnackbarMessage("Invalid username or password.");
-        setOpenSnackbar(true);
-      }
-    } catch (error) {
-      console.error("Login error:", error.response?.data || error.message);
-      setSnackbarMessage("Login failed: " + (error.response?.data?.message || "Please try again."));
-      setOpenSnackbar(true);
-    } finally {
+    setLoading(true);
+    setTimeout(() => {
+      // Redirects to client home page regardless of input
+      navigate('/civilify/client-home-page');
       setLoading(false);
-    }
+    }, 2000); // Simulating a delay to show the spinner
   };
 
   // Navigate to signup page
@@ -249,8 +226,8 @@ function ClientLogin() {
         </Alert>
       </Snackbar>
 
-    {/* Loading Spinner */}
-    {loading && (
+      {/* Loading Spinner (pachuy2) */}
+      {loading && (
         <Box
           style={{
             position: 'fixed',
@@ -265,7 +242,6 @@ function ClientLogin() {
           <CircularProgress size={50} style={{ color: '#D9641E' }} />
         </Box>
       )}
-
     </div>
   );
 }

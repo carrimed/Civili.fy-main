@@ -8,12 +8,12 @@ function UpdatePersonalInfo() {
     contact: '+123 456 7890',
     birthday: 'January 1, 1990',
     sex: 'Male',
-    address: 'Taga Mingla, Cebu City'
+    address: 'Taga Mingla, Cebu City',
   });
 
-  const navigate = useNavigate();  // Initialize the navigation hook
+  const [showPopup, setShowPopup] = useState(false); // State for controlling popup visibility
+  const navigate = useNavigate();
 
-  // Handle change in input fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPersonalInfo((prevInfo) => ({
@@ -22,13 +22,15 @@ function UpdatePersonalInfo() {
     }));
   };
 
-  // Handle form submission (you can add logic to update the data in the backend)
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Updated Info:', personalInfo);
+    setShowPopup(true); // Show popup after form submission
+  };
 
-    // Navigate to the profile page after submitting the form
-    navigate('/civilify/profile-page');
+  const handlePopupConfirm = () => {
+    setShowPopup(false);
+    navigate('/civilify/client-profile-page'); // Navigate only after confirming
   };
 
   const styles = {
@@ -78,8 +80,26 @@ function UpdatePersonalInfo() {
       fontSize: '16px',
       transition: 'background-color 0.3s',
     },
-    submitButtonHover: {
-      backgroundColor: '#ED7D27',
+    popup: {
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: '#FFFFFF',
+      padding: '20px',
+      borderRadius: '10px',
+      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+      textAlign: 'center',
+      zIndex: 1000,
+    },
+    overlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.3)',
+      zIndex: 999,
     },
   };
 
@@ -152,6 +172,16 @@ function UpdatePersonalInfo() {
 
         <button type="submit" style={styles.submitButton}>Update</button>
       </form>
+
+      {showPopup && (
+        <>
+          <div style={styles.overlay} onClick={handlePopupConfirm} />
+          <div style={styles.popup}>
+            <p>Account Details Successfully Saved!</p>
+            <button onClick={handlePopupConfirm} style={styles.submitButton}>OK</button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

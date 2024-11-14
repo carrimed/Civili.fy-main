@@ -82,8 +82,16 @@ function ClientHome() {
       {/* App Bar */}
       <AppBar position="static" style={{ backgroundColor: 'white', boxShadow: 'none', width: '100%' }}>
         <Toolbar>
-          <Typography component="div" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => navigate('/')}>
-            <img src="/images/logoiconblack.png" alt="Logo" style={{ width: '40px', marginLeft: '10px', marginRight: '10px' }} />
+          <Typography
+            component="div"
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            onClick={() => navigate('/')}
+          >
+            <img
+              src="/images/logoiconblack.png"
+              alt="Logo"
+              style={{ width: '40px', marginLeft: '10px', marginRight: '10px' }}
+            />
           </Typography>
           <Box display="flex" justifyContent="flex-end" alignItems="center" style={{ flexGrow: 1 }}>
             <Typography variant="body1" onClick={() => navigate('/requests')} style={{ cursor: 'pointer', marginLeft: '20px', color: '#41423A', fontSize: '16px' }}>
@@ -95,7 +103,7 @@ function ClientHome() {
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
               <MenuItem onClick={() => { handleClose(); navigate('/profile'); }}>My Profile</MenuItem>
               <MenuItem onClick={() => { handleClose(); navigate('/settings'); }}>Settings</MenuItem>
-              <MenuItem onClick={() => { handleClose(); navigate('/logout'); }}>Logout</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </Box>
         </Toolbar>
@@ -119,26 +127,69 @@ function ClientHome() {
           InputProps={{
             disableUnderline: true,
             startAdornment: <SearchIcon style={{ color: 'grey', marginLeft: '10px' }} />,
-            style: { fontSize: '18px', height: '40px' },
+            style: {
+              fontSize: '18px',
+              height: '40px',
+            },
           }}
         />
       </Box>
 
       {/* Icons Row */}
       <Box display="flex" justifyContent="center" gap="20px" marginTop="10px">
-        <IconButton style={{ backgroundColor: 'white', width: '35px', height: '35px', color: 'black', borderRadius: '50%' }} onClick={() => handleIconClick('search')}>
+        <IconButton
+          style={{
+            backgroundColor: 'white',
+            width: '35px',
+            height: '35px',
+            color: 'black',
+            borderRadius: '50%',
+          }}
+          onClick={() => handleIconClick('search')}
+        >
           <SearchIcon />
         </IconButton>
-        <IconButton style={{ backgroundColor: 'white', width: '35px', height: '35px', color: 'black', borderRadius: '50%' }} onClick={() => handleIconClick('requests')}>
+        <IconButton
+          style={{
+            backgroundColor: 'white',
+            width: '35px',
+            height: '35px',
+            color: 'black',
+            borderRadius: '50%',
+          }}
+          onClick={() => handleIconClick('requests')}
+        >
           <MessageIcon />
         </IconButton>
-        <IconButton style={{ backgroundColor: 'white', width: '35px', height: '35px', color: 'black', borderRadius: '50%' }} onClick={() => handleIconClick('profile')}>
+        <IconButton
+          style={{
+            backgroundColor: 'white',
+            width: '35px',
+            height: '35px',
+            color: 'black',
+            borderRadius: '50%',
+          }}
+          onClick={() => handleIconClick('profile')}
+        >
           <PersonIcon />
         </IconButton>
       </Box>
 
-      {/* Description Box */}
-      <Box style={{ width: '500px', height: '200px', borderRadius: '12px', marginTop: '20px', marginBottom: '70px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+      {/* White Rounded Square Box */}
+      <Box
+        style={{
+          width: '500px', // Ensuring the width is correct
+          height: '200px', // The height you specified
+          borderRadius: '12px',
+          marginTop: '20px',
+          marginBottom: '70px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '20px',
+        }}
+      >
         {descriptions[selectedOption]}
       </Box>
 
@@ -146,6 +197,39 @@ function ClientHome() {
       <Box style={{ backgroundColor: '#41423A', width: '100%', height: '20px', display: 'flex', alignItems: 'center', paddingLeft: '10px', color: 'white', fontFamily: 'Faculty Glyphic', fontSize: '10px' }}>
         © The Civilify Company, Cebu City
       </Box>
+      <Box
+        style={{
+          backgroundColor: '#41423A',
+          width: '100%',
+          height: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          paddingLeft: '10px',
+          color: 'white',
+          fontFamily: 'Faculty Glyphic',
+          fontSize: '10px',
+        }}
+      >
+        © The Civilify Company, Cebu City
+      </Box>
+
+      {/* Loading Spinner (pachuy2) */}
+      {loading && (
+        <Box
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            padding: '20px',
+            borderRadius: '8px',
+          }}
+        >
+          <CircularProgress size={50} style={{ color: '#D9641E' }} />
+        </Box>
+      )}
+
     </div>
   );
 }

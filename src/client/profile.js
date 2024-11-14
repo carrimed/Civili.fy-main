@@ -22,7 +22,7 @@ function ProfileDisplay() {
         handleClose();
         if (action === 'updateProfile') {
             // Navigate to the UpdatePersonalInfo page
-            navigate('/civilify/update-client-info  ');  // Change '/updatePersonalInfo' to the actual route path
+            navigate('/civilify/client-update-personal-info-page');  // Change '/updatePersonalInfo' to the actual route path
         } else if (action === 'deleteProfile') {
             // Add your delete profile logic here
             console.log('Delete Profile');

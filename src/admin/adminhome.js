@@ -209,7 +209,7 @@ function AdminHome() {
         onClose={() => setOpenSnackbar(false)}
       />
 
-      {/* Loading Spinner */}
+      {/* Loading Spinner (pachuy2) */}
       {loading && (
         <Box
           style={{

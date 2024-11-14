@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Grid, TextField, Button, Paper, Box, Typography, Snackbar, CircularProgress, IconButton, Container, SnackbarContent } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -9,7 +8,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 function ClientSignup() {
   const navigate = useNavigate();
   const [name, setName] = useState('');
-  const [email, setEmail] = useState(''); // Updated field
+  const [email, setEmail] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [password, setPassword] = useState('');
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -26,26 +25,36 @@ function ClientSignup() {
       return;
     }
 
+    setLoading(true);
+
+    // Commenting out the API call for registration
+    /* 
     try {
-      setLoading(true);
       await axios.post('http://localhost:8080/api/Client/postClientRecord', {
         name,
         email,
-        contact_number: contactNumber, // Match field with API requirement
+        contact_number: contactNumber,
         password,
       });
       setSnackbarMessage("Successfully registered!");
       setIsSuccess(true);
-      setOpenSnackbar(true);
-      navigate('/civilify/client-login-page');
     } catch (error) {
       console.error("Registration error:", error.response?.data || error.message);
       setSnackbarMessage("Registration failed: " + (error.response?.data?.message || "Please try again."));
       setIsSuccess(false);
-      setOpenSnackbar(true);
     } finally {
       setLoading(false);
     }
+    */
+
+    // Direct navigation to login page after a simulated delay
+    setTimeout(() => {
+      navigate('/civilify/client-login-page');
+      setSnackbarMessage("Redirecting to login page...");
+      setIsSuccess(true);
+      setOpenSnackbar(true);
+      setLoading(false);
+    }, 1000);
   };
 
   const handleBackClick = () => {
