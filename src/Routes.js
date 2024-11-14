@@ -27,9 +27,9 @@ function AppRoutes() {
       <Route path="/civilify/client-case-page" element={<ClientCase />} />
       <Route path="/civilify/client-review-page" element={<ClientReview />} />
       <Route path="/civilify/client-appointment-page" element={<ClientAppointment />} />
+      <Route path="/civilify/client-update-personal-info-page" element={<UpdatePersonalInfo />} />
 
-      <Route path="/civilify/profile-page" element={<ProfileDisplay />} />
-      <Route path="/civilify/update-client-info" element={<UpdatePersonalInfo />}/>
+      <Route path="/civilify/client-profile-page" element={<ProfileDisplay />} />
 
       <Route path="/civilify/admin-login-page" element={<AdminLogin />} />
       <Route path="/civilify/admin-home-page" element={<AdminHome />} />
