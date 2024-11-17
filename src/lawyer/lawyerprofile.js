@@ -127,19 +127,20 @@ function ProfileDisplay() {
     },
     bio: {
       textAlign: 'center',
-      fontSize: '14px',
+      fontSize: '16px',
+      fontStyle: 'italic',
       color: '#777777',
       marginBottom: '15px',
     },
     infoContainer: {
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       gap: '8px',
       fontSize: '14px',
       color: '#41423A',
-      width: '100%',
-      padding: '0 20px',
+      width: '80%',
+      padding: '20px',
       boxSizing: 'border-box',
     },
     label: {
@@ -192,14 +193,6 @@ function ProfileDisplay() {
       <div style={styles.container}>
         {/* Back and Settings Icons */}
         <FaArrowLeft style={styles.backIcon} onClick={() => window.history.back()} />
-        <FaCog style={styles.settingsIcon} onClick={handleClick} />
-        
-        {/* Menu */}
-        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-          <MenuItem onClick={() => handleMenuItemClick('updateProfile')}>Update Profile</MenuItem>
-          <MenuItem onClick={() => handleMenuItemClick('deleteProfile')}>Delete Profile</MenuItem>
-          <MenuItem onClick={() => handleMenuItemClick('logout')}>Log out</MenuItem>
-        </Menu>
 
         {/* Banner and Profile Picture */}
         <img src="https://rare-gallery.com/uploads/posts/219455-james-bond-2880x1800.jpg" alt="Banner" style={styles.bannerImage} />
@@ -233,18 +226,16 @@ function ProfileDisplay() {
           <AppointmentForm
             onClose={handleCloseModal}
             onSubmit={handleSubmit}
-            onChange={handleChange}
-            onDateChange={handleDateChange}
-            onTimeChange={handleTimeChange}
             appointmentData={appointmentData}
+            handleChange={handleChange}
+            handleDateChange={handleDateChange}
+            handleTimeChange={handleTimeChange}
           />
         )}
       </div>
-     
+
       {/* Footer */}
-      <div style={styles.footer}>
-        <span>All rights reserved.</span>
-      </div>
+      <div style={styles.footer}>All rights reserved</div>
     </div>
   );
 }
