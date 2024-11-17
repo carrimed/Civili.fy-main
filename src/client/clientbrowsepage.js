@@ -108,17 +108,87 @@ function BrowsePage() {
         />
       </Box>
 
-      {filteredLawyers.map((lawyer) => (
-        <Card key={lawyer.name} style={{ position: 'fixed', left: '35%', top: '150px', width: '500px', margin: '10px', display: 'flex', alignItems: 'center', padding: '10px' }} onClick={handleLawyerClick}>
-          <Avatar src={lawyer.imageUrl} alt={lawyer.name} style={{ width: 60, height: 60, marginRight: '15px' }} />
-          <CardContent>
-            <Typography variant="h6" style={{ fontFamily: 'Outfit' }}>{lawyer.name}</Typography>
-            <Typography variant="body2" color="textSecondary" style={{ fontFamily: 'Outfit' }}>{lawyer.specialization}</Typography>
-            <Typography variant="body2" style={{ fontFamily: 'Outfit' }}>Email: {lawyer.email}</Typography>
-            <Typography variant="body2" style={{ fontFamily: 'Outfit' }}>Contact: {lawyer.contact}</Typography>
-          </CardContent>
-        </Card>
-      ))}
+      {filteredLawyers.map((lawyer, index) => (
+  <Card
+    key={lawyer.name}
+    style={{
+      position: 'fixed',
+      left: '35%',
+      top: `${150 + index * 150}px`, // Adjust cards' position dynamically
+      width: '500px',
+      margin: '10px auto',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '15px',
+      borderRadius: '12px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+      cursor: 'pointer',
+      backgroundColor: '#ffffff',
+    }}
+    onClick={handleLawyerClick}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'scale(1.03)';
+      e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.3)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'scale(1)';
+      e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+    }}
+  >
+    <Avatar
+      src={lawyer.imageUrl}
+      alt={lawyer.name}
+      style={{
+        width: 70,
+        height: 70,
+        marginRight: '15px',
+        border: '2px solid #D9641E',
+      }}
+    />
+    <CardContent>
+      <Typography
+        variant="h6"
+        style={{
+          fontFamily: 'Outfit',
+          fontWeight: 'bold',
+          color: '#D9641E',
+        }}
+      >
+        {lawyer.name}
+      </Typography>
+      <Typography
+        variant="body2"
+        style={{
+          fontFamily: 'Outfit',
+          color: '#555',
+        }}
+      >
+        {lawyer.specialization}
+      </Typography>
+      <Typography
+        variant="body2"
+        style={{
+          fontFamily: 'Outfit',
+          marginTop: '5px',
+          color: '#777',
+        }}
+      >
+        📧 {lawyer.email}
+      </Typography>
+      <Typography
+        variant="body2"
+        style={{
+          fontFamily: 'Outfit',
+          color: '#777',
+        }}
+      >
+        📞 {lawyer.contact}
+      </Typography>
+    </CardContent>
+  </Card>
+))}
+
 
       <Box style={{ backgroundColor: '#41423A', width: '100%', height: '20px', display: 'flex', alignItems: 'center', paddingLeft: '10px', color: 'white', fontFamily: 'Faculty Glyphic', fontSize: '10px' }}>
         © The Civilify Company, Cebu Philippines
