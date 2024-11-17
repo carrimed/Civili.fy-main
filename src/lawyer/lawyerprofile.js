@@ -3,6 +3,7 @@ import { AppBar, Toolbar, Typography, Box, Menu, MenuItem, Button, Dialog, Dialo
 import { FaArrowLeft, FaCog } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { DesktopDatePicker, TimePicker } from '@mui/x-date-pickers';
+import AppointmentForm from '../client/appointmentform';
 
 function ProfileDisplay() {
   const navigate = useNavigate();
@@ -223,23 +224,23 @@ function ProfileDisplay() {
         </div>
 
         {/* Book Appointment Button */}
-        <Button style={styles.bookButton} onClick={handleBookAppointment}>Book Appointment</Button>
+        {!openModal && (
+          <Button style={styles.bookButton} onClick={handleBookAppointment}>Book Appointment</Button>
+        )}
+
+        {/* Appointment Form Modal */}
+        {openModal && (
+          <AppointmentForm
+            onClose={handleCloseModal}
+            onSubmit={handleSubmit}
+            onChange={handleChange}
+            onDateChange={handleDateChange}
+            onTimeChange={handleTimeChange}
+            appointmentData={appointmentData}
+          />
+        )}
       </div>
-
-      {/* Appointment Modal */}
-      <Dialog open={openModal} onClose={handleCloseModal}>
-        <DialogTitle>Book Appointment</DialogTitle>
-        <DialogContent>
-          <DesktopDatePicker label="Date" value={appointmentData.date} onChange={handleDateChange} renderInput={(params) => <TextField {...params} />} />
-          <TimePicker label="Time" value={appointmentData.time} onChange={handleTimeChange} renderInput={(params) => <TextField {...params} />} />
-          <TextField label="Message" name="message" value={appointmentData.message} onChange={handleChange} fullWidth />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="primary">Cancel</Button>
-          <Button onClick={handleSubmit} color="primary">Submit</Button>
-        </DialogActions>
-      </Dialog>
-
+     
       {/* Footer */}
       <div style={styles.footer}>
         <span>All rights reserved.</span>
