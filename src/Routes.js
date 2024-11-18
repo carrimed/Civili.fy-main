@@ -16,7 +16,7 @@ import AdminLogin from './admin/adminlogin';
 import AdminHome from './admin/adminhome';
 import LawyerProfileDisplay from './lawyer/lawyerprofile';
 import BrowsePage from './client/clientbrowsepage';
-import AppointmentForm from './client/appointmentform';
+import ClientAppointmentForm from './client/clientappointmentform';
 
 function AppRoutes() {
   return (
@@ -31,9 +31,9 @@ function AppRoutes() {
       <Route path="/civilify/client-review-page" element={<ClientReview />} />
       <Route path="/civilify/client-appointment-page" element={<ClientAppointment />} />
       <Route path="/civilify/client-update-personal-info-page" element={<UpdatePersonalInfo />} />
-
       <Route path="/civilify/client-profile-page" element={<ProfileDisplay />} />
-      <Route path="/civilify/appointment-form" element={<AppointmentForm />} />
+      <Route path="/civilify/client-appointment-form" element={<ClientAppointmentForm />} />
+
       <Route path="/civilify/admin-login-page" element={<AdminLogin />} />
       <Route path="/civilify/admin-home-page" element={<AdminHome />} />
       <Route path="/civilify/lawyer-profile" element={<LawyerProfileDisplay />} />

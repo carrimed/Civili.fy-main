@@ -97,7 +97,7 @@ function ClientLogin() {
             )}
           </IconButton>
 
-          <Box display="flex" flexDirection="column" alignItems="center" style={{ fontFamily: 'Outfit' }}>
+          <Box display="flex" width={300} flexDirection="column" alignItems="center" style={{ fontFamily: 'Outfit' }}>
             <img src="/images/logoiconblack.png" alt="Logo" style={{ width: '100px', marginBottom: '20px' }} />
 
             <TextField

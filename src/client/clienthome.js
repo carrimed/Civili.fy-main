@@ -1,16 +1,29 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, TextField, Box, IconButton, Menu, MenuItem } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Menu,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Slider,
+  CircularProgress,
+  Button,
+} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import MessageIcon from '@mui/icons-material/Message';
 import PersonIcon from '@mui/icons-material/Person';
-import CircularProgress from '@mui/material/CircularProgress';
+import { useNavigate } from 'react-router-dom';
 
 function ClientHome() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedOption, setSelectedOption] = useState('search');
-  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [category, setCategory] = useState('');
+  const [lawyerType, setLawyerType] = useState('');
+  const [rateRange, setRateRange] = useState([3000, 75000]);
   const [loading, setLoading] = useState(false);
 
   const handleProfileClick = (event) => {
@@ -21,190 +34,247 @@ function ClientHome() {
     setAnchorEl(null);
   };
 
-  const handleIconClick = (option) => {
-    setSelectedOption(option);
-  };
-
-  // Handle the search input change
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  // Handle search submit (when Enter is pressed)
-  const handleSearchSubmit = () => {
-    if (searchQuery) {
-      // Navigate to /civilify/browse-page with search query as a URL parameter
-      navigate(`/civilify/browse-page?query=${encodeURIComponent(searchQuery)}`);
-    }
-  };
-
   const handleLogout = () => {
     setLoading(true);
     setTimeout(() => {
       navigate('/civilify/client-login-page');
-    }, 2000); 
+    }, 2000);
     handleClose();
   };
 
-  const descriptions = {
-    search: (
-      <>
-        <Typography variant="h6" style={{ color: 'white', fontFamily: 'Outfit', fontSize: '20px', marginBottom: '10px' }}>
-          Search
-        </Typography>
-        <hr style={{ width: '100%', borderTop: '1px solid #fff', margin: '10px 0' }} />
-        <Typography variant="body1" style={{ color: 'white', fontFamily: 'Outfit', fontSize: '16px' }}>
-          Enter the details of your case into the search bar, and our intelligent algorithm will match you with the most suitable lawyers from our extensive database...
-        </Typography>
-      </>
-    ),
-    requests: (
-      <>
-        <Typography variant="h6" style={{ color: 'white', fontFamily: 'Outfit', fontSize: '20px', marginBottom: '10px' }}>
-          Requests
-        </Typography>
-        <hr style={{ width: '100%', borderTop: '1px solid white', margin: '10px 0' }} />
-        <Typography variant="body1" style={{ color: 'white', fontFamily: 'Outfit', fontSize: '16px' }}>
-          Keep track of all your appointment requests...
-        </Typography>
-      </>
-    ),
-    profile: (
-      <>
-        <Typography variant="h6" style={{ color: 'white', fontFamily: 'Outfit', fontSize: '20px', marginBottom: '10px' }}>
-          Profile
-        </Typography>
-        <hr style={{ width: '100%', borderTop: '1px solid white', margin: '10px 0' }} />
-        <Typography variant="body1" style={{ color: 'white', fontFamily: 'Outfit', fontSize: '16px' }}>
-          View and update your personal profile...
-        </Typography>
-      </>
-    ),
+  const handleSearchSubmit = () => {
+    navigate(
+      `/civilify/browse-page?category=${encodeURIComponent(
+        category
+      )}&lawyerType=${encodeURIComponent(
+        lawyerType
+      )}&rateMin=${rateRange[0]}&rateMax=${rateRange[1]}`
+    );
   };
 
+  const sections = [
+    {
+      title: 'Search',
+      icon: <SearchIcon fontSize="large" />,
+      description:
+        'Utilize Civilify\'s unique search system. Personalize your search to find exactly what you need.',
+    },
+    {
+      title: 'Requests',
+      icon: <MessageIcon fontSize="large" />,
+      description:
+        'Track your outgoing and previous requests. Monitor the status of lawyer appointments.',
+    },
+    {
+      title: 'Profile',
+      icon: <PersonIcon fontSize="large" />,
+      description:
+        'View and update your profile details to keep everything accurate and professional.',
+    },
+  ];
+
   return (
-    <div style={{ position: 'relative', overflow: 'hidden', backgroundColor: 'transparent', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
-      {/* Background Image */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: 'url("/images/bg2.png")', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 1, zIndex: -1 }} />
-      {/* Orange Gradient Overlay */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(to bottom, #D9641E, #A54C17)', opacity: 0.7, zIndex: -1 }} />
-      
+    <div
+      style={{
+        position: 'relative',
+        backgroundColor: 'transparent',
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
       {/* App Bar */}
-      <AppBar position="static" style={{ backgroundColor: 'white', boxShadow: 'none', width: '100%' }}>
+      <AppBar
+        position="static"
+        style={{
+          background: 'linear-gradient(to right, #FFF4ED, #D76826, #E26012)', // Gradient colors
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          fontFamily: 'Faculty Graphic', // Font for App Bar text
+          width: '100%',
+        }}
+      >
         <Toolbar>
           <Typography
             component="div"
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            style={{ cursor: 'pointer', fontFamily: 'Faculty Graphic' }} // Font for App Bar text
             onClick={() => navigate('/')}
           >
             <img
               src="/images/logoiconblack.png"
               alt="Logo"
-              style={{ width: '40px', marginLeft: '10px', marginRight: '10px' }}
+              style={{ width: '40px', margin: '10px' }}
             />
           </Typography>
-          <Box display="flex" justifyContent="flex-end" alignItems="center" style={{ flexGrow: 1 }}>
-            <Typography variant="body1" onClick={() => navigate('/requests')} style={{ cursor: 'pointer', marginLeft: '20px', color: '#41423A', fontSize: '16px' }}>
+          <Box display="flex" justifyContent="flex-end" style={{ flexGrow: 1 }}>
+            <Typography
+              variant="body1"
+              onClick={() => navigate('/requests')}
+              style={{
+                cursor: 'pointer',
+                marginLeft: '20px',
+                color: 'white',
+                fontFamily: 'Faculty Graphic', // Font for App Bar text
+              }}
+            >
               Requests
             </Typography>
-            <Typography variant="body1" onClick={handleProfileClick} style={{ cursor: 'pointer', marginLeft: '20px', color: '#41423A', fontSize: '16px' }}>
+            <Typography
+              variant="body1"
+              onClick={handleProfileClick}
+              style={{
+                cursor: 'pointer',
+                marginLeft: '75px',
+                color: 'white',
+                fontFamily: 'Faculty Graphic', // Font for App Bar text
+              }}
+            >
               Profile ▾
             </Typography>
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-              <MenuItem onClick={() => { handleClose(); navigate('/profile'); }}>My Profile</MenuItem>
-              <MenuItem onClick={() => { handleClose(); navigate('/settings'); }}>Settings</MenuItem>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              PaperProps={{
+                style: { marginTop: '40px' },
+              }}
+            >
+              <MenuItem onClick={() => navigate('/civilify/client-profile-page')}>
+                My Profile
+              </MenuItem>
+              <MenuItem onClick={() => navigate('/settings')}>Settings</MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Main Title */}
-      <Typography variant="h4" style={{ color: 'white', fontFamily: 'Faculty Glyphic', fontSize: '28px', marginTop: '40px', marginBottom: '10px', textAlign: 'center' }}>
+      {/* Title */}
+      <Typography
+        variant="h4"
+        style={{
+          marginTop: '50px',
+          fontFamily: 'Faculty Glyphic',
+          color: '#41423A',
+          textAlign: 'center',
+        }}
+      >
         The search for justice starts here
       </Typography>
 
-      {/* Search Bar */}
-      <Box style={{ display: 'flex', justifyContent: 'center', marginTop: '5px', marginBottom: '5px', padding: '0 20px', width: '100%' }}>
-        <TextField
-          variant="standard"
-          size="medium"
-          placeholder="Search for practitioners..."
-          value={searchQuery}
-          onChange={handleSearchChange}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()} // Trigger search on Enter
-          style={{ width: '100%', maxWidth: '500px', backgroundColor: '#F5F5F5', borderRadius: '30px', padding: '10px 15px' }}
-          InputProps={{
-            disableUnderline: true,
-            startAdornment: <SearchIcon style={{ color: 'grey', marginLeft: '10px' }} />,
-            style: {
-              fontSize: '18px',
-              height: '40px',
-            },
-          }}
-        />
-      </Box>
-
-      {/* Icons Row */}
-      <Box display="flex" justifyContent="center" gap="20px" marginTop="10px">
-        <IconButton
-          style={{
-            backgroundColor: 'white',
-            width: '35px',
-            height: '35px',
-            color: 'black',
-            borderRadius: '50%',
-          }}
-          onClick={() => handleIconClick('search')}
-        >
-          <SearchIcon />
-        </IconButton>
-        <IconButton
-          style={{
-            backgroundColor: 'white',
-            width: '35px',
-            height: '35px',
-            color: 'black',
-            borderRadius: '50%',
-          }}
-          onClick={() => handleIconClick('requests')}
-        >
-          <MessageIcon />
-        </IconButton>
-        <IconButton
-          style={{
-            backgroundColor: 'white',
-            width: '35px',
-            height: '35px',
-            color: 'black',
-            borderRadius: '50%',
-          }}
-          onClick={() => handleIconClick('profile')}
-        >
-          <PersonIcon />
-        </IconButton>
-      </Box>
-
-      {/* White Rounded Square Box */}
+      {/* Filters Section */}
       <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        gap="20px"
+        marginTop="20px"
+        width="80%"
+      >
+        {/* Category Dropdown */}
+        <FormControl style={{ width: '30%' }}>
+          <InputLabel>Category</InputLabel>
+          <Select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            {['Civil law', 'Criminal law', 'Corporate law', 'Family law'].map((item) => (
+              <MenuItem key={item} value={item}>
+                {item}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* Lawyer Type Dropdown */}
+        <FormControl style={{ width: '20%' }}>
+          <InputLabel>Lawyer Type</InputLabel>
+          <Select
+            value={lawyerType}
+            onChange={(e) => setLawyerType(e.target.value)}
+          >
+            {['Public', 'Private', 'Exclusive'].map((type) => (
+              <MenuItem key={type} value={type}>
+                {type}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* Rate Slider */}
+        <Box style={{ color: 'orange', width: '40%' }}>
+          <Typography color='black'>
+            Rate per Hour: {rateRange[0]} - {rateRange[1]} PHP
+          </Typography>
+          <Slider
+            value={rateRange}
+            onChange={(e, newValue) => setRateRange(newValue)}
+            valueLabelDisplay="auto"
+            min={3000}
+            max={100000}
+            step={1000}
+            sx={{
+              '& .MuiSlider-thumb': {
+                backgroundColor: '#D9641E', // Orange thumb color
+              },
+              '& .MuiSlider-rail': {
+                backgroundColor: '#D9641E', // Orange rail color
+              },
+              '& .MuiSlider-track': {
+                backgroundColor: '#D9641E', // Orange track color
+              },
+            }}
+          />
+        </Box>
+      </Box>
+
+      {/* Submit Button */}
+      <Button
+        variant="contained"
+        onClick={handleSearchSubmit}
         style={{
-          width: '500px', // Ensuring the width is correct
-          height: '200px', // The height you specified
-          borderRadius: '12px',
-          marginTop: '20px',
-          marginBottom: '70px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '20px',
+          backgroundColor: '#D9641E',
+          color: 'white',
+          marginTop: '30px',
         }}
       >
-        {descriptions[selectedOption]}
+        SUBMIT
+      </Button>
+
+      {/* Descriptions Section */}
+      <Box
+        display="flex"
+        justifyContent="space-around"
+        alignItems="center"
+        width="100%"
+        marginTop="250px"
+        marginBottom="30px"
+      >
+        {sections.map((section) => (
+          <Box
+            key={section.title}
+            style={{
+              width: '30%',
+              textAlign: 'center',
+              padding: '20px',
+              backgroundColor: 'white',
+              borderRadius: '12px',
+            }}
+          >
+            {section.icon}
+            <Typography variant="h6" style={{ fontFamily: 'Outfit', marginTop: '10px' }}>
+              {section.title}
+            </Typography>
+            <Typography variant="body2" style={{ fontFamily: 'Outfit' }}>
+              {section.description}
+            </Typography>
+          </Box>
+        ))}
       </Box>
 
       {/* Footer Section */}
-
       <Box
         style={{
           backgroundColor: '#41423A',
@@ -212,16 +282,18 @@ function ClientHome() {
           height: '20px',
           display: 'flex',
           alignItems: 'center',
-          paddingLeft: '10px',
+          justifyContent: 'center',
           color: 'white',
           fontFamily: 'Faculty Glyphic',
           fontSize: '10px',
+          position: 'absolute',
+          bottom: 0,
         }}
       >
         © The Civilify Company, Cebu City
       </Box>
 
-      {/* Loading Spinner (pachuy2) */}
+      {/* Loading Spinner */}
       {loading && (
         <Box
           style={{
@@ -237,7 +309,6 @@ function ClientHome() {
           <CircularProgress size={50} style={{ color: '#D9641E' }} />
         </Box>
       )}
-
     </div>
   );
 }

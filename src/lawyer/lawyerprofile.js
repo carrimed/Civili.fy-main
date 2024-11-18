@@ -3,9 +3,9 @@ import { AppBar, Toolbar, Typography, Box, Menu, MenuItem, Button, Dialog, Dialo
 import { FaArrowLeft, FaCog } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { DesktopDatePicker, TimePicker } from '@mui/x-date-pickers';
-import AppointmentForm from '../client/appointmentform';
+import ClientAppointmentForm from '../client/clientappointmentform';
 
-function ProfileDisplay() {
+function LawyerProfile() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -223,7 +223,7 @@ function ProfileDisplay() {
 
         {/* Appointment Form Modal */}
         {openModal && (
-          <AppointmentForm
+          <ClientAppointmentForm
             onClose={handleCloseModal}
             onSubmit={handleSubmit}
             appointmentData={appointmentData}
@@ -240,4 +240,4 @@ function ProfileDisplay() {
   );
 }
 
-export default ProfileDisplay;
+export default LawyerProfile;

@@ -17,7 +17,7 @@ const StyledButton = styled(Button)({
     marginTop: '20px'
 });
 
-function AppointmentForm() {
+function ClientAppointmentForm() {
     const [open, setOpen] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [appointmentDetails, setAppointmentDetails] = useState({ date: '', time: '', message: '' });
@@ -133,4 +133,4 @@ function AppointmentForm() {
     );
 }
 
-export default AppointmentForm;
+export default ClientAppointmentForm;
