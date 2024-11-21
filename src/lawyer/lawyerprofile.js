@@ -216,22 +216,8 @@ function LawyerProfile() {
           <div><span style={styles.label}>Sex:</span> <span style={styles.infoText}>Male</span></div>
         </div>
 
-        {/* Book Appointment Button */}
-        {!openModal && (
-          <Button style={styles.bookButton} onClick={handleBookAppointment}>Book Appointment</Button>
-        )}
-
         {/* Appointment Form Modal */}
-        {openModal && (
-          <ClientAppointmentForm
-            onClose={handleCloseModal}
-            onSubmit={handleSubmit}
-            appointmentData={appointmentData}
-            handleChange={handleChange}
-            handleDateChange={handleDateChange}
-            handleTimeChange={handleTimeChange}
-          />
-        )}
+        <ClientAppointmentForm />
       </div>
 
       {/* Footer */}
