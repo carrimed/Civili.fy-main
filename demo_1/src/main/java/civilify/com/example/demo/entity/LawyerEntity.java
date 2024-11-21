@@ -1,31 +1,38 @@
 package civilify.com.example.demo.entity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.*;
 
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "LAWYER")
 public class LawyerEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int lawyer_id;
+    @Column(name = "lawyer_id")
+    private int lawyerId;
+
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "specialization", nullable = false)
     private String specialization;
-    private String contact_number;
+
+    @Column(name = "contact_number", nullable = false)
+    private String contactNumber;
+
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
+
+    @Column(name = "password", nullable = false)
     private String password;
 
     // Getters and Setters
     public int getLawyerId() {
-        return lawyer_id;
+        return lawyerId;
     }
 
-    public void setLawyerId(int lawyer_id) {
-        this.lawyer_id = lawyer_id;
+    public void setLawyerId(int lawyerId) {
+        this.lawyerId = lawyerId;
     }
 
     public String getName() {
@@ -43,14 +50,15 @@ public class LawyerEntity {
     public void setSpecialization(String specialization) {
         this.specialization = specialization;
     }
-    
+
     public String getContactNumber() {
-    	return contact_number;
+        return contactNumber;
     }
-    public void setContactNumber(String contact_number) {
-    	this.contact_number = contact_number;
-    	}
-    
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -66,4 +74,4 @@ public class LawyerEntity {
     public void setPassword(String password) {
         this.password = password;
     }
-} 
+}

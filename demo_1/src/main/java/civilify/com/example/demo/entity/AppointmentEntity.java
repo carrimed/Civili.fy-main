@@ -9,9 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-import java.time.LocalDate; // Use LocalDate for DATE
-import java.time.LocalTime; // Use LocalTime for TIME
-
+import java.time.LocalDate;
+import java.time.LocalTime;
+ 
 @Entity
 @Table(name = "APPOINTMENT")
 public class AppointmentEntity {
@@ -20,12 +20,12 @@ public class AppointmentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int appointment_id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "clientId", nullable = false)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "client_id", nullable = false)  // Ensure the column name matches the DB column name
     private ClientEntity client;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "lawyerId", nullable = false)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "lawyer_id", nullable = false)  // Ensure the column name matches the DB column name
     private LawyerEntity lawyer;
 
     private LocalDate date;
@@ -71,4 +71,5 @@ public class AppointmentEntity {
     public void setTime(LocalTime time) {
         this.time = time;
     }
+
 }

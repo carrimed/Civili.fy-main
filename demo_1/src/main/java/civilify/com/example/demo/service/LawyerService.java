@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import civilify.com.example.demo.entity.LawyerEntity;
 import civilify.com.example.demo.repository.LawyerRepository;
 
-
 @Service
 public class LawyerService {
 
@@ -26,22 +25,24 @@ public class LawyerService {
         return lawyerRepo.findAll();
     }
     
-    //deletelawyerbyname
+    // Delete lawyer by name
     public String deleteLawyerByName(String name) {
-        List<LawyerEntity> lawyers = lawyerRepo.findByName(name); // Assume findByName is implemented
+        List<LawyerEntity> lawyers = lawyerRepo.findByName(name); // Assume findByName is implemented in LawyerRepository
         if (!lawyers.isEmpty()) {
+            int deletedCount = 0;
             for (LawyerEntity lawyer : lawyers) {
                 lawyerRepo.delete(lawyer); // Delete each lawyer with the given name
+                deletedCount++;
             }
-            return "Lawyer(s) with name " + name + " successfully deleted!";
+            return deletedCount + " Lawyer(s) with name '" + name + "' successfully deleted!";
         } else {
-            return "Lawyer with name " + name + " NOT found!";
+            return "Lawyer with name '" + name + "' NOT found!";
         }
     }
 
     // Update operation
-    public LawyerEntity updateLawyer(int lawyer_id, LawyerEntity updatedLawyer) {
-        Optional<LawyerEntity> existingLawyerOpt = lawyerRepo.findById(lawyer_id);
+    public LawyerEntity updateLawyer(int lawyerId, LawyerEntity updatedLawyer) {
+        Optional<LawyerEntity> existingLawyerOpt = lawyerRepo.findById(lawyerId);
         if (existingLawyerOpt.isPresent()) {
             LawyerEntity existingLawyer = existingLawyerOpt.get();
             existingLawyer.setName(updatedLawyer.getName());
@@ -51,20 +52,18 @@ public class LawyerService {
             existingLawyer.setPassword(updatedLawyer.getPassword());
             return lawyerRepo.save(existingLawyer);
         }
-        return null;
+        return null; // Return null if lawyer with given ID doesn't exist
     }
 
-    // Delete operation
-    public String deleteLawyer(int lawyer_id) {
-    	String msg;
-        if (lawyerRepo.existsById(lawyer_id)) {  // Check if the user exists
-            lawyerRepo.deleteById(lawyer_id);    // Pass the correct userId
-            msg = "Lawyer with ID " + lawyer_id + " successfully deleted!";
+    // Delete operation by ID
+    public String deleteLawyer(int lawyerId) {
+        String msg;
+        if (lawyerRepo.existsById(lawyerId)) {  // Check if the lawyer exists by ID
+            lawyerRepo.deleteById(lawyerId);    // Delete the lawyer by ID
+            msg = "Lawyer with ID " + lawyerId + " successfully deleted!";
         } else {
-            msg = "Lawyer with ID " + lawyer_id + " NOT found!";
+            msg = "Lawyer with ID " + lawyerId + " NOT found!";
         }
         return msg;
     }
 }
-
-
