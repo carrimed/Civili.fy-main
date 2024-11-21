@@ -1,7 +1,7 @@
 package civilify.com.example.demo.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import civilify.com.example.demo.entity.ClientEntity;
 import civilify.com.example.demo.repository.ClientRepository;
@@ -12,48 +12,71 @@ import java.util.NoSuchElementException;
 @Service
 public class ClientService {
 
-    @Autowired
-    private ClientRepository urepo;
+    private final ClientRepository clientRepository;
 
+    public ClientService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
+    }
+
+    // Create new Client record
     public ClientEntity postClientRecord(ClientEntity client) {
-        return urepo.save(client);
+        // No password encoding, just save as is
+        return clientRepository.save(client);
     }
 
+    // Get all clients
     public List<ClientEntity> getAllClients() {
-        return urepo.findAll();
+        return clientRepository.findAll();
     }
 
+    // Get client by ID
     public ClientEntity getClientById(int clientId) {
-        return urepo.findById(clientId).orElse(null);
-    }
-
-    public ClientEntity updateClientDetails(int clientId, ClientEntity newClientDetails) {
-        ClientEntity user = urepo.findById(clientId)
+        return clientRepository.findById(clientId)
             .orElseThrow(() -> new NoSuchElementException("Client with ID " + clientId + " not found."));
-        
-        user.setName(newClientDetails.getName());
-        user.setUsername(newClientDetails.getUsername());
-        user.setContactNumber(newClientDetails.getContactNumber());
-        user.setPassword(newClientDetails.getPassword());
-
-        return urepo.save(user);
     }
 
+    // Update client details
+    @Transactional
+    public ClientEntity updateClientDetails(int clientId, ClientEntity newClientDetails) {
+        ClientEntity client = clientRepository.findById(clientId)
+            .orElseThrow(() -> new NoSuchElementException("Client with ID " + clientId + " not found."));
+
+        // Update client details (no password encryption)
+        client.setName(newClientDetails.getName());
+        client.setUsername(newClientDetails.getUsername());
+        client.setContactNumber(newClientDetails.getContactNumber());
+
+        // Update password only if it's provided
+        if (newClientDetails.getPassword() != null && !newClientDetails.getPassword().isEmpty()) {
+            client.setPassword(newClientDetails.getPassword());
+        }
+
+        return clientRepository.save(client);
+    }
+
+    // Delete client by ID
     public String deleteClient(int clientId) {
-        if (urepo.existsById(clientId)) {
-            urepo.deleteById(clientId);
-            return "User with ID " + clientId + " successfully deleted!";
+        if (clientRepository.existsById(clientId)) {
+            clientRepository.deleteById(clientId);
+            return "Client with ID " + clientId + " successfully deleted!";
         } else {
-            return "User with ID " + clientId + " NOT found!";
+            return "Client with ID " + clientId + " NOT found!";
         }
     }
 
-    public boolean validateUser(int clientId, String password) {
-        ClientEntity client = getClientById(clientId);
+    // Validate user credentials
+    public boolean validateUser(String username, String password) {
+        ClientEntity client = clientRepository.findByUsername(username); // Assuming this method is implemented in the repository
         if (client == null) {
-            return false; 
-        } else {
-            return client.getPassword().equals(password); 
+            return false;
         }
+        // Compare passwords directly (no encryption)
+        return client.getPassword().equals(password);
+    }
+
+    // Alternative validateUser method by clientId and password
+    public boolean validateUserById(int clientId, String password) {
+        ClientEntity client = getClientById(clientId);
+        return client.getPassword().equals(password);
     }
 }

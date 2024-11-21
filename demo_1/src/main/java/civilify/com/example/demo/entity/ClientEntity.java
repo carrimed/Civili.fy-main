@@ -1,27 +1,49 @@
 package civilify.com.example.demo.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import java.time.LocalDate;  // Recommended: use LocalDate instead of java.sql.Date
 
 @Entity
 @Table(name = "CLIENT")
 public class ClientEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int client_id;
-    
-    @Column(unique = true) // Ensure the username is unique
+    @Column(name = "client_id")
+    private int clientId;
+
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
+    @Column(name = "name", nullable = false)
     private String name;
-    //private String username;
-    private String contact_number;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "contact_number", nullable = false)
+    private String contactNumber;
+
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "birthdate", nullable = false)
+    private LocalDate birthdate;  // Use LocalDate instead of java.sql.Date
+
+    @Column(name = "age", nullable = false)
+    private int age;
+
+    @Column(name = "occupation")
+    private String occupation;
+
+    @Column(name = "civil_status")
+    private String civilStatus;
+
+    @Column(name = "address", nullable = false)
+    private String address;
+
+    @Column(name = "zipcode")
+    private String zipcode;
 
     // Default constructor
     public ClientEntity() {
@@ -29,22 +51,38 @@ public class ClientEntity {
     }
 
     // Parameterized constructor
-    public ClientEntity(int client_id, String name, String username, String contact_number, String password) {
-        super();
-        this.client_id = client_id;
-        this.name = name;
+    public ClientEntity(int clientId, String username, String name, String email, String contactNumber,
+                        String password, LocalDate birthdate, int age, String occupation, String civilStatus,
+                        String address, String zipcode) {
+        this.clientId = clientId;
         this.username = username;
-        this.contact_number = contact_number;
+        this.name = name;
+        this.email = email;
+        this.contactNumber = contactNumber;
         this.password = password;
+        this.birthdate = birthdate;
+        this.age = age;
+        this.occupation = occupation;
+        this.civilStatus = civilStatus;
+        this.address = address;
+        this.zipcode = zipcode;
     }
 
     // Getters and Setters
     public int getClientId() {
-        return client_id;
+        return clientId;
     }
 
-    public void setClientId(int client_id) {
-        this.client_id = client_id;
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getName() {
@@ -55,21 +93,20 @@ public class ClientEntity {
         this.name = name;
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
-    
-   
-    
+
     public String getContactNumber() {
-    	return contact_number;
+        return contactNumber;
     }
-    public void setContactNumber(String contact_number) {
-    	this.contact_number = contact_number;
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
     }
 
     public String getPassword() {
@@ -78,5 +115,53 @@ public class ClientEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public LocalDate getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(LocalDate birthdate) {
+        this.birthdate = birthdate;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getOccupation() {
+        return occupation;
+    }
+
+    public void setOccupation(String occupation) {
+        this.occupation = occupation;
+    }
+
+    public String getCivilStatus() {
+        return civilStatus;
+    }
+
+    public void setCivilStatus(String civilStatus) {
+        this.civilStatus = civilStatus;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getZipcode() {
+        return zipcode;
+    }
+
+    public void setZipcode(String zipcode) {
+        this.zipcode = zipcode;
     }
 }

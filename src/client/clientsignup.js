@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
+import axios from 'axios';
 
 function ClientSignup() {
   const navigate = useNavigate();
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [password, setPassword] = useState('');
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -18,7 +19,7 @@ function ClientSignup() {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const handleRegisterClick = async () => {
-    if (!name || !email || !contactNumber || !password) {
+    if (!name || !username || !contactNumber || !password) {
       setSnackbarMessage("Please fill in all required fields.");
       setIsSuccess(false);
       setOpenSnackbar(true);
@@ -28,11 +29,11 @@ function ClientSignup() {
     setLoading(true);
 
     // Commenting out the API call for registration
-    /* 
+     
     try {
       await axios.post('http://localhost:8080/api/Client/postClientRecord', {
         name,
-        email,
+        username,
         contact_number: contactNumber,
         password,
       });
@@ -45,7 +46,7 @@ function ClientSignup() {
     } finally {
       setLoading(false);
     }
-    */
+    
 
     // Direct navigation to login page after a simulated delay
     setTimeout(() => {
@@ -162,12 +163,12 @@ function ClientSignup() {
               style={{ fontFamily: 'Outfit, sans-serif', maxWidth: '600px' }}
             />
             <TextField
-              label="Email"
+              label="Username"
               variant="outlined"
               fullWidth
               margin="normal"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               style={{ fontFamily: 'Outfit, sans-serif', maxWidth: '600px' }}
             />
             <TextField
