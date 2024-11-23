@@ -14,6 +14,7 @@ public class ClientEntity {
 
     @Column(name = "username", unique = true, nullable = false)
     private String username;
+<<<<<<< Updated upstream
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -25,6 +26,11 @@ public class ClientEntity {
     private String contactNumber;
 
     @Column(name = "password", nullable = false)
+=======
+    
+    private String name;
+    private String contact_number;
+>>>>>>> Stashed changes
     private String password;
 
     @Column(name = "birthdate", nullable = false)

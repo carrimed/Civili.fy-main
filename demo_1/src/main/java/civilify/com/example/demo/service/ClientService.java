@@ -11,6 +11,9 @@ import java.util.NoSuchElementException;
 
 @Service
 public class ClientService {
+	
+	/*@Autowired
+	private ClientService clientService;*/
 
     private final ClientRepository clientRepository;
 
@@ -63,13 +66,30 @@ public class ClientService {
             return "Client with ID " + clientId + " NOT found!";
         }
     }
+<<<<<<< Updated upstream
 
     // Validate user credentials
     public boolean validateUser(String username, String password) {
         ClientEntity client = clientRepository.findByUsername(username); // Assuming this method is implemented in the repository
+=======
+    
+    
+    //for token not yet implemented
+    public boolean validateUser(String username, String password) {
+        ClientEntity client = urepo.findByUsername(username);
         if (client == null) {
             return false;
         }
+        return client.getPassword().equals(password);  // You can add password hashing here
+    } 
+     
+    /*public boolean validateUser(int clientId, String password) {
+        ClientEntity client = getClientById(clientId);
+>>>>>>> Stashed changes
+        if (client == null) {
+            return false;
+        }
+<<<<<<< Updated upstream
         // Compare passwords directly (no encryption)
         return client.getPassword().equals(password);
     }
@@ -80,3 +100,7 @@ public class ClientService {
         return client.getPassword().equals(password);
     }
 }
+=======
+    }  */
+}
+>>>>>>> Stashed changes

@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import {
-  Grid, TextField, Button, Paper, Box, Typography, IconButton, Snackbar, Alert, Container, CircularProgress
+  Grid, TextField, Button, Paper, Box, Typography, IconButton, Snackbar, Alert, Container, CircularProgress,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< Updated upstream
 import axios from 'axios';
+=======
+import axios from 'axios'; // Add axios for API calls
+>>>>>>> Stashed changes
 
 function ClientLogin() {
   const navigate = useNavigate();
@@ -25,12 +29,13 @@ function ClientLogin() {
   // Handle the login click event
   const handleLoginClick = async () => {
     if (!username || !password) {
-      setSnackbarMessage("Please fill in both fields.");
+      setSnackbarMessage('Please fill in both fields.');
       setOpenSnackbar(true);
       return;
     }
 
     setLoading(true);
+<<<<<<< Updated upstream
     try {
       const response = await axios.post('http://localhost:8080/api/Client/login', {
         username: username,
@@ -51,6 +56,25 @@ function ClientLogin() {
       }
     } finally {
       setLoading(false);
+=======
+
+    try {
+      const response = await axios.post('http://localhost:8080/api/Client/login', {
+        username,
+        password,
+      });
+
+      // Assuming the token is returned in the response body
+      const token = response.data.token;
+      localStorage.setItem('token', token); // Store token in localStorage
+
+      setLoading(false);
+      navigate('/civilify/client-home-page');
+    } catch (error) {
+      setLoading(false);
+      setSnackbarMessage('Invalid username or password.');
+      setOpenSnackbar(true);
+>>>>>>> Stashed changes
     }
   };
 
@@ -140,20 +164,6 @@ function ClientLogin() {
               InputLabelProps={{ style: { fontFamily: 'Outfit', fontWeight: '500' } }}
             />
 
-            <Typography
-              variant="body2"
-              style={{
-                color: '#D95F0E',
-                cursor: 'pointer',
-                fontSize: '12px',
-                textAlign: 'center',
-                marginTop: '10px',
-              }}
-              onClick={() => navigate('/forgot-password')}
-            >
-              Forgot Password?
-            </Typography>
-
             <Button
               variant="contained"
               style={{ backgroundColor: 'black', color: 'white', marginTop: '20px', fontFamily: 'Outfit', fontWeight: '600' }}
@@ -163,71 +173,9 @@ function ClientLogin() {
             >
               {loading ? <CircularProgress size={24} style={{ color: 'white' }} /> : 'Login'}
             </Button>
-
-            <Box style={{ width: '100%', marginTop: '10px', textAlign: 'center' }}>
-              <Typography variant="body2" style={{ color: 'black', fontSize: '12px', textShadow: '0 0 5px white', marginTop: '15px' }}>
-                or sign in with
-              </Typography>
-            </Box>
-
-            <Box display="flex" justifyContent="center" style={{ marginTop: '10px' }}>
-              <IconButton
-                style={{
-                  backgroundColor: '#3b5998',
-                  color: 'white',
-                  marginRight: '10px',
-                }}
-              >
-                <FacebookIcon />
-              </IconButton>
-              <IconButton
-                style={{
-                  backgroundColor: '#db4437',
-                  color: 'white',
-                }}
-              >
-                <GoogleIcon />
-              </IconButton>
-            </Box>
-
-            <Typography
-              variant="body2"
-              style={{
-                color: '#D95F0E',
-                marginTop: '20px',
-                cursor: 'pointer',
-                transition: 'color 0.3s',
-              }}
-              onClick={handleSignUpClick}
-              onMouseEnter={(e) => (e.target.style.color = 'orange')}
-              onMouseLeave={(e) => (e.target.style.color = '#D95F0E')}
-            >
-              No account? Sign up
-            </Typography>
           </Box>
         </Paper>
       </Grid>
-
-      <Box
-        style={{
-          color: '#FFFFFF',
-          padding: '10px 20px',
-          position: 'absolute',
-          bottom: '0',
-          left: '0',
-          zIndex: 1,
-          width: '100%',
-          textAlign: 'left',
-        }}
-      >
-        <Container style={{ paddingLeft: 0 }}>
-          <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-            <Typography variant="body2" style={{ fontFamily: 'Faculty Glyphic', fontSize: '10px' }}>
-              © The Civilify Company, Cebu City
-            </Typography>
-          </Box>
-        </Container>
-      </Box>
 
       <Snackbar
         open={openSnackbar}
@@ -242,23 +190,6 @@ function ClientLogin() {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-
-      {/* Loading Spinner (pachuy2) */}
-      {loading && (
-        <Box
-          style={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            padding: '20px',
-            borderRadius: '8px',
-          }}
-        >
-          <CircularProgress size={50} style={{ color: '#D9641E' }} />
-        </Box>
-      )}
     </div>
   );
 }

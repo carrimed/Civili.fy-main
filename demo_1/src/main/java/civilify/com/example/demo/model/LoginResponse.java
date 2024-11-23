@@ -1,19 +1,17 @@
 package civilify.com.example.demo.model;
 
 public class LoginResponse {
-    private boolean success;
-    private String message;
+    private String token;
 
-    public LoginResponse(boolean success, String message) {
-        this.success = success;
-        this.message = message;
+    public LoginResponse(String token) {
+        this.token = token;
     }
 
-    public boolean isSuccess() {
-        return success;
+    public String getToken() {
+        return token;
     }
 
-    public String getMessage() {
-        return message;
+    public void setToken(String token) {
+        this.token = token;
     }
 }
