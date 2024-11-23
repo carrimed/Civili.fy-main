@@ -24,7 +24,7 @@ public class AdminEntity {
         this.username = username;
         this.password = password;
     }
-
+    
     // Getters and setters
     public int getAdminId() {
         return adminId;

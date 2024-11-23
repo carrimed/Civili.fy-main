@@ -19,7 +19,7 @@ public class ClientEntity {
     private String contactNumber;
     private String password;
 
-    @Column(name = "birthdate", nullable = false)
+    @Column(name = "birthdate", nullable = true)
     private LocalDate birthdate;  // Use LocalDate instead of java.sql.Date
 
     @Column(name = "age", nullable = false)
