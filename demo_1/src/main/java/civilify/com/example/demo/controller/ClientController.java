@@ -18,13 +18,8 @@ public class ClientController {
 
     @Autowired
     private ClientService clientService;
-<<<<<<< Updated upstream
-
-    // Register a new Client
-=======
     
     
->>>>>>> Stashed changes
     @PostMapping("/postClientRecord")
     public ResponseEntity<ClientEntity> postClientRecord(@RequestBody ClientEntity client) {
         ClientEntity createdClient = clientService.postClientRecord(client);

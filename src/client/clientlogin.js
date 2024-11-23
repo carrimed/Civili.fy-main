@@ -6,11 +6,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useNavigate } from 'react-router-dom';
-<<<<<<< Updated upstream
-import axios from 'axios';
-=======
 import axios from 'axios'; // Add axios for API calls
->>>>>>> Stashed changes
 
 function ClientLogin() {
   const navigate = useNavigate();
@@ -35,28 +31,6 @@ function ClientLogin() {
     }
 
     setLoading(true);
-<<<<<<< Updated upstream
-    try {
-      const response = await axios.post('http://localhost:8080/api/Client/login', {
-        username: username,
-        password: password
-      });
-
-      if (response.status === 200) {
-        // Login successful
-        navigate('/civilify/client-home-page');  // Redirect to home page
-      }
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        setSnackbarMessage("Invalid username or password");
-        setOpenSnackbar(true);
-      } else {
-        setSnackbarMessage("An error occurred. Please try again.");
-        setOpenSnackbar(true);
-      }
-    } finally {
-      setLoading(false);
-=======
 
     try {
       const response = await axios.post('http://localhost:8080/api/Client/login', {
@@ -74,7 +48,6 @@ function ClientLogin() {
       setLoading(false);
       setSnackbarMessage('Invalid username or password.');
       setOpenSnackbar(true);
->>>>>>> Stashed changes
     }
   };
 

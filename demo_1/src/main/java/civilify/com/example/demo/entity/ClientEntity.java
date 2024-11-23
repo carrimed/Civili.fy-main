@@ -14,23 +14,9 @@ public class ClientEntity {
 
     @Column(name = "username", unique = true, nullable = false)
     private String username;
-<<<<<<< Updated upstream
-
-    @Column(name = "name", nullable = false)
+    private String email; 
     private String name;
-
-    @Column(name = "email", nullable = false)
-    private String email;
-
-    @Column(name = "contact_number", nullable = false)
     private String contactNumber;
-
-    @Column(name = "password", nullable = false)
-=======
-    
-    private String name;
-    private String contact_number;
->>>>>>> Stashed changes
     private String password;
 
     @Column(name = "birthdate", nullable = false)
