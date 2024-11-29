@@ -11,6 +11,7 @@ import axios from 'axios';
 function Login() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -38,7 +39,7 @@ function Login() {
         : 'http://localhost:8080/api/lawyer/login'; // Update this for lawyer login if needed
   
       // Send login request to the backend
-      const response = await axios.post(endpoint, { username, password });
+      const response = await axios.post(endpoint, { loginField: username, password});
   
       // Extract token from the response
       const { token } = response.data;
@@ -55,7 +56,7 @@ function Login() {
       setLoading(false);
   
       // Display error message from the backend or a generic one
-      const errorMessage = error.response?.data?.message || 'Invalid username or password.';
+      const errorMessage = error.response?.data?.message || 'Invalid email / username or password.';
       setSnackbarMessage(errorMessage);
       setOpenSnackbar(true);
     }

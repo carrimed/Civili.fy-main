@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import {
   TextField,
   Button,
@@ -58,7 +58,6 @@ function LawyerSignupForm() {
   const [officeAddress, setOfficeAddress] = useState("");
   const [birthdate, setBirthdate] = useState("");
   const [yearsOfExperience, setYearsOfExperience] = useState("");
-  const [address, setAddress] = useState("");
   const [zipcode, setZipcode] = useState("");
   const [consultationFee, setConsultationFee] = useState("");
   const [hourlyRate, setHourlyRate] = useState("");
@@ -90,6 +89,24 @@ function LawyerSignupForm() {
   };
 
   const handleRegisterClick = async () => {
+    // Log form data to check if all values are being updated
+    console.log({
+        name,
+        username,
+        email,
+        specialization,
+        contactNumber,
+        officeAddress,
+        birthdate,
+        yearsOfExperience,
+        zipcode,
+        consultationFee,
+        hourlyRate,
+        password,
+        agreeToTerms,
+    });
+
+    // Check if any required field is empty
     if (
       !name ||
       !username ||
@@ -99,7 +116,6 @@ function LawyerSignupForm() {
       !officeAddress ||
       !birthdate ||
       !yearsOfExperience ||
-      !address ||
       !zipcode ||
       !password ||
       !consultationFee ||
@@ -115,20 +131,18 @@ function LawyerSignupForm() {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:8080/api/Lawyer/postLawyerRecord", {
+      await axios.post("http://localhost:8080/api/lawyer/create", {
         name,
         username,
         email,
         specialization,
-        contact_number: contactNumber,
-        office_address: officeAddress,
+        contactNumber,
+        officeAddress,
         birthdate,
-        age: calculateAge(birthdate),
-        years_of_experience: yearsOfExperience,
-        address,
+        yearsOfExperience,
         zipcode,
-        consultation_fee: consultationFee,
-        hourly_rate: hourlyRate,
+        consultationFee,
+        hourlyRate,
         password,
       });
       setSnackbarMessage("Successfully registered!");
@@ -141,6 +155,14 @@ function LawyerSignupForm() {
       setLoading(false);
     }
   };
+  
+  useEffect(() => {
+    if (isSuccess) {
+      setTimeout(() => {
+        navigate("/civilify/login-page");  // Perform the navigation after success
+      }, 1000); // Delay for a smooth user experience
+    }
+  }, [isSuccess, navigate]);  // Only run when isSuccess state changes
 
   return (
     <Box
@@ -308,16 +330,16 @@ function LawyerSignupForm() {
 
           {/* Terms and Register Button */}
           <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={agreeToTerms}
-                  onChange={(e) => setAgreeToTerms(e.target.checked)}
-                  sx={{ color: "#D9641E" }}
-                />
-              }
-              label="I agree with Civilify's Terms and Conditions"
-            />
+                        <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={agreeToTerms}
+                    onChange={(e) => setAgreeToTerms(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="I agree to the terms and conditions"
+              />
           </Grid>
 
           <Grid item xs={12}>

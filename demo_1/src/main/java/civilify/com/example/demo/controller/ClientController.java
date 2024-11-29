@@ -8,6 +8,7 @@ import civilify.com.example.demo.entity.ClientEntity;
 import civilify.com.example.demo.service.ClientService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -27,12 +28,17 @@ public class ClientController {
 
     // Client login
     @PostMapping("/login")
-    public ResponseEntity<String> loginClient(@RequestBody ClientEntity client) {
-        boolean isValidUser = clientService.validateUser(client.getUsername(), client.getPassword());
+    public ResponseEntity<String> loginClient(@RequestBody Map<String, String> loginData) {
+        String loginField = loginData.get("loginField");  // This can be either username or email
+        String password = loginData.get("password");
+
+        // Call the service method to validate the user
+        boolean isValidUser = clientService.validateUser(loginField, password);
+
         if (isValidUser) {
             return ResponseEntity.ok("Login successful");
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username/email or password");
         }
     }
 

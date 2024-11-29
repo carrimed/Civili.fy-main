@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import civilify.com.example.demo.entity.ClientEntity;
+import civilify.com.example.demo.entity.LawyerEntity;
 import civilify.com.example.demo.repository.ClientRepository;
 
 import java.util.List;
@@ -69,13 +70,23 @@ public class ClientService {
     
     
     //for token not yet implemented
-    public boolean validateUser(String username, String password) {
-        ClientEntity client = clientRepository.findByUsername(username);
-        if (client == null) {
-            return false;
+    public boolean validateUser(String loginField, String password) {
+        ClientEntity client = null;
+
+        // If the login field contains "@" symbol, treat it as email
+        if (loginField.contains("@")) {
+            client = clientRepository.findByEmail(loginField);  // Find by email
+        } else {
+            client = clientRepository.findByUsername(loginField);  // Otherwise, treat it as username
         }
-        return client.getPassword().equals(password);  // You can add password hashing here
-    } 
+
+        // If the lawyer is found, compare the password
+        if (client != null && client.getPassword().equals(password)) {
+            return true;
+        }
+
+        return false;
+    }
      
     /*public boolean validateUser(int clientId, String password) {
         ClientEntity client = getClientById(clientId);

@@ -18,7 +18,7 @@ function ClientSignup() {
   const [occupation, setOccupation] = useState('');
   const [civilStatus, setCivilStatus] = useState('');
   const [address, setAddress] = useState('');
-  const [zipCode, setZipCode] = useState('');
+  const [zipcode, setZipCode] = useState('');
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -45,7 +45,7 @@ function ClientSignup() {
   };
 
   const handleRegisterClick = async () => {
-    if (!name || !username || !email || !password || (step === 2 && (!contactNumber || !birthDate || !occupation || !civilStatus || !address || !zipCode))) {
+    if (!name || !username || !email || !password || (step === 2 && (!contactNumber || !birthDate || !occupation || !civilStatus || !address || !zipcode))) {
       setSnackbarMessage("Please fill in all required fields.");
       setIsSuccess(false);
       setOpenSnackbar(true);
@@ -60,13 +60,13 @@ function ClientSignup() {
         name,
         username,
         email,
-        contact_number: contactNumber,
-        birth_date: birthDate,
+        contactNumber,
+        birthDate,
         age,
         occupation,
-        civil_status: civilStatus,
+        civilStatus,
         address,
-        zip_code: zipCode,
+        zipcode,
         password,
       };
   
@@ -317,7 +317,7 @@ function ClientSignup() {
                   variant="outlined"
                   fullWidth
                   margin="normal"
-                  value={zipCode}
+                  value={zipcode}
                   onChange={(e) => setZipCode(e.target.value)}
                   style={{ fontFamily: 'Outfit, sans-serif', maxWidth: '600px' }}
                 />

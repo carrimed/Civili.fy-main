@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import civilify.com.example.demo.entity.LawyerEntity;
 import civilify.com.example.demo.repository.LawyerRepository;
 
@@ -24,7 +23,7 @@ public class LawyerService {
     public List<LawyerEntity> getAllLawyers() {
         return lawyerRepo.findAll();
     }
-    
+
     // Delete lawyer by name
     public String deleteLawyerByName(String name) {
         List<LawyerEntity> lawyers = lawyerRepo.findByName(name); // Assume findByName is implemented in LawyerRepository
@@ -50,6 +49,13 @@ public class LawyerService {
             existingLawyer.setContactNumber(updatedLawyer.getContactNumber());
             existingLawyer.setUsername(updatedLawyer.getUsername());
             existingLawyer.setPassword(updatedLawyer.getPassword());
+            existingLawyer.setEmail(updatedLawyer.getEmail());
+            existingLawyer.setOfficeAddress(updatedLawyer.getOfficeAddress());
+            existingLawyer.setBirthdate(updatedLawyer.getBirthdate());
+            existingLawyer.setYearsOfExperience(updatedLawyer.getYearsOfExperience());
+            existingLawyer.setZipcode(updatedLawyer.getZipcode());
+            existingLawyer.setConsultationFee(updatedLawyer.getConsultationFee());
+            existingLawyer.setHourlyRate(updatedLawyer.getHourlyRate());
             return lawyerRepo.save(existingLawyer);
         }
         return null; // Return null if lawyer with given ID doesn't exist
@@ -65,5 +71,23 @@ public class LawyerService {
             msg = "Lawyer with ID " + lawyerId + " NOT found!";
         }
         return msg;
+    }
+    
+    public boolean validateUser(String loginField, String password) {
+        LawyerEntity lawyer = null;
+
+        // If the login field contains "@" symbol, treat it as email
+        if (loginField.contains("@")) {
+            lawyer = lawyerRepo.findByEmail(loginField);  // Find by email
+        } else {
+            lawyer = lawyerRepo.findByUsername(loginField);  // Otherwise, treat it as username
+        }
+
+        // If the lawyer is found, compare the password
+        if (lawyer != null && lawyer.getPassword().equals(password)) {
+            return true;
+        }
+
+        return false;
     }
 }

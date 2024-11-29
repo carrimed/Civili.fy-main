@@ -5,13 +5,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import civilify.com.example.demo.entity.ClientEntity;
 import civilify.com.example.demo.entity.LawyerEntity;
 import civilify.com.example.demo.service.LawyerService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/lawyer")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "*"})
 public class LawyerController {
 
     @Autowired
@@ -28,6 +31,22 @@ public class LawyerController {
     public ResponseEntity<LawyerEntity> createLawyer(@RequestBody LawyerEntity lawyer) {
         LawyerEntity createdLawyer = lawyerService.createLawyer(lawyer);
         return new ResponseEntity<>(createdLawyer, HttpStatus.CREATED);
+    }
+    
+    // lawyer login
+    @PostMapping("/login")
+    public ResponseEntity<String> loginLawyer(@RequestBody Map<String, String> loginData) {
+        String loginField = loginData.get("loginField");  // This can be either username or email
+        String password = loginData.get("password");
+
+        // Call the service method to validate the user
+        boolean isValidUser = lawyerService.validateUser(loginField, password);
+
+        if (isValidUser) {
+            return ResponseEntity.ok("Login successful");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username/email or password");
+        }
     }
 
     // Read functionality (GET all lawyers)
