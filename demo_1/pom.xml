@@ -59,13 +59,13 @@
 		<dependency>
     		<groupId>org.springframework.security</groupId>
     		<artifactId>spring-security-core</artifactId>
-    		<version>6.0.0</version> <!-- Spring Security version for Spring Boot 3.x -->
+    		<version>6.0.0</version><!--$NO-MVN-MAN-VER$--> <!-- Spring Security version for Spring Boot 3.x -->
 		</dependency>
 		
 		<dependency>
     		<groupId>org.springframework.security</groupId>
     		<artifactId>spring-security-web</artifactId>
-    		<version>6.0.0</version> <!-- Spring Security Web for Spring Boot 3.x -->
+    		<version>6.0.0</version><!--$NO-MVN-MAN-VER$--> <!-- Spring Security Web for Spring Boot 3.x -->
 		</dependency>
 		<dependency>
     		<groupId>org.springframework.security</groupId>

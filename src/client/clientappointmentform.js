@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
-import { Modal, TextField, Button, Typography, Paper, Box, Grid2, Snackbar, Alert } from '@mui/material';
+import { Modal, TextField, Button, Typography, Paper, Box, Grid, Snackbar, Alert, Checkbox } from '@mui/material';
 import { styled } from '@mui/system';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CloseIcon from '@mui/icons-material/Close';
 
-
-//for the BookAppointment Form 
-const StyledButton = styled(Button)({
-    backgroundColor: '#D9641E',
+// For the Book Appointment Form
+const StyledButton = styled(Button)(({ theme, colorType }) => ({
+    backgroundColor: colorType === 'red' ? '#D32F2F' : colorType === 'green' ? '#388E3C' : '#000000',
     color: '#F1F1F1',
     '&:hover': {
-        backgroundColor: '#ED7D27',
+        backgroundColor: colorType === 'red' ? '#C62828' : colorType === 'green' ? '#2C6B2F' : '#333333',
     },
     fontSize: '1rem',
     padding: '10px 20px',
-    marginTop: '20px'
-});
+    marginTop: '20px',
+    fontFamily: 'Outfit, sans-serif',
+    width: '45%', // For both buttons to align nicely
+    margin: '5px', // Add space between the buttons
+}));
 
 function ClientAppointmentForm() {
     const [open, setOpen] = useState(false);
@@ -23,14 +25,15 @@ function ClientAppointmentForm() {
     const [appointmentDetails, setAppointmentDetails] = useState({ date: '', time: '', message: '' });
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [message, setMessage] = useState('');
+    const [termsAccepted, setTermsAccepted] = useState(false); // Track checkbox state
 
     const handleInputChange = (e) => {
         setAppointmentDetails({ ...appointmentDetails, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = () => {
-        if (!appointmentDetails.date || !appointmentDetails.time || !appointmentDetails.message) {
-            setMessage('Please fill in all fields');
+        if (!appointmentDetails.date || !appointmentDetails.time || !appointmentDetails.message || !termsAccepted) {
+            setMessage('Please fill in all fields and accept the terms');
             setSnackbarOpen(true);
             return;
         }
@@ -43,8 +46,18 @@ function ClientAppointmentForm() {
         }, 3000);  // Show success message briefly
     };
 
+    const handleDiscard = () => {
+        setAppointmentDetails({ date: '', time: '', message: '' }); // Clear form fields
+        setTermsAccepted(false); // Reset checkbox
+        setOpen(false); // Close the modal
+    };
+
     const handleCloseSnackbar = () => {
         setSnackbarOpen(false);
+    };
+
+    const handleCheckboxChange = (e) => {
+        setTermsAccepted(e.target.checked); // Update checkbox state
     };
 
     return (
@@ -57,18 +70,19 @@ function ClientAppointmentForm() {
                     minHeight: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.6)'
                 }}>
                     <Paper elevation={3} sx={{
-                        padding: '40px', width: '500px', height: '600px', textAlign: 'center', backgroundColor: '#F1F1F1'
+                        padding: '30px', width: '450px', minHeight: '400px', textAlign: 'center', backgroundColor: '#F1F1F1',
+                        fontFamily: 'Outfit, sans-serif', borderRadius: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
                     }}>
                         <Box display="flex" justifyContent="space-between" alignItems="center">
-                            <Typography variant="h6" sx={{ color: '#41423A' }}>
-                                Book an Appointment
+                            <Typography variant="h6" sx={{ color: '#41423A', fontWeight: 600 }}>
+                                Booking appointment for: James Bond
                             </Typography>
                             <Button onClick={() => setOpen(false)} sx={{ minWidth: 0, padding: 0 }}>
                                 <CloseIcon sx={{ color: '#D9641E' }} />
                             </Button>
                         </Box>
-                        <Grid2 container spacing={2} sx={{ marginTop: '20px' }}>
-                            <Grid2 item xs={12}>
+                        <Grid container spacing={2} sx={{ marginTop: '20px' }}>
+                            <Grid item xs={12}>
                                 <TextField
                                     name="date"
                                     label="Select Date"
@@ -77,8 +91,8 @@ function ClientAppointmentForm() {
                                     onChange={handleInputChange}
                                     InputLabelProps={{ shrink: true }}
                                 />
-                            </Grid2>
-                            <Grid2 item xs={12}>
+                            </Grid>
+                            <Grid item xs={12}>
                                 <TextField
                                     name="time"
                                     label="Select Time"
@@ -87,26 +101,43 @@ function ClientAppointmentForm() {
                                     onChange={handleInputChange}
                                     InputLabelProps={{ shrink: true }}
                                 />
-                            </Grid2>
-                            <Grid2 item xs={12}>
+                            </Grid>
+                            <Grid item xs={12}>
                                 <TextField
                                     name="message"
                                     label="Message or Concern"
                                     multiline
-                                    rows={8}  // Increased rows for larger message box (vertical size)
+                                    rows={6}  // Adjusted height for the message field
                                     fullWidth
                                     onChange={handleInputChange}
                                     InputLabelProps={{ shrink: true }}
-                                    sx={{
-                                        marginBottom: '20px', 
-                                        // Adjust width if needed (set to fullWidth or a fixed width)
-                                    }}
+
                                 />
-                            </Grid2>
-                        </Grid2>
-                        {/* Positioning Submit Button at the Bottom */}
-                        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                            <StyledButton onClick={handleSubmit}>Submit</StyledButton>
+                            </Grid>
+                        </Grid>
+
+                        {/* Checkbox for Terms and Conditions */}
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',  // Center the checkbox and text horizontally
+                            marginTop: '5px',  // Reduced top margin
+                            marginBottom: '5px', // Reduced bottom margin
+                        }}>
+                            <Checkbox
+                                checked={termsAccepted}
+                                onChange={handleCheckboxChange}
+                                sx={{ color: '#D9641E' }}
+                            />
+                            <Typography sx={{ fontSize: '14px', marginLeft: '5px' }}>
+                                I agree to Civilify's Rules and Regulations
+                            </Typography>
+                        </Box>
+
+                        {/* Positioning DISCARD and BOOK Buttons at the Bottom */}
+                        <Box sx={{ display: 'flex', justifyContent: 'center'}}>
+                            <StyledButton onClick={handleDiscard} colorType="red" sx={{ width: '100%' }}>DISCARD</StyledButton>
+                            <StyledButton onClick={handleSubmit} colorType="green" sx={{ width: '100%' }} disabled={!termsAccepted}>BOOK</StyledButton>
                         </Box>
 
                         {submitted && (

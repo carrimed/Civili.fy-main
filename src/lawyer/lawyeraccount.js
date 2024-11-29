@@ -42,15 +42,15 @@ function LawyerAccount() {
   };
 
   const handleSignOut = () => {
-    navigate('/lawyer-login-page');
+    navigate('/civilify/login-page');
   };
 
   const handleAccountClick = () => {
-    navigate('/lawyer-account-page');
+    navigate('/civilify/lawyer-profile-page');
   };
 
   const handleLogoClick = () => {
-    navigate('/lawyer-home-page');
+    navigate('/civilify/lawyer-home-page');
   };
 
   const handleDeleteClick = () => {
@@ -66,7 +66,7 @@ function LawyerAccount() {
   };
 
   const handleBackClick = () => {
-    navigate('/lawyer-home-page');
+    navigate('/civilify/lawyer-home-page');
   };
 
   const handleAddSpecialization = () => {

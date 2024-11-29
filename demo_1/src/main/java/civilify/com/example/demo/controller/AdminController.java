@@ -1,5 +1,4 @@
 package civilify.com.example.demo.controller;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import civilify.com.example.demo.entity.AdminEntity;

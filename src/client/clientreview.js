@@ -1,16 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  AppBar,
-  Toolbar,
+  Box,
+  Paper,
   Typography,
   TextField,
   Button,
-  Box,
-  Paper,
   IconButton,
   Snackbar,
 } from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import StarIcon from '@mui/icons-material/Star';
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
@@ -19,8 +16,6 @@ import axios from 'axios';
 function ClientReview() {
   const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
-  const [clientId, setClientId] = useState('');
-  const [lawyerId, setLawyerId] = useState('');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -30,7 +25,7 @@ function ClientReview() {
 
   const fetchReviews = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/review/findAll`);
+      const response = await axios.get('http://localhost:8080/api/review/findAll');
       setReviews(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -56,7 +51,7 @@ function ClientReview() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const reviewData = { clientId, lawyerId, rating, comment };
+    const reviewData = { rating, comment };
 
     try {
       if (isEditing) {
@@ -84,15 +79,11 @@ function ClientReview() {
   const resetForm = () => {
     setComment('');
     setRating(0);
-    setClientId('');
-    setLawyerId('');
   };
 
   const handleEdit = (review) => {
     setIsEditing(true);
     setCurrentReviewId(review.reviewId);
-    setClientId(review.clientId);
-    setLawyerId(review.lawyerId);
     setRating(review.rating);
     setComment(review.comment);
   };
@@ -110,34 +101,25 @@ function ClientReview() {
     }
   };
 
-  const handleSignOut = () => {
-    navigate('/client-login-page');
-  };
-
-  const handleAccountClick = () => {
-    navigate('/client-account-page');
-  };
-
-  const handleLogoClick = () => {
-    navigate('/client-home-page');
-  };
-
   const exitEditingMode = () => {
     setIsEditing(false);
     resetForm();
   };
 
-  // Function to render star rating
   const renderStars = (rating) => {
     return (
-      <Box display="flex">
+      <Box display="flex" marginTop={1} marginBottom={2}>
         {Array.from({ length: 5 }, (_, index) => (
           <StarIcon
             key={index}
             style={{
               color: index < rating ? 'orange' : 'gray',
-              fontSize: '20px',
+              fontSize: '30px',
+              cursor: 'pointer',
             }}
+            onClick={() => handleClick(index)}
+            onMouseEnter={() => handleMouseEnter(index)}
+            onMouseLeave={handleMouseLeave}
           />
         ))}
       </Box>
@@ -145,38 +127,23 @@ function ClientReview() {
   };
 
   return (
-    <div style={{ backgroundColor: '#D9641E', minHeight: '100vh', color: 'white' }}>
-      <AppBar position="static" style={{ backgroundColor: 'white', color: 'black' }}>
-        <Toolbar>
-          <Typography
-            component="div"
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-            onClick={handleLogoClick}
-          >
-            <img src="/images/logoiconblack.png" alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
-          </Typography>
-          <Box display="flex" alignItems="center" marginLeft="auto">
-            <IconButton onClick={handleAccountClick} style={{ color: 'black' }}>
-              <AccountCircleIcon />
-            </IconButton>
-            <Typography
-              variant="body1"
-              style={{ cursor: 'pointer', marginLeft: '15px' }}
-              onClick={handleSignOut}
-              onMouseEnter={(e) => (e.target.style.color = 'orange')}
-              onMouseLeave={(e) => (e.target.style.color = 'black')}
-            >
-              Sign out
-            </Typography>
-          </Box>
-        </Toolbar>
-      </AppBar>
-
+    <div style={{
+      position: 'relative',
+      backgroundColor: '#F7F7F7',
+      width: '100vw',
+      height: '100vh',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      fontFamily: 'Outfit, sans-serif' // Applying Outfit globally
+    }}>
+      {/* Review Form */}
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh" flexDirection="column">
-        <Paper style={{ padding: '20px', maxWidth: '400px', width: '100%', marginBottom: '20px', marginTop: '40px' }}>
+        <Paper style={{ padding: '20px', maxWidth: '400px', width: '100%' }}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="h6" gutterBottom align="center">
-              {isEditing ? `Edit Review ID: #${currentReviewId}` : 'Submit Review'}
+            <Typography variant="h6" gutterBottom align="center" style={{ fontWeight: 700, fontFamily: 'Outfit' }}>
+              {isEditing ? `Edit Review ID: #${currentReviewId}` : 'Submitting a review for: James Bond'}
             </Typography>
             {isEditing && (
               <IconButton onClick={exitEditingMode} style={{ color: 'black' }}>
@@ -185,102 +152,95 @@ function ClientReview() {
             )}
           </Box>
 
-          <TextField
-            label="Client ID"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={clientId}
-            onChange={(e) => setClientId(e.target.value)}
-            type="number"
-          />
-
-          <TextField
-            label="Lawyer ID"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={lawyerId}
-            onChange={(e) => setLawyerId(e.target.value)}
-            type="number"
-          />
-
-          <Typography variant="subtitle1" gutterBottom>
+          {/* Rating Label and Stars */}
+          <Typography variant="subtitle1" gutterBottom style={{ marginBottom: '4px', fontWeight: 400, fontFamily: 'Outfit' }}>
             Rating
           </Typography>
+          {renderStars(rating)}
 
-          <Box display="flex" alignItems="center" marginY={2}>
-            {Array.from({ length: 5 }, (_, index) => (
-              <StarIcon
-                key={index}
-                onMouseEnter={() => handleMouseEnter(index)}
-                onMouseLeave={handleMouseLeave}
-                onClick={() => handleClick(index)}
-                style={{
-                  cursor: 'pointer',
-                  color: index < rating ? 'orange' : 'gray',
-                  fontSize: '40px',
-                }}
-              />
-            ))}
-          </Box>
-
+          {/* Comment Label and TextField */}
+          <Typography variant="subtitle1" gutterBottom style={{ marginBottom: '4px', fontWeight: 400, fontFamily: 'Outfit' }}>
+            Comment
+          </Typography>
           <TextField
-            label="Comment"
             variant="outlined"
             fullWidth
             margin="normal"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
             multiline
             rows={4}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            label="Write your comment here"
+            style={{ marginBottom: '15px', fontFamily: 'Outfit' }}
           />
 
-          <Box marginTop={2} display="flex" justifyContent="center">
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              {isEditing ? 'Update' : 'Submit'}
+          {/* Submit and Discard Buttons */}
+          <Box display="flex" justifyContent="space-between">
+            <Button
+              variant="contained"
+              color="error" // Red button
+              onClick={resetForm}
+              fullWidth
+              style={{
+                padding: '10px',
+                marginTop: '15px',
+                backgroundColor: 'red',
+                color: 'white',
+                marginRight: '8px',
+                fontFamily: 'Outfit'
+              }}
+            >
+              Discard
+            </Button>
+            <Button
+              variant="contained"
+              color="success" // Green button
+              onClick={handleSubmit}
+              fullWidth
+              style={{
+                padding: '10px',
+                marginTop: '15px',
+                backgroundColor: 'green',
+                color: 'white',
+                fontFamily: 'Outfit'
+              }}
+            >
+              {isEditing ? 'Update Review' : 'Submit Review'}
             </Button>
           </Box>
         </Paper>
 
-        <Box display="flex" flexDirection="row" flexWrap="wrap" justifyContent="flex-start" width="100%" p={2}>
-          <Typography variant="h6" gutterBottom style={{ width: '100%', textAlign: 'center' }}>
-            Submitted Reviews
-          </Typography>
-          {reviews.length === 0 ? (
-            <Typography variant="h6" gutterBottom>No reviews available.</Typography>
-          ) : (
-            reviews.map((review) => (
-              <Box key={review.reviewId} display="flex" flexDirection="column" alignItems="center" m={1}>
-                <Paper style={{ padding: '20px', width: '200px' }}>
-                  <Typography variant="subtitle1">Review ID: #{review.reviewId}</Typography>
-                  <Typography variant="subtitle1">Client ID: {review.clientId}</Typography>
-                  <Typography variant="subtitle1">Lawyer ID: {review.lawyerId}</Typography>
-                  <Typography variant="subtitle1">Rating: {review.lawyerId}</Typography>
-                  {renderStars(review.rating)}
-                  <Typography variant="subtitle1">Comment: {review.lawyerId}</Typography>
-                  <Typography variant="body1">{review.comment}</Typography>
-                  <Box display="flex" justifyContent="space-between" marginTop={1}>
-                    <Button onClick={() => handleEdit(review)} color="primary">
-                      Edit
-                    </Button>
-                    <Button onClick={() => handleDelete(review.reviewId)} color="secondary">
-                      Delete
-                    </Button>
-                  </Box>
-                </Paper>
+        {/* Review List */}
+        <Box>
+          {reviews.map((review) => (
+            <Paper key={review.reviewId} style={{ padding: '20px', marginBottom: '10px' }}>
+              <Typography variant="body1" style={{ fontWeight: 400 }}>
+                Client ID: {review.clientId} | Lawyer ID: {review.lawyerId}
+              </Typography>
+              {renderStars(review.rating)}
+              <Typography variant="body2" style={{ marginTop: '10px', fontWeight: 400 }}>
+                {review.comment}
+              </Typography>
+              <Box display="flex" justifyContent="flex-end" style={{ marginTop: '10px' }}>
+                <Button onClick={() => handleEdit(review)} color="primary">
+                  Edit
+                </Button>
+                <Button onClick={() => handleDelete(review.reviewId)} color="secondary" style={{ marginLeft: '10px' }}>
+                  Delete
+                </Button>
               </Box>
-            ))
-          )}
+            </Paper>
+          ))}
         </Box>
-
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={3000}
-          onClose={() => setSnackbarOpen(false)}
-          message={snackbarMessage}
-        />
       </Box>
+
+      {/* Snackbar for alerts */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        message={snackbarMessage}
+      />
     </div>
   );
 }
