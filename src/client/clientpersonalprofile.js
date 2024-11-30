@@ -19,26 +19,33 @@ const ClientPersonalProfile = () => {
 
   const navigate = useNavigate();
 
-  // Fetch client details based on clientId
-  const fetchClientDetails = async (clientId) => {
+  // Fetch client details using username and password stored in localStorage
+  const fetchClientDetails = async (username, password) => {
     setLoading(true);
     setError(null);
     try {
-      console.log("Fetching client details for clientId:", clientId);
+      console.log("Fetching client details for username:", username);
 
-      // Fetch client details
-      const clientDetailsResponse = await axios.get(`http://localhost:8080/api/client/findById/${clientId}`);
-      const clientDetailsData = clientDetailsResponse.data;
-      console.log("Client details:", clientDetailsData);
+      // Fetch client details based on stored username
+      const clientDetailsResponse = await axios.post('http://localhost:8080/api/client/login', {
+        loginField: username,
+        password: password,
+      });
 
-      // Fetch the profile picture
-      const profilePictureResponse = await axios.get(`http://localhost:8080/api/client/getProfilePicture/${clientId}`);
-      const profilePictureData = profilePictureResponse.data; // Assuming this is Base64-encoded
-      console.log("Profile picture data:", profilePictureData);
+      const clientId = clientDetailsResponse.data.clientId;
 
-      // Update state with the fetched data
-      setClientDetails(clientDetailsData);
-      setProfilePicture(`data:image/jpeg;base64,${profilePictureData}`);
+      if (clientId) {
+        // Fetch the actual profile details using clientId
+        const clientDetails = await axios.get(`http://localhost:8080/api/client/findById/${clientId}`);
+        const profilePictureResponse = await axios.get(`http://localhost:8080/api/client/getProfilePicture/${clientId}`);
+        
+        // Assuming profile picture is Base64-encoded
+        const profilePictureData = profilePictureResponse.data; 
+        setClientDetails(clientDetails.data);
+        setProfilePicture(`data:image/jpeg;base64,${profilePictureData}`);
+      } else {
+        setError("Failed to fetch client details.");
+      }
     } catch (error) {
       console.error('Error fetching client details:', error);
       setError("Failed to load client details");
@@ -47,40 +54,24 @@ const ClientPersonalProfile = () => {
     }
   };
 
-  // Fetch clientId after login
-  const fetchClientId = async () => {
-    try {
-      const loginResponse = await axios.post('http://localhost:8080/api/client/login', {
-        loginField: 'omg', // Use actual username here
-        password: 'password', // Use actual password here
-      });
-
-      const responseData = loginResponse.data; // The response should contain { clientId, message }
-      const clientId = responseData.clientId; // Assuming the clientId is returned correctly
-      const message = responseData.message; // The success message
-
-      console.log("Login response:", responseData);
-
-      if (clientId) {
-        fetchClientDetails(clientId); // Fetch client details after login
-      } else {
-        console.error("No clientId returned from login");
-        setError("Login failed. No client ID returned.");
-      }
-    } catch (error) {
-      console.error('Login failed:', error);
-      setError("Login failed. Please check your credentials.");
-    }
-  };
-
+  // Fetch details when component loads
   useEffect(() => {
-    fetchClientId(); // Call to fetch client details after login
+    const username = localStorage.getItem('username');
+    const password = localStorage.getItem('password');
+
+    if (username && password) {
+      fetchClientDetails(username, password);
+    } else {
+      setError("No login details found.");
+    }
   }, []);
 
   const handleProfileClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
   const handleLogout = () => {
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
     setTimeout(() => {
       navigate('/civilify/login-page');
     }, 2000);
@@ -95,7 +86,6 @@ const ClientPersonalProfile = () => {
   if (loading) return <Typography>Loading...</Typography>;
   if (error) return <Typography>Error: {error}</Typography>;
   if (!clientDetails) return <Typography>No user data available. Please try logging in again.</Typography>;
-  
   const styles = {
     header: {
       position: 'absolute',

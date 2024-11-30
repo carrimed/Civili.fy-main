@@ -33,19 +33,20 @@ function Login() {
     setLoading(true);
   
     try {
-      // Use full URL with backend port (8080)
+      // Send login request to the backend
       const endpoint = loginMode === 'Client'
         ? 'http://localhost:8080/api/client/login' // Updated to backend URL
         : 'http://localhost:8080/api/lawyer/login'; // Update this for lawyer login if needed
   
-      // Send login request to the backend
-      const response = await axios.post(endpoint, { loginField: username, password});
+      // Send login credentials to the backend
+      const response = await axios.post(endpoint, { loginField: username, password });
   
-      // Extract token from the response
+      // Extract token from the response (if you want to use it later)
       const { token } = response.data;
   
-      // Save the token in local storage
-      localStorage.setItem('token', token);
+      // Save username and password to localStorage (for now, without using a token)
+      localStorage.setItem('username', username);
+      localStorage.setItem('password', password);
   
       setLoading(false);
   
@@ -56,7 +57,7 @@ function Login() {
       setLoading(false);
   
       // Display error message from the backend or a generic one
-      const errorMessage = error.response?.data?.message || 'Invalid email / username or password.';
+      const errorMessage = error.response?.data?.message || 'Invalid username or password.';
       setSnackbarMessage(errorMessage);
       setOpenSnackbar(true);
     }
