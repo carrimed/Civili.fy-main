@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Menu, MenuItem, Divider, Card } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/AccountCircle';
@@ -8,10 +8,74 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import MaritalStatusIcon from '@mui/icons-material/Person';
 import WorkIcon from '@mui/icons-material/Work';
 import PlaceIcon from '@mui/icons-material/Place';
+import axios from 'axios';
 
-function ClientPersonalProfile() {
-  const navigate = useNavigate();
+const ClientPersonalProfile = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [clientDetails, setClientDetails] = useState(null);
+
+  const navigate = useNavigate();
+
+  // Fetch client details based on clientId
+  const fetchClientDetails = async (clientId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      console.log("Fetching client details for clientId:", clientId);
+
+      // Fetch client details
+      const clientDetailsResponse = await axios.get(`http://localhost:8080/api/client/findById/${clientId}`);
+      const clientDetailsData = clientDetailsResponse.data;
+      console.log("Client details:", clientDetailsData);
+
+      // Fetch the profile picture
+      const profilePictureResponse = await axios.get(`http://localhost:8080/api/client/getProfilePicture/${clientId}`);
+      const profilePictureData = profilePictureResponse.data; // Assuming this is Base64-encoded
+      console.log("Profile picture data:", profilePictureData);
+
+      // Update state with the fetched data
+      setClientDetails(clientDetailsData);
+      setProfilePicture(`data:image/jpeg;base64,${profilePictureData}`);
+    } catch (error) {
+      console.error('Error fetching client details:', error);
+      setError("Failed to load client details");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch clientId after login
+  const fetchClientId = async () => {
+    try {
+      const loginResponse = await axios.post('http://localhost:8080/api/client/login', {
+        loginField: 'omg', // Use actual username here
+        password: 'password', // Use actual password here
+      });
+
+      const responseData = loginResponse.data; // The response should contain { clientId, message }
+      const clientId = responseData.clientId; // Assuming the clientId is returned correctly
+      const message = responseData.message; // The success message
+
+      console.log("Login response:", responseData);
+
+      if (clientId) {
+        fetchClientDetails(clientId); // Fetch client details after login
+      } else {
+        console.error("No clientId returned from login");
+        setError("Login failed. No client ID returned.");
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      setError("Login failed. Please check your credentials.");
+    }
+  };
+
+  useEffect(() => {
+    fetchClientId(); // Call to fetch client details after login
+  }, []);
 
   const handleProfileClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -24,10 +88,14 @@ function ClientPersonalProfile() {
   };
 
   const handleEditProfileRedirect = () => {
-    navigate('/civilify/client-update-profile-page'); 
+    navigate('/civilify/client-update-profile-page');
     handleClose();
   };
 
+  if (loading) return <Typography>Loading...</Typography>;
+  if (error) return <Typography>Error: {error}</Typography>;
+  if (!clientDetails) return <Typography>No user data available. Please try logging in again.</Typography>;
+  
   const styles = {
     header: {
       position: 'absolute',
@@ -170,7 +238,7 @@ function ClientPersonalProfile() {
           ))}
         </Box>
       </Box>
-
+  
       {/* Profile Dropdown Menu */}
       <Menu
         anchorEl={anchorEl}
@@ -182,119 +250,94 @@ function ClientPersonalProfile() {
         <MenuItem onClick={handleClose}>Settings</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
-
+  
       {/* Profile Header */}
       <Typography style={styles.profileHeaderText}>Quick Actions</Typography>
       <Typography
-      style={{
-        position: 'absolute',
-        textAlign: 'right',
-        top: '135px',
-        right: '200px',
-        fontFamily: 'Outfit',
-        fontWeight: 'light',
-        fontSize: '16px',
-        color: '#40170A',
-        zIndex: 1,
-        opacity: 0.5,
-      }}>
-      Change my password
-    </Typography>
-    <Typography
-      style={{
-        position: 'absolute',
-        textAlign: 'right',
-        top: '160px',
-        right: '200px',
-        fontFamily: 'Outfit',
-        fontWeight: 'light',
-        fontSize: '16px',
-        color: '#40170A',
-        zIndex: 1,
-        opacity: 0.5,
-      }}>
-      Set language preferences
-    </Typography>
-    <Typography
-      style={{
-        position: 'absolute',
-        textAlign: 'right',
-        top: '185px',
-        right: '200px',
-        fontFamily: 'Outfit',
-        fontWeight: 'light',
-        fontSize: '16px',
-        color: '#40170A',
-        zIndex: 1,
-        opacity: 0.5,
-      }}>
-      Account Privacy settings
-    </Typography>
-    <Typography
-      style={{
-        position: 'absolute',
-        textAlign: 'right',
-        top: '210px',
-        right: '200px',
-        fontFamily: 'Outfit',
-        fontWeight: 'light',
-        fontSize: '16px',
-        color: '#40170A',
-        zIndex: 1,
-        opacity: 0.5,
-      }}>
-      Edit my profile details
-    </Typography>
-    <Typography
-      style={{
-        position: 'absolute',
-        textAlign: 'right',
-        top: '235px',
-        right: '200px',
-        fontFamily: 'Outfit',
-        fontWeight: 'light',
-        fontSize: '16px',
-        color: '#40170A',
-        zIndex: 1,
-        opacity: 0.5,
-      }}>
-      Deactivate my account
-    </Typography>
-
+        style={{
+          position: 'absolute',
+          textAlign: 'right',
+          top: '135px',
+          right: '200px',
+          fontFamily: 'Outfit',
+          fontWeight: 'light',
+          fontSize: '16px',
+          color: '#40170A',
+          zIndex: 1,
+          opacity: 0.5,
+        }}
+      >
+        Change my password
+      </Typography>
+  
+      {/* Additional profile quick actions */}
+      <Typography
+        style={{
+          position: 'absolute',
+          textAlign: 'right',
+          top: '160px',
+          right: '200px',
+          fontFamily: 'Outfit',
+          fontWeight: 'light',
+          fontSize: '16px',
+          color: '#40170A',
+          zIndex: 1,
+          opacity: 0.5,
+        }}
+      >
+        Set language preferences
+      </Typography>
+      <Typography
+        style={{
+          position: 'absolute',
+          textAlign: 'right',
+          top: '185px',
+          right: '200px',
+          fontFamily: 'Outfit',
+          fontWeight: 'light',
+          fontSize: '16px',
+          color: '#40170A',
+          zIndex: 1,
+          opacity: 0.5,
+        }}
+      >
+        Account Privacy settings
+      </Typography>
+  
       {/* Line */}
       <div style={styles.line}></div>
       <div
         style={{
-          position: 'fixed',    // Positioned relative to the viewport
-          left: '195px',         // Adjust as needed for exact alignment
-          bottom: '68px',       // Distance from the bottom of the screen
+          position: 'fixed',
+          left: '195px',
+          bottom: '68px',
           fontSize: '14px',
           color: '#40170A',
-          zIndex: 1000,         // Keeps it above other elements
+          zIndex: 1000,
           fontFamily: 'Faculty Graphic',
-          opacity: 0.4
+          opacity: 0.4,
         }}
       >
         Civilify's Terms and Conditions
       </div>
       <div
         style={{
-          position: 'fixed',    // Positioned relative to the viewport
-          left: '1133px',         // Adjust as needed for exact alignment
-          bottom: '68px',       // Distance from the bottom of the screen
+          position: 'fixed',
+          left: '1133px',
+          bottom: '68px',
           fontSize: '14px',
           color: '#40170A',
-          zIndex: 1000,         // Keeps it above other elements
+          zIndex: 1000,
           fontFamily: 'Faculty Graphic',
-          opacity: 0.4
+          opacity: 0.4,
         }}
       >
         Security and Safety Terms
       </div>
-
+  
       {/* Line */}
       <div style={styles.lineprofile}></div>
-
+  
       {/* Profile Card */}
       <Card style={styles.card}>
         <Box
@@ -306,48 +349,48 @@ function ClientPersonalProfile() {
             borderRadius: '20px 20px 0 0',
           }}
         >
+          {/* Profile Picture */}
           <Box style={{ display: 'flex', alignItems: 'center' }}>
             <img
-              src="/images/pfp1.jpg"
+              src={profilePicture} // Dynamically set the profile picture URL
               alt="Profile"
-              style={styles.profilePicture}
+              style={styles.profilePicture} // Apply your custom styles here
             />
-            <Box>
-              <Typography
-                variant="h5"
-                style={{ fontFamily: 'Outfit', fontWeight: 'bold' }}
+          </Box>
+  
+          {/* Profile Info */}
+          <Box>
+            <Typography variant="h5" style={{ fontFamily: 'Outfit', fontWeight: 'bold' }}>
+              {clientDetails.fullName} {/* Dynamic user data */}
+            </Typography>
+            <Typography
+              style={{
+                fontFamily: 'Outfit',
+                fontStyle: 'italic',
+                color: '#555',
+              }}
+            >
+              {clientDetails.bio} {/* Dynamic bio */}
+            </Typography>
+  
+            {/* Buttons */}
+            <Box style={styles.buttons}>
+              <button
+                style={{ ...styles.button, ...styles.editButton }}
+                onClick={handleEditProfileRedirect}
               >
-                Keith Ruezyl Tagarao
-              </Typography>
-              <Typography
-                style={{
-                  fontFamily: 'Outfit',
-                  fontStyle: 'italic',
-                  color: '#555',
-                }}
+                Edit Profile
+              </button>
+              <button
+                style={{ ...styles.button, ...styles.logoutButton }}
+                onClick={handleLogout}
               >
-                I live so high I'm way up in the sky
-              </Typography>
-
-              {/* Buttons */}
-              <Box style={styles.buttons}>
-                <button
-                  style={{ ...styles.button, ...styles.editButton }}
-                  onClick={handleEditProfileRedirect}
-                >
-                  Edit Profile
-                </button>
-                <button
-                  style={{ ...styles.button, ...styles.logoutButton }}
-                  onClick={handleLogout}
-                >
-                  Logout
-                </button>
-              </Box>
+                Logout
+              </button>
             </Box>
           </Box>
         </Box>
-
+  
         <Divider style={{ margin: '20px 0' }} />
         <Box
           style={{
@@ -359,47 +402,41 @@ function ClientPersonalProfile() {
         >
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <PersonIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>@skrptt</span>
+            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.username}</span> {/* Dynamic username */}
           </Typography>
-
+  
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <EmailIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>keithtagarao@gmail.com</span>
+            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.email}</span> {/* Dynamic email */}
           </Typography>
-
+  
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <PhoneIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>123-456-7890 | +63 999-760-1161</span>
+            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.contactNumber}</span> {/* Dynamic phone number */}
           </Typography>
-
+  
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <CakeIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>Born on December 31, 1999</span>
+            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.birthdate}</span> {/* Dynamic date of birth */}
           </Typography>
-
+  
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <MaritalStatusIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>Single</span>
+            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.civilStatus}</span> {/* Dynamic marital status */}
           </Typography>
-
+  
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <WorkIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>Software Engineer</span>
+            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.occupation}</span> {/* Dynamic profession */}
           </Typography>
-
+  
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <PlaceIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>Metro Manila, 6064</span>
+            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.address}</span> {/* Dynamic address */}
           </Typography>
         </Box>
       </Card>
-
-      {/* Footer Section */}
-      <Box style={styles.footer}>
-        <span>© The Civilify Company, 2024 | All Rights Reserved</span>
-      </Box>
     </div>
   );
-}
-
+};  
 export default ClientPersonalProfile;

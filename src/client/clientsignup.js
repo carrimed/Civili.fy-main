@@ -8,12 +8,14 @@ import axios from 'axios';
 
 function ClientSignup() {
   const navigate = useNavigate();
+  
+  const [profilePicture, setProfilePicture] = useState('');
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [contactNumber, setContactNumber] = useState('');
-  const [birthDate, setBirthDate] = useState('');
+  const [birthdate, setBirthDate] = useState('');
   const [age, setAge] = useState('');
   const [occupation, setOccupation] = useState('');
   const [civilStatus, setCivilStatus] = useState('');
@@ -25,10 +27,11 @@ function ClientSignup() {
   const [backLoading, setBackLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [step, setStep] = useState(1); // Step to track form visibility (1: initial, 2: extended)
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-  const calculateAge = (birthDate) => {
+  const calculateAge = (birthdate) => {
     const today = new Date();
-    const birth = new Date(birthDate);
+    const birth = new Date(birthdate);
     const age = today.getFullYear() - birth.getFullYear();
     const m = today.getMonth() - birth.getMonth();
     if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
@@ -44,8 +47,20 @@ function ClientSignup() {
     setAge(calculatedAge);
   };
 
+  {/*const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file.size > MAX_FILE_SIZE) {
+      setSnackbarMessage("File is too large. Please upload an image smaller than 10MB.");
+      setOpenSnackbar(true);
+      return; // Don't proceed with the upload
+    } else {
+      setProfilePicture(file);
+    }
+  }; */}
+
   const handleRegisterClick = async () => {
-    if (!name || !username || !email || !password || (step === 2 && (!contactNumber || !birthDate || !occupation || !civilStatus || !address || !zipcode))) {
+    if (!name || !username || !email || !password || 
+        (step === 2 && (!contactNumber || !birthdate || !occupation || !civilStatus || !address || !zipcode))) {
       setSnackbarMessage("Please fill in all required fields.");
       setIsSuccess(false);
       setOpenSnackbar(true);
@@ -55,13 +70,16 @@ function ClientSignup() {
     setLoading(true);
   
     try {
-      // Ensure correct data is being sent to the backend
+      let profilePicturePath = null;
+      let clientId = null;  // Declare clientId here
+  
+      // Prepare the payload for client creation
       const payload = {
         name,
         username,
         email,
         contactNumber,
-        birthDate,
+        birthdate,
         age,
         occupation,
         civilStatus,
@@ -70,28 +88,64 @@ function ClientSignup() {
         password,
       };
   
-      console.log("Payload being sent:", payload);  // Check what is being sent
+      // Create the client and get clientId from the response
+      const response = await axios.post("http://localhost:8080/api/client/postClientRecord", payload);
+      const { clientId: responseClientId, message } = response.data;
+      clientId = responseClientId;  // Assign the clientId from the response
+      console.log(message);  // Log the success message
   
-      const response = await axios.post('http://localhost:8080/api/client/postClientRecord', payload);
+      // Now, proceed with uploading the profile picture if provided
+      if (profilePicture) {
+        const formData = new FormData();
+        formData.append('profilePicture', profilePicture); // 'profilePicture' is the selected image file
+        formData.append('clientId', clientId);  // Now clientId is properly initialized
+  
+        // Perform the file upload via fetch
+        await fetch('http://localhost:8080/api/client/uploadProfilePicture', {
+          method: 'POST',
+          body: formData,
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+  
+        // Assuming server returns the path or success message, capture it here
+        profilePicturePath = "path_or_data_returned_from_server"; // Adjust based on your response
+      }
+  
+      // Update the payload with the profile picture path
+      const updatedPayload = {
+        ...payload,
+        profilePicture: profilePicturePath, // Include the profile picture path if uploaded
+      };
+  
+      // Optionally send the updated payload to update the client (if needed)
+      // const updateResponse = await axios.post("http://localhost:8080/api/client/update", updatedPayload);
+  
+      localStorage.setItem("clientId", clientId); // Or store in a session if using session management
+  
       setSnackbarMessage("Successfully registered!");
       setIsSuccess(true);
       setOpenSnackbar(true);
     } catch (error) {
       console.error("Registration error:", error.response?.data || error.message);
-      setSnackbarMessage("Registration failed: " + (error.response?.data?.message || "Please try again."));
+      setSnackbarMessage(
+        "Registration failed: " + (error.response?.data?.message || "Please try again.")
+      );
       setIsSuccess(false);
     } finally {
       setLoading(false);
     }
   
     setTimeout(() => {
-      navigate('/civilify/login-page');
+      navigate("/civilify/login-page");
       setSnackbarMessage("Redirecting to login page...");
       setIsSuccess(true);
       setOpenSnackbar(true);
       setLoading(false);
     }, 1000);
   };
+  
 
   const handleNextClick = () => {
     if (step === 1) {
@@ -200,6 +254,16 @@ function ClientSignup() {
             {/* Step 1 - Initial Fields */}
             {step === 1 && (
               <>
+                  <TextField
+                  label="Profile Picture"
+                  type="file"
+                  inputProps={{
+                    accept: "image/*",
+                  }}
+                  fullWidth
+                  margin="normal"
+                  onChange={(e) => setProfilePicture(e.target.files[0])}
+                />
                 <TextField
                   label="Name"
                   variant="outlined"
@@ -259,7 +323,7 @@ function ClientSignup() {
                       variant="outlined"
                       fullWidth
                       margin="normal"
-                      value={birthDate}
+                      value={birthdate}
                       onChange={handleBirthDateChange}
                       InputLabelProps={{
                         shrink: true,

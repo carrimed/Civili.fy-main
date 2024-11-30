@@ -24,7 +24,7 @@ public class AuthController {
         this.clientService = clientService;
     }
 
-    @PostMapping("/login")
+    /*@PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         boolean isValidUser = clientService.validateUser(loginRequest.getUsername(), loginRequest.getPassword());
         if (!isValidUser) {
@@ -34,7 +34,7 @@ public class AuthController {
         //Generates token if credentials are valid 
         String token = jwtService.generateToken(loginRequest.getUsername());
         return ResponseEntity.ok(new LoginResponse(token));
-    }
+    } */
     
     // Endpoint to generate a JWT token for a given user (for testing)
     @GetMapping("/generate-token")

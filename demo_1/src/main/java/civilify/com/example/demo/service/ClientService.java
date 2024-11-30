@@ -1,5 +1,6 @@
 package civilify.com.example.demo.service;
 
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,6 +10,7 @@ import civilify.com.example.demo.repository.ClientRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class ClientService {
@@ -37,6 +39,13 @@ public class ClientService {
     public ClientEntity getClientById(int clientId) {
         return clientRepository.findById(clientId)
             .orElseThrow(() -> new NoSuchElementException("Client with ID " + clientId + " not found."));
+    }
+    
+    
+    
+    public ClientEntity findById(int clientId) {
+        Optional<ClientEntity> client = clientRepository.findById(clientId);
+        return client.orElse(null); // If client is not found, return null
     }
 
     // Update client details
@@ -70,7 +79,7 @@ public class ClientService {
     
     
     //for token not yet implemented
-    public boolean validateUser(String loginField, String password) {
+    public ClientEntity validateUser(String loginField, String password) {
         ClientEntity client = null;
 
         // If the login field contains "@" symbol, treat it as email
@@ -80,12 +89,17 @@ public class ClientService {
             client = clientRepository.findByUsername(loginField);  // Otherwise, treat it as username
         }
 
-        // If the lawyer is found, compare the password
+        // If the client is found and the password matches
         if (client != null && client.getPassword().equals(password)) {
-            return true;
+            return client;  // Return the ClientEntity object
         }
 
-        return false;
+        return null;  // If no client is found or password does not match
+    }
+    
+
+    public ClientEntity save(ClientEntity client) {
+        return clientRepository.save(client); // Use the JpaRepository's save method
     }
      
     /*public boolean validateUser(int clientId, String password) {

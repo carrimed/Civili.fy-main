@@ -14,7 +14,7 @@ public class ClientEntity {
 
     @Column(name = "username", unique = true, nullable = false)
     private String username;
-    private String email; 
+    private String email;
     private String name;
     private String contactNumber;
     private String password;
@@ -37,6 +37,10 @@ public class ClientEntity {
     @Column(name = "zipcode")
     private String zipcode;
 
+    @Lob
+    @Column(name = "profile_picture", columnDefinition = "LONGBLOB")  // Add column to store profile picture path or filename
+    private byte[] profilePicture;
+
     // Default constructor
     public ClientEntity() {
         super();
@@ -45,7 +49,7 @@ public class ClientEntity {
     // Parameterized constructor
     public ClientEntity(int clientId, String username, String name, String email, String contactNumber,
                         String password, LocalDate birthdate, int age, String occupation, String civilStatus,
-                        String address, String zipcode) {
+                        String address, String zipcode, byte[] profilePicture) {
         this.clientId = clientId;
         this.username = username;
         this.name = name;
@@ -58,6 +62,7 @@ public class ClientEntity {
         this.civilStatus = civilStatus;
         this.address = address;
         this.zipcode = zipcode;
+        this.profilePicture = profilePicture;
     }
 
     // Getters and Setters
@@ -155,5 +160,13 @@ public class ClientEntity {
 
     public void setZipcode(String zipcode) {
         this.zipcode = zipcode;
+    }
+
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
     }
 }

@@ -3,10 +3,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import civilify.com.example.demo.entity.ClientEntity;
 import civilify.com.example.demo.service.ClientService;
+import io.jsonwebtoken.lang.Collections;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -26,35 +32,97 @@ public class ClientController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdClient);
     } 
 
-    // Client login
     @PostMapping("/login")
-    public ResponseEntity<String> loginClient(@RequestBody Map<String, String> loginData) {
+    public ResponseEntity<Map<String, Object>> loginClient(@RequestBody Map<String, String> loginData) {
         String loginField = loginData.get("loginField");  // This can be either username or email
         String password = loginData.get("password");
 
         // Call the service method to validate the user
-        boolean isValidUser = clientService.validateUser(loginField, password);
+        ClientEntity client = clientService.validateUser(loginField, password);
 
-        if (isValidUser) {
-            return ResponseEntity.ok("Login successful");
+        Map<String, Object> response = new HashMap<>();
+
+        if (client != null) {
+            // If the client is valid, return client ID and success message
+            response.put("clientId", client.getClientId());
+            response.put("message", "Login successful");
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username/email or password");
+            // If validation fails, return error message
+            response.put("message", "Invalid username/email or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
+    
+    @PostMapping("/uploadProfilePicture")
+    public ResponseEntity<String> uploadProfilePicture(
+            @RequestParam("profilePicture") MultipartFile file, 
+            @RequestParam int clientId) {
+        try {
+            // Retrieve the client by ID
+            ClientEntity client = clientService.findById(clientId);
+            if (client == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found");
+            }
 
-    // Get all Clients
-    @GetMapping("/getAllClients")
-    public ResponseEntity<List<ClientEntity>> getAllClients() {
-        List<ClientEntity> clients = clientService.getAllClients();
-        if (clients.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();  // No clients found
+            // Set the binary data
+            client.setProfilePicture(file.getBytes());
+
+            // Save the updated client
+            clientService.save(client);
+
+            return ResponseEntity.ok("Profile picture uploaded successfully");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload the profile picture");
         }
-        return ResponseEntity.ok(clients);
+    }
+    
+    @PostMapping("/updateProfilePicture/{clientId}")
+    public ResponseEntity<String> updateProfilePicture(
+            @PathVariable int clientId,
+            @RequestParam("profilePicture") MultipartFile file) {
+
+        try {
+            // Find the client by ID
+            ClientEntity client = clientService.findById(clientId);
+            if (client == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found");
+            }
+
+            // Convert the MultipartFile to a byte array
+            byte[] profilePicture = file.getBytes();
+
+            // Update the profile picture
+            client.setProfilePicture(profilePicture);
+
+            // Save the updated client
+            clientService.save(client);
+
+            return ResponseEntity.ok("Profile picture updated successfully");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload profile picture");
+        }
+    }
+    
+    @GetMapping("/getProfilePicture/{clientId}")
+    public ResponseEntity<String> getProfilePicture(@PathVariable int clientId) {
+        ClientEntity client = clientService.findById(clientId);
+        if (client == null || client.getProfilePicture() == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile picture not found");
+        }
+
+        // Encode binary data to Base64
+        String base64Image = Base64.getEncoder().encodeToString(client.getProfilePicture());
+
+        // Return the Base64 string
+        return ResponseEntity.ok(base64Image);
     }
 
     // Get Client by ID
-    @GetMapping("/findById")
-    public ResponseEntity<ClientEntity> getClientById(@RequestParam int clientId) {
+    @GetMapping("/findById/{clientId}")
+    public ResponseEntity<ClientEntity> getClientById(@PathVariable int clientId) {
         try {
             ClientEntity client = clientService.getClientById(clientId);
             return ResponseEntity.ok(client);
