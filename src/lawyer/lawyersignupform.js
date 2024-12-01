@@ -1,11 +1,11 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
   Typography,
   Box,
   Snackbar,
-  SnackbarContent,
+  SnackbarContent, 
   CircularProgress,
   Checkbox,
   FormControlLabel,
@@ -20,34 +20,14 @@ import ErrorIcon from "@mui/icons-material/Error";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const specializationOptions = [
-  "Environmental law",
-  "Intellectual Property Law",
-  "Family law",
-  "International law",
-  "Corporate law",
-  "Health law",
-  "Property law",
-  "Tax law",
-  "Constitutional law",
-  "Immigration law",
-  "Business law",
-  "Administrative law",
-  "Education law",
-  "Animal law",
-  "Bankruptcy",
-  "Civil procedure",
-  "Alternative dispute resolution",
-  "Civil and political rights",
-  "Media law",
-  "Municipal law",
-  "Criminal law",
-  "Employment law",
-  "Banking laws",
-  "Criminal litigation",
+  "Environmental law", "Intellectual Property Law", "Family law", "International law", "Corporate law", "Health law",
+  "Property law", "Tax law", "Constitutional law", "Immigration law", "Business law", "Administrative law", "Education law",
+  "Animal law", "Bankruptcy", "Civil procedure", "Alternative dispute resolution", "Civil and political rights", "Media law",
+  "Municipal law", "Criminal law", "Employment law", "Banking laws", "Criminal litigation",
 ];
 
 function LawyerSignupForm() {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   // Form states
   const [name, setName] = useState("");
@@ -62,6 +42,7 @@ function LawyerSignupForm() {
   const [consultationFee, setConsultationFee] = useState("");
   const [hourlyRate, setHourlyRate] = useState("");
   const [password, setPassword] = useState("");
+  const [profilePicture, setProfilePicture] = useState(null);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
 
   // Snackbar states
@@ -103,6 +84,7 @@ function LawyerSignupForm() {
         consultationFee,
         hourlyRate,
         password,
+        profilePicture,
         agreeToTerms,
     });
 
@@ -120,6 +102,7 @@ function LawyerSignupForm() {
       !password ||
       !consultationFee ||
       !hourlyRate ||
+      !profilePicture ||
       !agreeToTerms
     ) {
       setSnackbarMessage("Please fill in all required fields.");
@@ -131,7 +114,11 @@ function LawyerSignupForm() {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:8080/api/lawyer/create", {
+      let profilePicturePath = null;
+      let lawyerId = null;  // Declare lawyerId here
+
+      // Prepare the payload for lawyer creation
+      const payload = {
         name,
         username,
         email,
@@ -144,25 +131,67 @@ function LawyerSignupForm() {
         consultationFee,
         hourlyRate,
         password,
-      });
+        agreeToTerms,
+      };
+
+      // Create the lawyer and get lawyerId from the response
+      const response = await axios.post("http://localhost:8080/api/lawyer/create", payload);
+      const { lawyerId: responseLawyerId, message } = response.data;
+      lawyerId = responseLawyerId;  // Assign the lawyerId from the response
+      console.log(message);  // Log the success message
+
+      // Now, proceed with uploading the profile picture if provided
+      if (profilePicture) {
+        const formData = new FormData();
+        formData.append('profilePicture', profilePicture); // 'profilePicture' is the selected image file
+        formData.append('lawyerId', lawyerId);  // Now lawyerId is properly initialized
+
+        // Perform the file upload via fetch
+        await fetch('http://localhost:8080/api/lawyer/uploadProfilePicture', {
+          method: 'POST',
+          body: formData,
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+
+        // Assuming server returns the path or success message, capture it here
+        profilePicturePath = "path_or_data_returned_from_server"; // Adjust based on your response
+      }
+
+      // Update the payload with the profile picture path
+      const updatedPayload = {
+        ...payload,
+        profilePicture: profilePicturePath, // Include the profile picture path if uploaded
+      };
+
+      // Optionally send the updated payload to update the lawyer (if needed)
+      // const updateResponse = await axios.post("http://localhost:8080/api/lawyer/update", updatedPayload);
+
+      localStorage.setItem("lawyerId", lawyerId); // Or store in a session if using session management
+
       setSnackbarMessage("Successfully registered!");
       setIsSuccess(true);
+      setOpenSnackbar(true);
     } catch (error) {
       console.error("Registration error:", error.response?.data || error.message);
-      setSnackbarMessage("Registration failed: " + (error.response?.data?.message || "Please try again."));
+      setSnackbarMessage(
+        "Registration failed: " + (error.response?.data?.message || "Please try again.")
+      );
       setIsSuccess(false);
     } finally {
       setLoading(false);
     }
+
+    setTimeout(() => {
+      navigate("/civilify/login-page");
+      setSnackbarMessage("Redirecting to login page...");
+      setIsSuccess(true);
+      setOpenSnackbar(true);
+      setLoading(false);
+    }, 1000);
   };
-  
-  useEffect(() => {
-    if (isSuccess) {
-      setTimeout(() => {
-        navigate("/civilify/login-page");  // Perform the navigation after success
-      }, 1000); // Delay for a smooth user experience
-    }
-  }, [isSuccess, navigate]);  // Only run when isSuccess state changes
+
 
   return (
     <Box
@@ -328,18 +357,32 @@ function LawyerSignupForm() {
             />
           </Grid>
 
+          {/* Profile Picture Upload */}
+          <Grid item xs={12}>
+          <TextField
+                  label=""
+                  type="file"
+                  inputProps={{
+                    accept: "image/*",
+                  }}
+                  fullWidth
+                  margin="normal"
+                  onChange={(e) => setProfilePicture(e.target.files[0])}
+                />
+          </Grid>
+
           {/* Terms and Register Button */}
           <Grid item xs={12}>
-                        <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={agreeToTerms}
-                    onChange={(e) => setAgreeToTerms(e.target.checked)}
-                    color="primary"
-                  />
-                }
-                label="I agree to the terms and conditions"
-              />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={agreeToTerms}
+                  onChange={(e) => setAgreeToTerms(e.target.checked)}
+                  color="primary"
+                />
+              }
+              label="I agree to the terms and conditions"
+            />
           </Grid>
 
           <Grid item xs={12}>
@@ -388,5 +431,6 @@ function LawyerSignupForm() {
     </Box>
   );
 }
+
 
 export default LawyerSignupForm;

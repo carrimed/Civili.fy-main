@@ -1,27 +1,111 @@
-import React, { useState } from 'react';
-import { Box, Typography, Button, MenuItem, Menu } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Button, MenuItem, Menu, CircularProgress } from '@mui/material';
 import { FaUserTie, FaPhoneAlt, FaMapMarkerAlt, FaEnvelope, FaCalendarAlt, FaDollarSign } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { styled } from '@mui/system';
 
-function LawyerHome() {
+function LawyerPersonalProfile() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [lawyerDetails, setLawyerDetails] = useState(null);
+
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
+
   const StyledButton = styled(Button)(({ theme, colorType }) => ({
     backgroundColor: colorType === 'red' ? '#D32F2F' : colorType === 'green' ? '#388E3C' : '#D9641E',
     color: '#F1F1F1',
     '&:hover': {
-        backgroundColor: colorType === 'red' ? '#C62828' : colorType === 'green' ? '#2C6B2F' : '#B55018',
+      backgroundColor: colorType === 'red' ? '#C62828' : colorType === 'green' ? '#2C6B2F' : '#B55018',
     },
     fontSize: '0.8rem',
     padding: '8px 16px',
     marginTop: '15px',
     fontFamily: 'Outfit, sans-serif',
-    width: '60%', 
+    width: '60%',
     margin: '5px',
-}));
+  }));
+
+  // Fetch lawyer details using username and password stored in localStorage
+  const fetchLawyerDetails = async (username, password) => {
+    setLoading(true);
+    setError(null); // Reset error
+    try {
+      console.log('Fetching lawyer details for username:', username);
+  
+      // Fetch lawyer details based on stored username and password
+      const lawyerDetailsResponse = await axios.post('http://localhost:8080/api/lawyer/login', {
+        loginField: username,
+        password: password,
+      });
+  
+      // Check if lawyerId exists in the response
+      const lawyerId = lawyerDetailsResponse.data.lawyerId;
+  
+      if (lawyerId) {
+        console.log('Lawyer ID:', lawyerId);  // Debugging
+  
+        // Fetch the actual profile details using the lawyerId
+        const lawyerDetails = await axios.get(`http://localhost:8080/api/lawyer/findById/${lawyerId}`);
+        console.log('Fetched Lawyer Details:', lawyerDetails.data);  // Debugging
+  
+        // Fetch profile picture
+        const profilePictureResponse = await axios.get(`http://localhost:8080/api/lawyer/getProfilePicture/${lawyerId}`);
+        console.log('Profile Picture Response:', profilePictureResponse.data);  // Debugging
+  
+        const profilePictureData = profilePictureResponse.data;
+        setLawyerDetails(lawyerDetails.data);
+  
+        // Assuming profile picture is Base64-encoded, set the image
+        setProfilePicture(`data:image/jpeg;base64,${profilePictureData}`);
+      } else {
+        // Handle the case where the lawyerId is not found
+        setError('Failed to fetch lawyer details. Invalid credentials or no data returned.');
+      }
+    } catch (error) {
+      console.error('Error fetching lawyer details:', error.response ? error.response.data : error.message);
+      // Displaying a more descriptive error message
+      setError('Failed to load lawyer details. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch details when component loads
+  useEffect(() => {
+    const username = localStorage.getItem('username');
+    const password = localStorage.getItem('password');
+
+    if (username && password) {
+      fetchLawyerDetails(username, password);
+    } else {
+      setError('No login details found.');
+    }
+  }, []);
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
+    setTimeout(() => {
+      navigate('/civilify/login-page');
+    }, 2000);
+    handleClose();
+  };
+
+  // Handle profile edit redirect
+  const handleEditProfileRedirect = () => {
+    navigate('/civilify/lawyer-update-profile-page');
+    handleClose();
+  };
+
+  if (loading) return <CircularProgress />;
+  if (error) return <Typography>Error: {error}</Typography>;
+  if (!lawyerDetails) return <Typography>No user data available. Please try logging in again.</Typography>;
 
   const styles = {
     outerContainer: {
@@ -195,7 +279,7 @@ function LawyerHome() {
             <MenuItem style={styles.menuItem} onClick={handleClose}>
               Deactivate Account
             </MenuItem>
-            <MenuItem style={{ ...styles.menuItem, ...styles.logout }} onClick={handleClose}>
+            <MenuItem style={{ ...styles.menuItem, ...styles.logout }} onClick={handleLogout}>
               Logout
             </MenuItem>
           </Menu>
@@ -209,63 +293,63 @@ function LawyerHome() {
     <Box style={styles.profilePicContainer}>
       <div style={styles.profilePic}>
         <img
-          src="https://images.saymedia-content.com/.image/t_share/MTc0NTE0MDYyNzc0NzczNzA1/daniel-craigs-james-bond-films-ranked-from-worst-to-best.jpg"
+          src={profilePicture} // Dynamically set the profile picture URL
           alt="Profile"
           style={styles.profilePicImage}
         />
       </div>
     </Box>
-    <Typography style={styles.name}>James Bond</Typography>
-    <Typography style={styles.bio}>Criminal Lawyer</Typography>
+    <Typography style={styles.name}>lawyerDetails</Typography>
+    <Typography style={styles.bio}>{lawyerDetails.specialization}</Typography>
 
     <Box style={styles.infoContainer}>
       <Typography>
         <span style={styles.label}>
           <FaUserTie style={styles.icon} /> Name:
         </span>{' '}
-        <span style={styles.infoText}>James Bond</span>
+        <span style={styles.infoText}>{lawyerDetails.fullname}</span>
       </Typography>
       <Typography>
         <span style={styles.label}>
           <FaUserTie style={styles.icon} /> Username:
         </span>{' '}
-        <span style={styles.infoText}>@JamesBond</span>
+        <span style={styles.infoText}>{lawyerDetails.username}</span>
       </Typography>
       <Typography>
         <span style={styles.label}>
           <FaPhoneAlt style={styles.icon} /> Contact Number:
         </span>{' '}
-        <span style={styles.infoText}>+123 456 7890</span>
+        <span style={styles.infoText}>{lawyerDetails.contactNumber}</span>
       </Typography>
       <Typography>
         <span style={styles.label}>
           <FaMapMarkerAlt style={styles.icon} /> Office Address:
         </span>{' '}
-        <span style={styles.infoText}>221B Baker Street</span>
+        <span style={styles.infoText}>{lawyerDetails.address}</span>
       </Typography>
       <Typography>
         <span style={styles.label}>
           <FaEnvelope style={styles.icon} /> Email:
         </span>{' '}
-        <span style={styles.infoText}>jamesbond@example.com</span>
+        <span style={styles.infoText}>{lawyerDetails.email}</span>
       </Typography>
       <Typography>
         <span style={styles.label}>
           <FaCalendarAlt style={styles.icon} /> Birthdate:
         </span>{' '}
-        <span style={styles.infoText}>November 11, 1920</span>
+        <span style={styles.infoText}>{lawyerDetails.birthdate}</span>
       </Typography>
       <Typography>
         <span style={styles.label}>
           <FaDollarSign style={styles.icon} /> Hourly Rate (PHP):
         </span>{' '}
-        <span style={styles.infoText}>1500</span>
+        <span style={styles.infoText}>{lawyerDetails.hourlyRate}</span>
       </Typography>
       <Typography>
         <span style={styles.label}>
           <FaDollarSign style={styles.icon} /> Consultation Fee (PHP):
         </span>{' '}
-        <span style={styles.infoText}>500</span>
+        <span style={styles.infoText}>{lawyerDetails.consultationFee}</span>
       </Typography>
       <StyledButton onClick={() => navigate('/civilify/lawyer-accountsettings-page')}>Edit Profile</StyledButton>
     </Box>
@@ -303,4 +387,4 @@ function LawyerHome() {
   );
 }
 
-export default LawyerHome;
+export default LawyerPersonalProfile;

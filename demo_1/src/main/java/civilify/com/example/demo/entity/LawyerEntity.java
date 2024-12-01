@@ -47,6 +47,10 @@ public class LawyerEntity {
 
     @Column(name = "password", nullable = false)
     private String password;
+    
+    @Lob
+    @Column(name = "profile_picture", columnDefinition = "LONGBLOB")  // Add column to store profile picture path or filename
+    private byte[] profilePicture;
 
     // Getters and Setters
     public int getLawyerId() {
@@ -151,5 +155,13 @@ public class LawyerEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
     }
 }

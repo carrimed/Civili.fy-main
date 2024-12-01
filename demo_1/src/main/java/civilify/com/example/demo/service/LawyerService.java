@@ -1,10 +1,13 @@
 package civilify.com.example.demo.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import civilify.com.example.demo.entity.ClientEntity;
 import civilify.com.example.demo.entity.LawyerEntity;
 import civilify.com.example.demo.repository.LawyerRepository;
 
@@ -22,6 +25,18 @@ public class LawyerService {
     // Read operation
     public List<LawyerEntity> getAllLawyers() {
         return lawyerRepo.findAll();
+    }
+    
+    // Get client by ID
+    public LawyerEntity getLawyerById(int lawyerId) {
+        return lawyerRepo.findById(lawyerId)
+            .orElseThrow(() -> new NoSuchElementException("Client with ID " + lawyerId + " not found."));
+    }
+    
+    
+    public LawyerEntity findById(int lawyerId) {
+        Optional<LawyerEntity> lawyer = lawyerRepo.findById(lawyerId);
+        return lawyer.orElse(null); // If client is not found, return null
     }
 
     // Delete lawyer by name
@@ -73,21 +88,25 @@ public class LawyerService {
         return msg;
     }
     
-    public boolean validateUser(String loginField, String password) {
-        LawyerEntity lawyer = null;
+    public LawyerEntity validateUser(String loginField, String password) {
+        LawyerEntity client = null;
 
         // If the login field contains "@" symbol, treat it as email
         if (loginField.contains("@")) {
-            lawyer = lawyerRepo.findByEmail(loginField);  // Find by email
+            client = lawyerRepo.findByEmail(loginField);  // Find by email
         } else {
-            lawyer = lawyerRepo.findByUsername(loginField);  // Otherwise, treat it as username
+            client = lawyerRepo.findByUsername(loginField);  // Otherwise, treat it as username
         }
 
-        // If the lawyer is found, compare the password
-        if (lawyer != null && lawyer.getPassword().equals(password)) {
-            return true;
+        // If the client is found and the password matches
+        if (client != null && client.getPassword().equals(password)) {
+            return client;  // Return the ClientEntity object
         }
 
-        return false;
+        return null;  // If no client is found or password does not match
+    }
+    
+    public LawyerEntity save(LawyerEntity lawyer) {
+        return lawyerRepo.save(lawyer); // Use the JpaRepository's save method
     }
 }
