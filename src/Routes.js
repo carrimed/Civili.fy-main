@@ -9,7 +9,7 @@ import ClientAppointmentForm from './client/clientappointmentform';
 import ClientUpdateProfile from './client/clientupdateprofile';
 
 import LawyerSignUpForm from './lawyer/lawyersignupform';
-import LawyerHome from './lawyer/lawyerhome';
+import LawyerProfileInfo from './lawyer/lawyerprofileinfo';
 
 import LandingPage from './landingpage';
 import AdminLogin from './admin/adminlogin';
@@ -41,9 +41,9 @@ function AppRoutes() {
       <Route path="/civilify/admin-login-page" element={<AdminLogin />}/>
       <Route path="/civilify/admin-home-page" element={<AdminHome />}/>
 
-      <Route path="/civilify/lawyer-home-page" element={<LawyerHome />} />
+      <Route path="/civilify/lawyer-profile-page" element={<LawyerProfileInfo />} />
       <Route path="/civilify/lawyer-sign-up-form" element={<LawyerSignUpForm />}/>
-      <Route path="/civilify/lawyer-profile-page" element={<LawyerProfile />}/>
+      <Route path="/civilify/lawyer-profile" element={<LawyerProfile />}/>
       <Route path="/civilify/lawyer-accountsettings-page" element={<LawyerAccount/>}/>
       <Route path="/civilify/lawyer-client-page" element={<LawyerClients/>}/>
 

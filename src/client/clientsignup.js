@@ -255,7 +255,7 @@ function ClientSignup() {
             {step === 1 && (
               <>
                   <TextField
-                  label="Profile Picture"
+                  label=""
                   type="file"
                   inputProps={{
                     accept: "image/*",

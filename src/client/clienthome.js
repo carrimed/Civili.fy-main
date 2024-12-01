@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Typography,
   Box,
@@ -25,9 +25,52 @@ function ClientHome() {
   const [rateRange, setRateRange] = useState([3000, 75000]);
   const [loading, setLoading] = useState(false);
   const [expandedCard, setExpandedCard] = useState(null);
+  const [userType, setUserType] = useState('');
+
+  useEffect(() => {
+    const storedUserType = localStorage.getItem('userType'); // Retrieve from localStorage
+    if (storedUserType) {
+      setUserType(storedUserType);
+    } else {
+      navigate('/civilify/login-page'); // Redirect to login if no user type is found
+    }
+  }, [navigate]);
 
   const handleProfileClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
+
+  const handleLogout = () => {
+    setLoading(true);
+    // Clear localStorage
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
+    localStorage.removeItem('userType');
+    localStorage.removeItem('token'); // Remove token if implemented later
+
+    setTimeout(() => {
+      navigate('/civilify/login-page');
+    }, 2000);
+    handleClose();
+  };
+
+  const handleProfileRedirect = () => {
+    if (userType === 'Client') {
+      navigate('/civilify/client-profile-page'); // Redirect to client profile
+    } else if (userType === 'Lawyer') {
+      navigate('/civilify/lawyer-profile-page'); // Redirect to lawyer profile
+    }
+    handleClose(); // Closes the dropdown menu
+  };
+
+  const handleSearchSubmit = () => {
+    navigate(
+      `/civilify/browse-page?category=${encodeURIComponent(
+        category
+      )}&lawyerType=${encodeURIComponent(
+        lawyerType
+      )}&rateMin=${rateRange[0]}&rateMax=${rateRange[1]}`
+    );
+  };
 
   const styles = {
     footer: {
@@ -45,29 +88,6 @@ function ClientHome() {
       bottom: '0',
       left: '0',
     },
-  };  
-
-  const handleLogout = () => {
-    setLoading(true);
-    setTimeout(() => {
-      navigate('/civilify/login-page');
-    }, 2000);
-    handleClose();
-  };
-
-  const handleProfileRedirect = () => {
-    navigate('/civilify/client-profile-page'); // Redirects to the profile page
-    handleClose(); // Closes the dropdown menu
-  };
-
-  const handleSearchSubmit = () => {
-    navigate(
-      `/civilify/browse-page?category=${encodeURIComponent(
-        category
-      )}&lawyerType=${encodeURIComponent(
-        lawyerType
-      )}&rateMin=${rateRange[0]}&rateMax=${rateRange[1]}`
-    );
   };
 
   const sections = [

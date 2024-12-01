@@ -22,7 +22,7 @@ const LandingPage = () => {
   const handleLoginSignupRedirect = () => {
     setLoading(true);
     setTimeout(() => {
-      navigate('/civilify/client-login-page');
+      navigate('/civilify/login-page');
     }, 2000); 
   };
 

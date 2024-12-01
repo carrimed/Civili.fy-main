@@ -29,33 +29,34 @@ function Login() {
       setOpenSnackbar(true);
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
-      // Send login request to the backend
+      // Determine endpoint based on login mode
       const endpoint = loginMode === 'Client'
-        ? 'http://localhost:8080/api/client/login' // Updated to backend URL
-        : 'http://localhost:8080/api/lawyer/login'; // Update this for lawyer login if needed
-  
+        ? 'http://localhost:8080/api/client/login'
+        : 'http://localhost:8080/api/lawyer/login';
+
       // Send login credentials to the backend
       const response = await axios.post(endpoint, { loginField: username, password });
-  
-      // Extract token from the response (if you want to use it later)
-      const { token } = response.data;
-  
-      // Save username and password to localStorage (for now, without using a token)
+
+      // Extract token and user details from the response
+      const { token, userType } = response.data; // Backend should provide a token and userType
+
+      // Save token and user details in localStorage
       localStorage.setItem('username', username);
-      localStorage.setItem('password', password);
-  
+      localStorage.setItem('password', password); // For now (remove when token is fully implemented)
+      localStorage.setItem('userType', userType || loginMode);
+      localStorage.setItem('token', token || ''); // Token stored for future implementation
+
       setLoading(false);
-  
-      // Redirect to the respective home page
-      const redirectURL = `/civilify/${loginMode.toLowerCase()}-home-page`;
-      navigate(redirectURL);
+
+      // Redirect to a common page
+      navigate('/civilify/client-home-page');
     } catch (error) {
       setLoading(false);
-  
+
       // Display error message from the backend or a generic one
       const errorMessage = error.response?.data?.message || 'Invalid username or password.';
       setSnackbarMessage(errorMessage);
@@ -64,18 +65,18 @@ function Login() {
   };
 
   const handleSignUpClick = () => {
-    const signUpRoute = loginMode === 'Client' 
-      ? '/civilify/client-signup-page' 
-      : '/civilify/lawyer-sign-up-form'; // Correct route for Lawyer signup
-  
+    const signUpRoute = loginMode === 'Client'
+      ? '/civilify/client-signup-page'
+      : '/civilify/lawyer-sign-up-form';
+
     navigate(signUpRoute);
   };
 
   const handleBackClick = () => {
-    setBackLoading(true);
+    setLoading(true);
     setTimeout(() => {
       navigate('/civilify/landing-page');
-      setBackLoading(false);
+      setLoading(false);
     }, 500);
   };
 
