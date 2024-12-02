@@ -68,7 +68,7 @@ public class ClientService {
     }
 
     // Delete client by ID
-    public String deleteClient(int clientId) {
+    public String deleteById(int clientId) {
         if (clientRepository.existsById(clientId)) {
             clientRepository.deleteById(clientId);
             return "Client with ID " + clientId + " successfully deleted!";
@@ -108,4 +108,6 @@ public class ClientService {
             return false;
         }
     }  */
+    
+    
 }

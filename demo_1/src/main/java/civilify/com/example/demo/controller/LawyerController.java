@@ -140,7 +140,7 @@ public class LawyerController {
     }
 
     // Read functionality (GET all lawyers)
-    @GetMapping("/getAll")
+    @GetMapping("/getAllLawyers")
     public ResponseEntity<List<LawyerEntity>> getAllLawyers() {
         List<LawyerEntity> lawyers = lawyerService.getAllLawyers();
         return lawyers.isEmpty() ? 

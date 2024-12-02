@@ -9,5 +9,6 @@ import civilify.com.example.demo.entity.LawyerEntity;
 public interface ClientRepository extends JpaRepository<ClientEntity, Integer> {
 	public ClientEntity findByUsername(String username);
 	public ClientEntity findByEmail(String email);
+	public ClientEntity deleteById(int clientId);
 }
     

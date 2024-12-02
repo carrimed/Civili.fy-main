@@ -1,9 +1,12 @@
 package civilify.com.example.demo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import civilify.com.example.demo.entity.AdminEntity;
 import civilify.com.example.demo.service.AdminService;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -14,6 +17,28 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody AdminEntity admin) {
+        // Fetch the admin by username (instead of ID)
+        AdminEntity foundAdmin = adminService.getAdminByUsername(admin.getUsername());
+        
+        if (foundAdmin != null && foundAdmin.getPassword().equals(admin.getPassword())) {
+            // Return success response (you can include a token or other success message)
+            return ResponseEntity.ok(new HashMap<String, String>() {/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+			{
+                put("success", "true");
+            }});
+        } else {
+            // Invalid credentials
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                 .body("Invalid credentials");
+        }
+    }
+    
     // Create a new admin
     @PostMapping("/createAdmin")
     public AdminEntity createAdmin(@RequestBody AdminEntity admin) {
