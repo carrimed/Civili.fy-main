@@ -53,7 +53,7 @@ public class LawyerEntity {
     private byte[] profilePicture;
 
     // Getters and Setters
-    public int getLawyerId() {
+    public int getId() {
         return lawyerId;
     }
 

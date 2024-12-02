@@ -66,7 +66,7 @@ public class ClientEntity {
     }
 
     // Getters and Setters
-    public int getClientId() {
+    public int getId() {
         return clientId;
     }
 

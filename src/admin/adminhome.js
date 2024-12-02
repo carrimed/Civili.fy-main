@@ -45,7 +45,7 @@ function AdminHome() {
   const [loading, setLoading] = useState(false); // Loading state
   const [snackbarMessage, setSnackbarMessage] = useState(''); // Snackbar message
   const [openSnackbar, setOpenSnackbar] = useState(false); // Snackbar visibility
-  const [selectedId, setSelectedId] = useState(null); // ID of the selected item for deletion
+  const [selectedId, setSelectedId] = useState(null);
   const [openDialog, setOpenDialog] = useState(false); // Confirmation dialog visibility
 
   // Logout function
@@ -175,6 +175,7 @@ function AdminHome() {
                 key={index}
                 secondaryAction={
                   <Button
+                    marginRight="10px"
                     variant="contained"
                     color="error"
                     onClick={() => {
@@ -186,11 +187,11 @@ function AdminHome() {
                   </Button>
                 }
               >
-                <ListItemText
-                  primary={item.name} // Match API field
-                  secondary={item.email} // Match API field
-                />
-              </ListItem>
+          <ListItemText
+            primary={item.name} // Match API field
+            secondary={`email: ${item.email} | id: ${item.id}`} // Concatenate email and id
+          />
+          </ListItem>
             ))}
           </List>
         ) : (
