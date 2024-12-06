@@ -77,15 +77,13 @@ public class LawyerService {
     }
 
     // Delete operation by ID
-    public String deleteLawyer(int lawyerId) {
-        String msg;
-        if (lawyerRepo.existsById(lawyerId)) {  // Check if the lawyer exists by ID
-            lawyerRepo.deleteById(lawyerId);    // Delete the lawyer by ID
-            msg = "Lawyer with ID " + lawyerId + " successfully deleted!";
+    public void deleteLawyer(int lawyerId) {
+        Optional<LawyerEntity> lawyer = lawyerRepo.findById(lawyerId);
+        if (lawyer.isPresent()) {
+            lawyerRepo.deleteById(lawyerId); // Deletes the lawyer
         } else {
-            msg = "Lawyer with ID " + lawyerId + " NOT found!";
+            throw new NoSuchElementException("Lawyer with ID " + lawyerId + " not found.");
         }
-        return msg;
     }
     
     public LawyerEntity validateUser(String loginField, String password) {

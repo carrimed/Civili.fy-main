@@ -97,16 +97,16 @@ public class LawyerController {
         }
     }
     
-    @PostMapping("/updateProfilePicture/{clientId}")
+    @PostMapping("/updateProfilePicture/{lawyer_id}")
     public ResponseEntity<String> updateProfilePicture(
             @PathVariable int lawyerId,
             @RequestParam("profilePicture") MultipartFile file) {
 
         try {
-            // Find the client by ID
+            // Find the lawyer by ID
             LawyerEntity lawyer = lawyerService.findById(lawyerId);
             if (lawyer == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Lawyer not found");
             }
 
             // Convert the MultipartFile to a byte array
@@ -115,7 +115,7 @@ public class LawyerController {
             // Update the profile picture
             lawyer.setProfilePicture(profilePicture);
 
-            // Save the updated client
+            // Save the updated lawyer
             lawyerService.save(lawyer);
 
             return ResponseEntity.ok("Profile picture updated successfully");
@@ -140,7 +140,7 @@ public class LawyerController {
     }
 
     // Read functionality (GET all lawyers)
-    @GetMapping("/getAll")
+    @GetMapping("/getAllLawyers")
     public ResponseEntity<List<LawyerEntity>> getAllLawyers() {
         List<LawyerEntity> lawyers = lawyerService.getAllLawyers();
         return lawyers.isEmpty() ? 
@@ -157,10 +157,17 @@ public class LawyerController {
                new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    // Delete functionality (DELETE)
-    @DeleteMapping("/deleteLawyer/{lawyer_id}")
-    public void deleteLawyer(@PathVariable int lawyer_id) {
-        lawyerService.deleteLawyer(lawyer_id);
+ // Delete functionality (DELETE by ID)
+    @DeleteMapping("/deleteById/{lawyerId}")
+    public ResponseEntity<String> deleteLawyer(@PathVariable int lawyerId) {
+        try {
+            lawyerService.deleteLawyer(lawyerId);
+            return ResponseEntity.ok("Lawyer with ID " + lawyerId + " successfully deleted.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Lawyer with ID " + lawyerId + " not found.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the lawyer.");
+        }
     }
     
     // New Delete
