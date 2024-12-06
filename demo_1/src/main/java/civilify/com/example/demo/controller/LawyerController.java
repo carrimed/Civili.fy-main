@@ -158,7 +158,7 @@ public class LawyerController {
     }
 
     // Delete functionality (DELETE)
-    @DeleteMapping("/deleteById/{lawyer_id}")
+    @DeleteMapping("/deleteLawyer/{lawyer_id}")
     public void deleteLawyer(@PathVariable int lawyer_id) {
         lawyerService.deleteLawyer(lawyer_id);
     }

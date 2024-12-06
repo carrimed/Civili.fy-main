@@ -10,6 +10,5 @@ public interface ClientRepository extends JpaRepository<ClientEntity, Integer> {
 	public ClientEntity findByUsername(String username);
 	public ClientEntity findByEmail(String email);
 	public ClientEntity deleteById(int clientId);
-	public ClientEntity getClientById(int clientId);
 }
     
