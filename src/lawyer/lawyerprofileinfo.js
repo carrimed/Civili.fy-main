@@ -4,6 +4,7 @@ import { FaUserTie, FaPhoneAlt, FaMapMarkerAlt, FaEnvelope, FaCalendarAlt, FaDol
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { styled } from '@mui/system';
+import { FaClock, FaStar } from 'react-icons/fa';
 
 function LawyerPersonalProfile() {
   const navigate = useNavigate();
@@ -212,6 +213,14 @@ function LawyerPersonalProfile() {
       marginRight: '5px',
       color: '#D9641E',
     },
+    clickableText: {
+      fontSize: '16px',
+      fontWeight: '500',
+      cursor: 'pointer',
+      padding: '5px 10px',
+      borderRadius: '20px',
+      transition: 'all 0.3s ease',
+    },
   };
 
   return (
@@ -289,7 +298,7 @@ function LawyerPersonalProfile() {
      {/* Main Content */}
 <Box style={{ ...styles.container, justifyContent: 'center' }}>
   {/* Profile Section */}
-  <Box style={{ ...styles.profileCard, marginLeft: '20px' }}>
+  <Box style={{ ...styles.profileCard, marginLeft: '20px', marginRight: '10px' }}>
     <Box style={styles.profilePicContainer}>
       <div style={styles.profilePic}>
         <img
@@ -307,7 +316,7 @@ function LawyerPersonalProfile() {
         <span style={styles.label}>
           <FaUserTie style={styles.icon} /> Name:
         </span>{' '}
-        <span style={styles.infoText}>{lawyerDetails.fullname}</span>
+        <span style={styles.infoText}>{lawyerDetails.name}</span>
       </Typography>
       <Typography>
         <span style={styles.label}>
@@ -326,7 +335,7 @@ function LawyerPersonalProfile() {
           <FaMapMarkerAlt style={styles.icon} /> Address:
         </span>{' '}
         <span style={styles.infoText}>
-          {lawyerDetails.address}, {lawyerDetails.zipcode}
+          {lawyerDetails.officeAddress}, {lawyerDetails.zipcode}
         </span>
       </Typography>
       <Typography>
@@ -357,29 +366,222 @@ function LawyerPersonalProfile() {
     </Box>
   </Box>
 
-  {/* Appointments Section */}
+ {/* Appointments Section */}
+<Box
+  style={{
+    ...styles.appointmentsCard,
+    marginRight: '10px',
+    width: '50%',
+    background: '#fff',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
+    borderRadius: '8px',
+    padding: '20px',
+  }}
+>
+  {/* Section Heading */}
+  <Typography
+    variant="h5"
+    style={{
+      marginBottom: '20px',
+      fontWeight: 'bold',
+      color: '#444',
+      textAlign: 'center', // Center-align for elegance
+    }}
+  >
+    My Appointments
+  </Typography>
+
+  {/* Tabs: Pending / Previous */}
   <Box
     style={{
-      ...styles.appointmentsCard,
-      marginRight: '20px',
-      width: '50%', // Reduce width to center-align better with ProfileCard
+      display: 'flex',
+      justifyContent: 'center',
+      gap: '20px',
+      marginBottom: '20px',
+      borderBottom: '2px solid #eee', // Divider for tabs
+      paddingBottom: '10px',
     }}
   >
     <Typography
-      variant="h6"
       style={{
-        marginBottom: '20px',
-        fontWeight: 'bold',
-        color: '#333',
+        ...styles.clickableText,
+        color: '#FF5722',
+        fontWeight: '500',
+        cursor: 'pointer',
+        transition: 'color 0.3s ease',
       }}
+      onMouseEnter={(e) => (e.target.style.color = '#d84315')}
+      onMouseLeave={(e) => (e.target.style.color = '#FF5722')}
     >
-      My Appointments
+      Pending
     </Typography>
-    <Box style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-      <Typography style={styles.clickableText}>Pending</Typography>
-      <Typography style={styles.clickableText}>Previous</Typography>
-    </Box>
+    <Typography
+      style={{
+        ...styles.clickableText,
+        color: '#757575',
+        fontWeight: '500',
+        cursor: 'pointer',
+        transition: 'color 0.3s ease',
+      }}
+      onMouseEnter={(e) => (e.target.style.color = '#424242')}
+      onMouseLeave={(e) => (e.target.style.color = '#757575')}
+    >
+      Previous
+    </Typography>
   </Box>
+
+  {/* Appointment List */}
+  <Box style={{ display: 'grid', gap: '15px', textAlign: 'left' }}>
+    {/* Example Appointment Item */}
+    {[1, 2, 3].map((item) => (
+      <Box
+        key={item}
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '10px 15px',
+          background: '#f9f9f9',
+          border: '1px solid #ddd',
+          borderRadius: '8px',
+          transition: 'box-shadow 0.3s ease',
+        }}
+        onMouseEnter={(e) => (e.target.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)')}
+        onMouseLeave={(e) => (e.target.style.boxShadow = 'none')}
+      >
+        <Box>
+          <Typography
+            style={{
+              fontSize: '16px',
+              fontWeight: '600',
+              color: '#333',
+            }}
+          >
+            Consultation with John Doe
+          </Typography>
+          <Typography
+  style={{
+    fontSize: '14px',
+    color: '#757575',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+  }}
+>
+  <FaCalendarAlt /> Dec 6, 2024 &nbsp; | &nbsp; <FaClock /> 3:00 PM
+</Typography>
+
+        </Box>
+        <Typography
+          style={{
+            fontSize: '14px',
+            fontWeight: '500',
+            color: '#2196F3',
+            cursor: 'pointer',
+          }}
+          onClick={() => console.log('View details clicked')}
+        >
+          View Details
+        </Typography>
+      </Box>
+    ))}
+  </Box>
+</Box>
+<Box
+  style={{
+    ...styles.appointmentsCard,
+    marginTop: '0px',
+    marginRight: '20px',
+    padding: '30px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '8px',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+  }}
+>
+  <Typography
+    variant="h6"
+    style={{
+      marginBottom: '15px',
+      fontWeight: 'bold',
+      color: '#333',
+    }}
+  >
+    Client Reviews
+  </Typography>
+
+  {/* Review List */}
+  <Box
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
+    }}
+  >
+    {/* Example Review */}
+    {[1, 2, 3].map((review, index) => (
+      <Box
+        key={index}
+        style={{
+          padding: '15px',
+          backgroundColor: '#ffffff',
+          borderRadius: '8px',
+          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        {/* Client Name */}
+        <Typography style={{ fontWeight: 'bold', marginBottom: '10px' }}>
+          Jane Doe
+        </Typography>
+
+        {/* Comment */}
+        <Typography
+          style={{
+            fontSize: '14px',
+            color: '#757575',
+            marginBottom: '10px',
+          }}
+        >
+          "The lawyer provided excellent advice and handled my case
+          professionally. Highly recommended!"
+        </Typography>
+
+        {/* Rating */}
+        <Box
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            marginBottom: '10px',
+          }}
+        >
+          <Typography style={{ fontWeight: 'bold', color: '#333' }}>
+            Rating:
+          </Typography>
+          <Box style={{ display: 'flex', gap: '5px' }}>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <FaStar
+                key={star}
+                color={star <= 4 ? '#FFD700' : '#ccc'} // Example: 4/5 rating
+                size={16}
+              />
+            ))}
+          </Box>
+        </Box>
+
+        {/* Recommendation */}
+        <Typography
+          style={{
+            fontStyle: 'italic',
+            color: '#4caf50',
+          }}
+        >
+          Would recommend
+        </Typography>
+      </Box>
+    ))}
+  </Box>
+</Box>
+
 </Box>
 
 
