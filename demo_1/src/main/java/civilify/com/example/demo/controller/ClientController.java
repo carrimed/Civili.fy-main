@@ -120,20 +120,6 @@ public class ClientController {
         return ResponseEntity.ok(base64Image);
     }
 
-	 // Get all Clients
-    @GetMapping("/getAllClients")
-    public ResponseEntity<List<ClientEntity>> getAllClients() {
-        try {
-            List<ClientEntity> clients = clientService.getAllClients();
-            if (clients.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);  // No clients found
-            }
-            return ResponseEntity.ok(clients);  // Return the list of clients
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Handle unexpected errors
-        }
-    }
-    
     // Get Client by ID
     @GetMapping("/findById/{clientId}")
     public ResponseEntity<ClientEntity> getClientById(@PathVariable int clientId) {
@@ -157,9 +143,9 @@ public class ClientController {
     }
 
     // Delete Client
-    @DeleteMapping("/deleteById/{client_id}")
+    @DeleteMapping("/deleteClient/{client_id}")
     public ResponseEntity<String> deleteClient(@PathVariable("client_id") int clientId) {
-        String message = clientService.deleteById(clientId);
+        String message = clientService.deleteClient(clientId);
         if (message.contains("NOT found")) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);  // Client not found
         }

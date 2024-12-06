@@ -27,11 +27,6 @@ public class AdminService {
                 .orElseThrow(() -> new IllegalArgumentException("Admin not found with id: " + id));
     }
 
-    public AdminEntity getAdminByUsername(String username) {
-        return adminRepo.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("Admin not found with username: " + username));
-    }
-
     public AdminEntity createAdmin(AdminEntity admin) {
         return adminRepo.save(admin);
     }
