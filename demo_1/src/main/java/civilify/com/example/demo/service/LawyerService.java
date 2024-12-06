@@ -30,7 +30,7 @@ public class LawyerService {
     // Get client by ID
     public LawyerEntity getLawyerById(int lawyerId) {
         return lawyerRepo.findById(lawyerId)
-            .orElseThrow(() -> new NoSuchElementException("Client with ID " + lawyerId + " not found."));
+            .orElseThrow(() -> new NoSuchElementException("lawyerId with ID " + lawyerId + " not found."));
     }
     
     

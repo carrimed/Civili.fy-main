@@ -33,6 +33,13 @@ const LandingPage = () => {
     }, 2000); 
   };
 
+  const handleLawyerSignUp = () => {
+    setLoading(true);
+    setTimeout(() => {
+      navigate('/civilify/lawyer-sign-up-form');
+    }, 2000);
+  }; 
+
   return (
     <div style={{ backgroundColor: '#F1F1F1', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
 
@@ -159,7 +166,7 @@ const LandingPage = () => {
                 fontSize: '18px',
                 marginTop: '20px',
               }}
-              onClick={() => scrollToSection('AboutUs')}
+              onClick={() => handleLawyerSignUp()}
             >
               Sign up as a practitioner
             </Button>

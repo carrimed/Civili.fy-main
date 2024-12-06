@@ -422,7 +422,7 @@ const ClientPersonalProfile = () => {
   
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <PlaceIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.address}</span> {/* Dynamic address */}
+            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.address}, {clientDetails.zipcode}</span> {/* Dynamic address */}
           </Typography>
         </Box>
       </Card>

@@ -60,7 +60,7 @@ function ClientSignup() {
 
   const handleRegisterClick = async () => {
     if (!name || !username || !email || !password || 
-        (step === 2 && (!contactNumber || !birthdate || !occupation || !civilStatus || !address || !zipcode))) {
+        (step === 2 && (!contactNumber || !birthdate || !occupation || !civilStatus || !address || !zipcode || !profilePicture))) {
       setSnackbarMessage("Please fill in all required fields.");
       setIsSuccess(false);
       setOpenSnackbar(true);
@@ -255,7 +255,7 @@ function ClientSignup() {
             {step === 1 && (
               <>
                   <TextField
-                  label="Profile Picture"
+                  label=""
                   type="file"
                   inputProps={{
                     accept: "image/*",

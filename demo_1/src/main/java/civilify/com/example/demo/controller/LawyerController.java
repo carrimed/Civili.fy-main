@@ -51,7 +51,7 @@ public class LawyerController {
 
         if (lawyer != null) {
             // If the client is valid, return client ID and success message
-            response.put("lawyerId", lawyer.getId());
+            response.put("lawyerId", lawyer.getLawyerId());
             response.put("message", "Login successful");
             return ResponseEntity.ok(response);
         } else {
@@ -140,7 +140,7 @@ public class LawyerController {
     }
 
     // Read functionality (GET all lawyers)
-    @GetMapping("/getAllLawyers")
+    @GetMapping("/getAll")
     public ResponseEntity<List<LawyerEntity>> getAllLawyers() {
         List<LawyerEntity> lawyers = lawyerService.getAllLawyers();
         return lawyers.isEmpty() ? 
@@ -158,7 +158,7 @@ public class LawyerController {
     }
 
     // Delete functionality (DELETE)
-    @DeleteMapping("/deleteById/{lawyer_id}")
+    @DeleteMapping("/deleteLawyer/{lawyer_id}")
     public void deleteLawyer(@PathVariable int lawyer_id) {
         lawyerService.deleteLawyer(lawyer_id);
     }
