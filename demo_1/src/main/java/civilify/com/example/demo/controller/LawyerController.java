@@ -51,7 +51,7 @@ public class LawyerController {
 
         if (lawyer != null) {
             // If the client is valid, return client ID and success message
-            response.put("lawyerId", lawyer.getId());
+            response.put("lawyerId", lawyer.getLawyerId());
             response.put("message", "Login successful");
             return ResponseEntity.ok(response);
         } else {

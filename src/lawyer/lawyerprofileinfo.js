@@ -323,9 +323,11 @@ function LawyerPersonalProfile() {
       </Typography>
       <Typography>
         <span style={styles.label}>
-          <FaMapMarkerAlt style={styles.icon} /> Office Address:
+          <FaMapMarkerAlt style={styles.icon} /> Address:
         </span>{' '}
-        <span style={styles.infoText}>{lawyerDetails.address}</span>
+        <span style={styles.infoText}>
+          {lawyerDetails.address}, {lawyerDetails.zipcode}
+        </span>
       </Typography>
       <Typography>
         <span style={styles.label}>

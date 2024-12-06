@@ -16,7 +16,6 @@ import AdminLogin from './admin/adminlogin';
 import AdminHome from './admin/adminhome';
 
 import ProtectedRoute from './utils/protectedroute';
-import LawyerProfile from './lawyer/lawyerprofile';
 import LawyerAccount from './lawyer/lawyeraccount';
 import LawyerClients from './lawyer/lawyerclients';
 
@@ -43,7 +42,6 @@ function AppRoutes() {
 
       <Route path="/civilify/lawyer-profile-page" element={<LawyerProfileInfo />} />
       <Route path="/civilify/lawyer-sign-up-form" element={<LawyerSignUpForm />}/>
-      <Route path="/civilify/lawyer-profile" element={<LawyerProfile />}/>
       <Route path="/civilify/lawyer-accountsettings-page" element={<LawyerAccount/>}/>
       <Route path="/civilify/lawyer-client-page" element={<LawyerClients/>}/>
 

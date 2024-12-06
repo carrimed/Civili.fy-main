@@ -44,7 +44,7 @@ public class ClientController {
 
         if (client != null) {
             // If the client is valid, return client ID and success message
-            response.put("clientId", client.getId());
+            response.put("clientId", client.getClientId());
             response.put("message", "Login successful");
             return ResponseEntity.ok(response);
         } else {
