@@ -102,6 +102,7 @@ public class ClientService {
         return clientRepository.save(client); // Use the JpaRepository's save method
     }
      
+    
     /*public boolean validateUser(int clientId, String password) {
         ClientEntity client = getClientById(clientId);
         if (client == null) {

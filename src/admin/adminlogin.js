@@ -8,17 +8,28 @@ function AdminLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false); // New state to track loading
+  const [error, setError] = useState(''); // State to track error message
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Start loading
     setLoading(true);
-    
-    // Simulate a login process (e.g., API call)
-    setTimeout(() => {
-      console.log('Logging in with', username, password);
-      navigate('/civilify/admin-home-page'); // Redirect after login
-      setLoading(false); // Stop loading
-    }, 2000); // Simulate 2 seconds loading time (replace with actual login logic)
+    setError(''); // Reset error message
+
+    try {
+      // Make API request to backend
+      const response = await axios.post('https://localhost:8080/api/admin/login', { username, password });
+
+      // If login is successful, navigate to the admin home page
+      if (response.data === "Login successful") {
+        navigate('/civilify/admin-home-page');
+      }
+    } catch (error) {
+      // Handle error (invalid credentials, etc.)
+      setError('Invalid username or password');
+    } finally {
+      // Stop loading
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,6 +101,13 @@ function AdminLogin() {
             marginBottom: '20px',
           }}
         />
+
+        {/* Error Message */}
+        {error && (
+          <Typography color="error" style={{ marginBottom: '15px' }}>
+            {error}
+          </Typography>
+        )}
 
         {/* Login Button */}
         <Button

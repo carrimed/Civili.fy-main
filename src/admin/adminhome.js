@@ -1,129 +1,152 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, IconButton, Snackbar, Menu, MenuItem, Divider, CircularProgress } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
+import {
+  Box,
+  TextField,
+  Typography,
+  Snackbar,
+  List,
+  ListItem,
+  ListItemText,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  CircularProgress,
+} from '@mui/material';
 import { styled } from '@mui/system';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirecting
+import { useNavigate } from 'react-router-dom';
 
-const StyledButton = styled(Button)(() => ({
-  color: 'white',
-  backgroundColor: '#ED7D27', // Updated orange color
-  '&:hover': {
-    backgroundColor: '#FF5722',
-  },
-  padding: '5px 10px', // Slightly smaller button
-  fontSize: '14px', // Smaller font size
+// Styled components
+const ToggleContainer = styled(Box)(() => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+  marginBottom: '20px',
+  fontSize: '16px',
+  fontWeight: 'bold',
 }));
 
-const StyledCancelButton = styled(IconButton)(() => ({
-  border: '2px solid #ED7D27', // Updated orange color
-  color: '#ED7D27',
-  borderRadius: '5px',
-  padding: '5px', // Slightly smaller button
-  fontSize: '14px', // Smaller font size
-  '&:hover': {
-    backgroundColor: 'transparent',
-  },
+const ToggleItem = styled(Typography)(({ isActive }) => ({
+  cursor: 'pointer',
+  marginRight: '20px',
+  paddingBottom: '5px',
+  borderBottom: isActive ? '2px solid #333333' : 'none',
+  color: isActive ? '#333333' : '#888888',
 }));
 
 function AdminHome() {
-  const [isPending, setIsPending] = useState(true);
-  const [practitioners, setPractitioners] = useState([]);
+  const navigate = useNavigate();
+
+  const [activeView, setActiveView] = useState('lawyers');
+  const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null); // For profile menu
-  const [loading, setLoading] = useState(false); // Loading state for logout
-  const navigate = useNavigate(); // For redirecting to login page
+  const [selectedId, setSelectedId] = useState(null); // ID of the selected item for deletion
+  const [openDialog, setOpenDialog] = useState(false);
 
-  // Retrieve practitioners data from localStorage if available
-  useEffect(() => {
-    const storedPractitioners = JSON.parse(localStorage.getItem('practitioners'));
-    if (storedPractitioners) {
-      setPractitioners(storedPractitioners);
-    } else {
-      // Default data if no stored data is found
-      const defaultPractitioners = [
-        { profilePicture: '/images/pfp4.png', name: 'John Doe', specialization: 'Criminal law', email: 'john.doe@email.com', status: 'pending' },
-        { profilePicture: '/images/pfp4.png', name: 'Jane Smith', specialization: 'Constitutional law', email: 'jane.smith@email.com', status: 'pending' },
-        // ... other default data
-      ];
-      setPractitioners(defaultPractitioners);
-      localStorage.setItem('practitioners', JSON.stringify(defaultPractitioners));
-    }
-  }, []);
-
-  const handleAction = (index, action) => {
-    const updatedPractitioners = practitioners.map((practitioner, i) => {
-      if (i === index) {
-        return {
-          ...practitioner,
-          status: action === 'approve' ? 'approved' : 'rejected',
-        };
-      }
-      return practitioner;
-    });
-
-    setPractitioners(updatedPractitioners);
-    localStorage.setItem('practitioners', JSON.stringify(updatedPractitioners));
-
-    setSnackbarMessage(`${updatedPractitioners[index].name} has been ${action === 'approve' ? 'approved' : 'rejected'}`);
-    setOpenSnackbar(true);
+  // Logout function
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/civilify/landing-page');
   };
 
-  const filteredPractitioners = practitioners.filter((practitioner) =>
-    practitioner.name.toLowerCase().includes(searchQuery.toLowerCase())
+  // Fetch data from the API
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const endpoint =
+        activeView === 'lawyers'
+          ? 'http://localhost:8080/api/lawyer/getAllLawyers'
+          : 'http://localhost:8080/api/client/getAllClients';
+      const response = await fetch(endpoint);
+      if (!response.ok) {
+        throw new Error(`Error fetching ${activeView}: ${response.statusText}`);
+      }
+      const result = await response.json();
+      setData(result);
+    } catch (error) {
+      console.error('Fetch error:', error);
+      setSnackbarMessage(`Failed to fetch ${activeView}. Please try again.`);
+      setOpenSnackbar(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle delete request
+  const handleDelete = async () => {
+    console.log('Attempting to delete item with ID:', selectedId); // Log selectedId
+
+    if (!selectedId) {
+      setSnackbarMessage('No item selected for deletion.');
+      setOpenSnackbar(true);
+      return;
+    }
+
+    const endpoint =
+      activeView === 'lawyers'
+        ? `http://localhost:8080/api/lawyer/deleteById/${selectedId}`
+        : `http://localhost:8080/api/client/deleteById/${selectedId}`;
+
+    console.log('Calling delete API with endpoint:', endpoint); // Log API endpoint
+
+    try {
+      const response = await fetch(endpoint, { method: 'DELETE' });
+      if (!response.ok) {
+        throw new Error(`Error deleting item: ${response.statusText}`);
+      }
+      console.log('Delete successful'); // Log success
+      setSnackbarMessage(`Successfully deleted ${activeView.slice(0, -1)}.`);
+      setOpenSnackbar(true);
+      fetchData(); // Refresh data after deletion
+    } catch (error) {
+      console.error('Delete error:', error); // Log error
+      setSnackbarMessage(`Failed to delete ${activeView.slice(0, -1)}. Please try again.`);
+      setOpenSnackbar(true);
+    } finally {
+      setOpenDialog(false); // Close the dialog after attempting delete
+    }
+  };
+
+  // Filtered data based on the search query
+  const filteredData = data.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const toggleRequests = () => {
-    setIsPending(!isPending);
-  };
-
-  // Profile Menu handling
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogout = () => {
-    setLoading(true); // Start loading when logout is clicked
-    setTimeout(() => {
-      // Simulate logout process (replace with actual logout logic if needed)
-      setLoading(false); // Stop loading
-      navigate('/civilify/admin-login-page'); // Redirect to login page
-    }, 2000); // Simulate a delay of 2 seconds
-  };
+  // Fetch data when the component mounts or activeView changes
+  useEffect(() => {
+    console.log('Fetching data for:', activeView); // Log active view when data is fetched
+    fetchData();
+  }, [activeView]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#F5F5F5', padding: '20px' }}>
-      {/* Top Section with Profile Dropdown and Logo */}
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        backgroundColor: '#F5F5F5',
+        padding: '20px',
+      }}
+    >
+      {/* Top Section */}
       <Box display="flex" justifyContent="space-between" alignItems="center" marginBottom="20px">
-        {/* Logo */}
-        <img src="/images/logotextblack.png" alt="Logo" style={{ width: '150px' }} />
-        
-        {/* Profile Dropdown */}
-        <Typography variant="body1" style={{ fontFamily: 'Faculty Glyphic', fontSize: '14px', cursor: 'pointer' }} onClick={handleProfileMenuOpen}>
-          Profile ▾
+        <img
+          src="/images/logotextblack.png"
+          alt="Logo"
+          style={{ width: '150px', marginTop: '7px', marginBottom: '10px' }}
+        />
+        <Typography
+          variant="body1"
+          sx={{ cursor: 'pointer' }}
+          onClick={handleLogout}
+        >
+          Logout
         </Typography>
-        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-          <Box style={{ display: 'flex', padding: '10px', alignItems: 'center' }}>
-            <img
-              src="/images/pfp1.jpg"
-              alt="Profile"
-              style={{ width: '40px', height: '40px', borderRadius: '50%', marginRight: '10px' }}
-            />
-            <Typography variant="body1" style={{ fontSize: '16px', fontFamily: 'Faculty Glyphic' }}>
-              Keith Tagarao
-            </Typography>
-          </Box>
-          <Divider />
-          <MenuItem onClick={() => { handleClose(); navigate('/profile'); }}>My Profile</MenuItem>
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
-        </Menu>
       </Box>
 
       {/* Search Bar */}
@@ -134,97 +157,103 @@ function AdminHome() {
           size="small"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{
-            backgroundColor: 'transparent',
-            borderRadius: '20px',
-            marginLeft: '20px',
-            fontSize: '14px',
-            width: '200px',
-          }}
-          InputProps={{
-            startAdornment: <SearchIcon style={{ color: 'grey' }} />,
-            style: { fontSize: '14px' },
-          }}
+          sx={{ width: '300px', marginRight: '10px' }}
         />
       </Box>
 
-      {/* Pending/Previous Requests */}
-      <Box display="flex" alignItems="center" marginBottom="20px">
-        <Typography variant="body2" style={{ color: 'grey', fontFamily: 'Outfit', fontSize: '14px', cursor: 'pointer' }} onClick={toggleRequests}>
-          Pending Requests
-        </Typography>
-        <Typography variant="body2" style={{ color: 'grey', fontFamily: 'Outfit', fontSize: '14px', margin: '0 10px' }}>|</Typography>
-        <Typography variant="body2" style={{ color: 'grey', fontFamily: 'Outfit', fontSize: '14px', cursor: 'pointer' }} onClick={toggleRequests}>
-          Previous Requests
-        </Typography>
-      </Box>
+      {/* Lawyers/Clients Toggle */}
+      <ToggleContainer>
+        <ToggleItem
+          isActive={activeView === 'lawyers'}
+          onClick={() => setActiveView('lawyers')}
+        >
+          Lawyers
+        </ToggleItem>
+        <ToggleItem
+          isActive={activeView === 'clients'}
+          onClick={() => setActiveView('clients')}
+        >
+          Clients
+        </ToggleItem>
+      </ToggleContainer>
 
-      {/* Law Practitioner Containers */}
-      <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="20px" style={{ marginTop: '20px' }}>
-        {filteredPractitioners
-          .filter((item) => (isPending ? item.status === 'pending' : item.status !== 'pending'))
-          .map((item, index) => (
-            <Box
-              key={index}
-              style={{
-                backgroundColor: 'white',
-                borderRadius: '10px',
-                padding: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-                height: '100px',
-              }}
-            >
-              <img src={item.profilePicture} alt="Profile" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px' }} />
-              <Box style={{ flexGrow: 1 }}>
-                <Typography variant="body1" style={{ fontFamily: 'Outfit', fontSize: '14px' }}>{item.name}</Typography>
-                <Typography variant="body2" style={{ color: 'grey', fontFamily: 'Outfit', fontSize: '12px' }}>{item.specialization}</Typography>
-                <Typography variant="body2" style={{ color: 'grey', fontFamily: 'Outfit', fontSize: '12px' }}>{item.email}</Typography>
-                <Typography variant="body2" style={{ color: 'grey', fontFamily: 'Outfit', fontSize: '12px' }}>Status: {item.status}</Typography>
-              </Box>
-              <Box display="flex" flexDirection="column" alignItems="center">
-                {item.status === 'pending' ? (
-                  <>
-                    <StyledButton onClick={() => handleAction(index, 'approve')}>
-                      <CheckCircleIcon />
-                    </StyledButton>
-                    <StyledCancelButton onClick={() => handleAction(index, 'reject')}>
-                      <CancelIcon style={{ width: '50px' }}/>
-                    </StyledCancelButton>
-                  </>
-                ) : (
-                  <StyledButton disabled>{item.status === 'approved' ? 'Approved' : 'Rejected'}</StyledButton>
-                )}
-              </Box>
-            </Box>
-          ))}
+      {/* Data List */}
+      <Box flex={1} overflow="auto">
+        {loading ? (
+          <CircularProgress />
+        ) : filteredData.length > 0 ? (
+          <List>
+  {filteredData.map((item) => {
+    // Dynamically choose the correct ID based on activeView
+    const idKey = activeView === 'lawyers' ? 'lawyerId' : 'clientId'; // lawyerId for lawyers, clientId for clients
+    const itemId = item[idKey]; // Get the correct ID for the item
+
+    console.log('Item:', item);  // Log the item to ensure you're getting the right data
+
+    return (
+      <ListItem
+        key={itemId} // Use the dynamic ID as the unique key for each ListItem
+        secondaryAction={
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              console.log('Selected Item ID:', itemId); // Log the selected ID for debugging
+              setSelectedId(itemId); // Set the selected item's ID for deletion
+              setOpenDialog(true); // Open the confirmation dialog
+            }}
+          >
+            Delete
+          </Button>
+        }
+      >
+        <ListItemText
+          primary={item.name}
+          secondary={`Email: ${item.email} | ${activeView === 'lawyers' ? `Lawyer ID: ${item.lawyerId}` : `Client ID: ${item.clientId}`}`} 
+          // Show either Lawyer ID or Client ID based on activeView
+        />
+      </ListItem>
+    );
+  })}
+</List>
+        ) : (
+          <Typography variant="body2">No {activeView} found.</Typography>
+        )}
       </Box>
 
       {/* Snackbar */}
       <Snackbar
         open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => {
+          setOpenSnackbar(false);
+          setSnackbarMessage('');
+        }}
         message={snackbarMessage}
-        autoHideDuration={3000}
-        onClose={() => setOpenSnackbar(false)}
       />
 
-      {/* Loading Spinner (pachuy2) */}
-      {loading && (
-        <Box
-          style={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            padding: '20px',
-            borderRadius: '8px',
-          }}
-        >
-          <CircularProgress size={50} style={{ color: '#D9641E' }} />
-        </Box>
-      )}
+      {/* Confirmation Dialog */}
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        aria-labelledby="confirm-dialog-title"
+        aria-describedby="confirm-dialog-description"
+      >
+        <DialogTitle id="confirm-dialog-title">Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="confirm-dialog-description">
+            Are you sure you want to delete this {activeView.slice(0, -1)}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleDelete} color="error">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

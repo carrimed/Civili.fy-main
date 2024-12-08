@@ -46,4 +46,22 @@ public class AdminController {
         adminService.deleteAdmin(id);
         return "Admin with ID " + id + " has been deleted.";
     }
+    
+ 	// POST endpoint for login
+    @PostMapping("/login")
+    public String login(@RequestBody AdminEntity admin) {
+        // Authenticate by username and password
+        AdminEntity existingAdmin = adminService.getAllAdmins().stream()
+                .filter(a -> a.getUsername().equals(admin.getUsername()) && a.getPassword().equals(admin.getPassword()))
+                .findFirst()
+                .orElse(null);
+
+        if (existingAdmin != null) {
+            // If authentication is successful
+            return "Login successful";
+        } else {
+            // If authentication fails
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+    }
 }

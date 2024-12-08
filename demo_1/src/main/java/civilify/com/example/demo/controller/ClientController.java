@@ -143,12 +143,18 @@ public class ClientController {
     }
 
     // Delete Client
-    @DeleteMapping("/deleteClient/{client_id}")
+    @DeleteMapping("/deleteById/{clientId}")
     public ResponseEntity<String> deleteClient(@PathVariable("client_id") int clientId) {
         String message = clientService.deleteClient(clientId);
         if (message.contains("NOT found")) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);  // Client not found
         }
         return ResponseEntity.status(HttpStatus.OK).body(message);  // Client successfully deleted
+    }
+    
+    //Endpoint to get all clients
+    @GetMapping("/getAllClients")
+    public List<ClientEntity> getAllClients() {
+        return clientService.getAllClients();
     }
 }
