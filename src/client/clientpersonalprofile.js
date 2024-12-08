@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Menu, MenuItem, Divider, Card } from '@mui/material';
+import { Box, Typography, Menu, MenuItem, Divider, Card, TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/AccountCircle';
 import EmailIcon from '@mui/icons-material/Email';
@@ -16,17 +16,15 @@ const ClientPersonalProfile = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
   const [clientDetails, setClientDetails] = useState(null);
-
+  const [editMode, setEditMode] = useState(false);
+  const [updatedDetails, setUpdatedDetails] = useState({});
+  const [newProfilePicture, setNewProfilePicture] = useState(null); // State for new profile picture
   const navigate = useNavigate();
 
-  // Fetch client details using username and password stored in localStorage
   const fetchClientDetails = async (username, password) => {
     setLoading(true);
     setError(null);
     try {
-      console.log("Fetching client details for username:", username);
-
-      // Fetch client details based on stored username
       const clientDetailsResponse = await axios.post('http://localhost:8080/api/client/login', {
         loginField: username,
         password: password,
@@ -35,13 +33,11 @@ const ClientPersonalProfile = () => {
       const clientId = clientDetailsResponse.data.clientId;
 
       if (clientId) {
-        // Fetch the actual profile details using clientId
-        const clientDetails = await axios.get(`http://localhost:8080/api/client/findById/${clientId}`);
+        const clientDetailsResponse = await axios.get(`http://localhost:8080/api/client/findById/${clientId}`);
         const profilePictureResponse = await axios.get(`http://localhost:8080/api/client/getProfilePicture/${clientId}`);
-        
-        // Assuming profile picture is Base64-encoded
-        const profilePictureData = profilePictureResponse.data; 
-        setClientDetails(clientDetails.data);
+
+        const profilePictureData = profilePictureResponse.data;
+        setClientDetails(clientDetailsResponse.data);
         setProfilePicture(`data:image/jpeg;base64,${profilePictureData}`);
       } else {
         setError("Failed to fetch client details.");
@@ -54,7 +50,6 @@ const ClientPersonalProfile = () => {
     }
   };
 
-  // Fetch details when component loads
   useEffect(() => {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
@@ -79,13 +74,66 @@ const ClientPersonalProfile = () => {
   };
 
   const handleEditProfileRedirect = () => {
-    navigate('/civilify/client-update-profile-page');
+    setEditMode(true);
     handleClose();
+  };
+
+  const handleUpdateProfile = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const clientId = clientDetails.clientId;
+      const updateResponse = await axios.put(`http://localhost:8080/api/client/update/${clientId}`, updatedDetails);
+
+      if (newProfilePicture) {
+        const formData = new FormData();
+        formData.append('profilePicture', newProfilePicture);
+        await axios.put(`http://localhost:8080/api/client/updateProfilePicture/${clientId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      }
+
+      if (updateResponse.status === 200) {
+        setClientDetails(updateResponse.data);
+        setError("Profile updated successfully.");
+        setEditMode(false);
+      } else {
+        setError("Failed to update profile.");
+      }
+    } catch (error) {
+      console.error('Error updating client details:', error);
+      setError("Failed to update profile.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatedDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
+
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewProfilePicture(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePicture(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   if (loading) return <Typography>Loading...</Typography>;
   if (error) return <Typography>Error: {error}</Typography>;
   if (!clientDetails) return <Typography>No user data available. Please try logging in again.</Typography>;
+
   const styles = {
     header: {
       position: 'absolute',
@@ -127,40 +175,29 @@ const ClientPersonalProfile = () => {
       fontWeight: 'normal',
       fontSize: '22px',
       color: '#40170A',
-      zIndex: 1, // Ensure the profile text stays on top
+      zIndex: 1,
     },
     line: {
       marginTop: '0px',
-      width: '1085px',  // Adjust width as needed
+      width: '1085px',
       height: '1px',
       backgroundColor: '#1F0C06',
       opacity: '20%',
-      position: 'absolute',  // Absolute positioning for the right alignment
-      top: '680px',  // Position the line below the text
-      right: '200px',  // Align the line 40px from the right edge
-      zIndex: 0,  // Ensure the line is behind other content
-    },
-    lineprofile: {
-      marginTop: '0px',
-      width: '1085px',  // Adjust width as needed
-      height: '1px',
-      backgroundColor: '#1F0C06',
-      opacity: '20%',
-      position: 'absolute',  // Absolute positioning for the right alignment
-      top: '130px',  // Position the line below the text
-      right: '200px',  // Align the line 40px from the right edge
-      zIndex: 0,  // Ensure the line is behind other content
+      position: 'absolute',
+      top: '680px',
+      right: '200px',
+      zIndex: 0,
     },
     card: {
       width: '40%',
       margin: '100px auto 20px',
       backgroundColor: '#fff',
-      borderRadius: '10px',  // Increased border radius
+      borderRadius: '10px',
       overflow: 'hidden',
       padding: '20px',
       marginLeft: '200px',
       position: 'relative',
-      outline: '1px solid #CFCFCF'
+      outline: '1px solid #CFCFCF',
     },
     profilePicture: {
       width: '120px',
@@ -199,7 +236,6 @@ const ClientPersonalProfile = () => {
 
   return (
     <div>
-      {/* Header Section */}
       <Box style={styles.header}>
         <img
           src="/images/logoiconblack.png"
@@ -228,8 +264,7 @@ const ClientPersonalProfile = () => {
           ))}
         </Box>
       </Box>
-  
-      {/* Profile Dropdown Menu */}
+
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -240,95 +275,9 @@ const ClientPersonalProfile = () => {
         <MenuItem onClick={handleClose}>Settings</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
-  
-      {/* Profile Header */}
+
       <Typography style={styles.profileHeaderText}>Quick Actions</Typography>
-      <Typography
-        style={{
-          position: 'absolute',
-          textAlign: 'right',
-          top: '135px',
-          right: '200px',
-          fontFamily: 'Outfit',
-          fontWeight: 'light',
-          fontSize: '16px',
-          color: '#40170A',
-          zIndex: 1,
-          opacity: 0.5,
-        }}
-      >
-        Change my password
-      </Typography>
-  
-      {/* Additional profile quick actions */}
-      <Typography
-        style={{
-          position: 'absolute',
-          textAlign: 'right',
-          top: '160px',
-          right: '200px',
-          fontFamily: 'Outfit',
-          fontWeight: 'light',
-          fontSize: '16px',
-          color: '#40170A',
-          zIndex: 1,
-          opacity: 0.5,
-        }}
-      >
-        Set language preferences
-      </Typography>
-      <Typography
-        style={{
-          position: 'absolute',
-          textAlign: 'right',
-          top: '185px',
-          right: '200px',
-          fontFamily: 'Outfit',
-          fontWeight: 'light',
-          fontSize: '16px',
-          color: '#40170A',
-          zIndex: 1,
-          opacity: 0.5,
-        }}
-      >
-        Account Privacy settings
-      </Typography>
-  
-      {/* Line */}
-      <div style={styles.line}></div>
-      <div
-        style={{
-          position: 'fixed',
-          left: '195px',
-          bottom: '68px',
-          fontSize: '14px',
-          color: '#40170A',
-          zIndex: 1000,
-          fontFamily: 'Faculty Graphic',
-          opacity: 0.4,
-        }}
-      >
-        Civilify's Terms and Conditions
-      </div>
-      <div
-        style={{
-          position: 'fixed',
-          left: '1133px',
-          bottom: '68px',
-          fontSize: '14px',
-          color: '#40170A',
-          zIndex: 1000,
-          fontFamily: 'Faculty Graphic',
-          opacity: 0.4,
-        }}
-      >
-        Security and Safety Terms
-      </div>
-  
-      {/* Line */}
-      <div style={styles.lineprofile}></div>
-  
-      {/* Profile Card */}
+
       <Card style={styles.card}>
         <Box
           style={{
@@ -339,31 +288,30 @@ const ClientPersonalProfile = () => {
             borderRadius: '20px 20px 0 0',
           }}
         >
-          {/* Profile Picture */}
           <Box style={{ display: 'flex', alignItems: 'center' }}>
             <img
-              src={profilePicture} // Dynamically set the profile picture URL
+              src={profilePicture}
               alt="Profile"
-              style={styles.profilePicture} // Apply your custom styles here
+              style={styles.profilePicture}
             />
+            {editMode && (
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleProfilePictureChange}
+                style={{ marginLeft: '20px' }}
+              />
+            )}
           </Box>
-  
-          {/* Profile Info */}
+
           <Box>
             <Typography variant="h5" style={{ fontFamily: 'Outfit', fontWeight: 'bold' }}>
-              {clientDetails.fullName} {/* Dynamic user data */}
+              {clientDetails.fullName}
             </Typography>
-            <Typography
-              style={{
-                fontFamily: 'Outfit',
-                fontStyle: 'italic',
-                color: '#555',
-              }}
-            >
-              {clientDetails.bio} {/* Dynamic bio */}
+            <Typography style={{ fontFamily: 'Outfit', fontStyle: 'italic', color: '#555' }}>
+              {clientDetails.bio}
             </Typography>
-  
-            {/* Buttons */}
+
             <Box style={styles.buttons}>
               <button
                 style={{ ...styles.button, ...styles.editButton }}
@@ -380,53 +328,118 @@ const ClientPersonalProfile = () => {
             </Box>
           </Box>
         </Box>
-  
+
+        {editMode && (
+          <Box style={styles.profileDetails}>
+            <TextField
+              label="Full Name"
+              name="fullName"
+              value={updatedDetails.fullName || clientDetails.fullName}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Username"
+              name="username"
+              value={updatedDetails.username || clientDetails.username}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Email"
+              name="email"
+              value={updatedDetails.email || clientDetails.email}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Contact Number"
+              name="contactNumber"
+              value={updatedDetails.contactNumber || clientDetails.contactNumber}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Date of Birth"
+              name="birthdate"
+              value={updatedDetails.birthdate || clientDetails.birthdate}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Marital Status"
+              name="civilStatus"
+              value={updatedDetails.civilStatus || clientDetails.civilStatus}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Occupation"
+              name="occupation"
+              value={updatedDetails.occupation || clientDetails.occupation}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Address"
+              name="address"
+              value={updatedDetails.address || clientDetails.address}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUpdateProfile}
+              style={{ marginTop: '20px' }}
+            >
+              Update Profile
+            </Button>
+          </Box>
+        )}
+
         <Divider style={{ margin: '20px 0' }} />
-        <Box
-          style={{
-            marginTop: '20px',
-            display: 'grid',
-            gap: '10px',
-            gridTemplateColumns: '1fr',
-          }}
-        >
+        <Box style={{ marginTop: '20px' }}>
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <PersonIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.username}</span> {/* Dynamic username */}
+            {clientDetails.username}
           </Typography>
-  
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <EmailIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.email}</span> {/* Dynamic email */}
+            {clientDetails.email}
           </Typography>
-  
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <PhoneIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.contactNumber}</span> {/* Dynamic phone number */}
+            {clientDetails.contactNumber}
           </Typography>
-  
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <CakeIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.birthdate}</span> {/* Dynamic date of birth */}
+            {clientDetails.birthdate}
           </Typography>
-  
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <MaritalStatusIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.civilStatus}</span> {/* Dynamic marital status */}
+            {clientDetails.civilStatus}
           </Typography>
-  
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <WorkIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.occupation}</span> {/* Dynamic profession */}
+            {clientDetails.occupation}
           </Typography>
-  
           <Typography style={{ display: 'flex', alignItems: 'center', color: '#632F0F' }}>
             <PlaceIcon style={{ marginRight: '10px', color: '#40170A' }} />
-            <span style={{ fontFamily: 'Outfit' }}>{clientDetails.address}, {clientDetails.zipcode}</span> {/* Dynamic address */}
+            {clientDetails.address}
           </Typography>
         </Box>
       </Card>
     </div>
   );
-};  
+};
+
 export default ClientPersonalProfile;

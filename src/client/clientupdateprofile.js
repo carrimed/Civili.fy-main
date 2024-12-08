@@ -1,23 +1,37 @@
-import React, { useState } from 'react';
-import { Box, Typography, Menu, MenuItem, Divider, Card, TextField, Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Menu,
+  MenuItem,
+  Card,
+  TextField,
+  Button,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 function ClientUpdateProfile() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
-  
+
   const [formData, setFormData] = useState({
-    name: 'Keith Ruezyl Tagarao',
-    bio: 'bio bio bio bio bio',
-    username: '@skrptt',
-    email: 'keithtagarao@gmail.com',
-    phone: '123-456-7890 | +63 999-760-1161',
-    birthdate: '1999-12-31',
-    civilstatus: 'single',
-    job: 'Software Engineer',
-    address: 'Metro Manila',
-    zipcode: '6064'
+    name: '',
+    username: '',
+    email: '',
+    phone: '',
+    birthdate: '',
+    civilstatus: '',
+    job: '',
+    address: '',
+    zipcode: '',
+    profilePicture: '', // To store profile photo
   });
+
+  // Fetch profile data from localStorage when component loads
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem('profileData')) || {};
+    setFormData(storedData);
+  }, []);
 
   const handleProfileClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -30,29 +44,30 @@ function ClientUpdateProfile() {
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setFormData((prev) => ({ ...prev, profilePicture: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSave = () => {
-    // Add save logic here
+    localStorage.setItem('profileData', JSON.stringify(formData));
     console.log('Profile saved:', formData);
+    navigate('/civilify/client-profile-page');
   };
 
   const handleDiscard = () => {
-    // Reset form data to initial values (could also be done with useEffect)
-    setFormData({
-      username: '@skrptt',
-      email: 'keithtagarao@gmail.com',
-      phone: '123-456-7890 | +63 999-760-1161',
-      birthdate: '1999-12-31',
-      civilstatus: 'single',
-      job: 'Software Engineer',
-      address: 'Metro Manila',
-      zipcode: '6064'
-    });
+    const storedData = JSON.parse(localStorage.getItem('profileData')) || {};
+    setFormData(storedData); // Reset to the stored profile data
   };
 
   const styles = {
@@ -87,61 +102,19 @@ function ClientUpdateProfile() {
       bottom: '0',
       left: '0',
     },
-    profileHeaderText: {
-      position: 'absolute',
-      textAlign: 'right',
-      top: '95px',
-      right: '200px',
-      fontFamily: 'Outfit',
-      fontWeight: 'normal',
-      fontSize: '22px',
-      color: '#40170A',
-      zIndex: 1, // Ensure the profile text stays on top
-    },
-    line: {
-      marginTop: '0px',
-      width: '1085px',  // Adjust width as needed
-      height: '1px',
-      backgroundColor: '#1F0C06',
-      opacity: '20%',
-      position: 'absolute',  // Absolute positioning for the right alignment
-      top: '680px',  // Position the line below the text
-      right: '200px',  // Align the line 40px from the right edge
-      zIndex: 0,  // Ensure the line is behind other content
-    },
-    lineprofile: {
-      marginTop: '0px',
-      width: '1085px',  // Adjust width as needed
-      height: '1px',
-      backgroundColor: '#1F0C06',
-      opacity: '20%',
-      position: 'absolute',  // Absolute positioning for the right alignment
-      top: '130px',  // Position the line below the text
-      right: '200px',  // Align the line 40px from the right edge
-      zIndex: 0,  // Ensure the line is behind other content
-    },
     card: {
       width: '50%',
-      margin: '100px auto', // Use 'auto' for horizontal centering
-      backgroundColor: '#fff',
-      borderRadius: '10px', // Increased border radius
-      overflow: 'hidden',
+      margin: '100px auto',
       padding: '20px',
-      position: 'relative',
-      outline: '1px solid #CFCFCF',
+      textAlign: 'center',
+      borderRadius: '10px',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
     },
     profilePicture: {
       width: '120px',
       height: '120px',
       borderRadius: '50%',
-      marginRight: '20px',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-    },
-    profileDetails: {
-      marginTop: '20px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '8px',
+      marginBottom: '20px',
     },
   };
 
@@ -189,176 +162,114 @@ function ClientUpdateProfile() {
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
 
-      {/* Line */}
-      <div style={styles.line}></div>
+      {/* Profile Form */}
+      <Box style={{ padding: '20px', backgroundColor: '#f4f4f4', marginTop: '100px' }}>
+        <Typography variant="h5">Update Profile</Typography>
+      </Box>
 
-      {/* Profile Card */}
       <Card style={styles.card}>
-  <Box
-    style={{
-      padding: '20px',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      borderRadius: '20px 20px 0 0',
-    }}
-  >
-    <Box style={{ display: 'flex', alignItems: 'center' }}>
-      <img
-        src="/images/pfp1.jpg"
-        alt="Profile"
-        style={styles.profilePicture}
-      />
-      <Box>
+        <Box>
+          <img
+            src={formData.profilePicture || '/images/default-profile.png'}
+            alt="Profile"
+            style={styles.profilePicture}
+          />
+          <label htmlFor="profilePhoto">
+            <input
+              type="file"
+              id="profilePhoto"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={handlePhotoChange}
+            />
+            <Button variant="outlined" component="span">
+              Upload Photo
+            </Button>
+          </label>
+        </Box>
+
         <TextField
           label="Name"
-          variant="outlined"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Username"
           name="username"
           value={formData.username}
           onChange={handleChange}
           fullWidth
-          style={{ marginBottom: '10px' }}
-          placeholder="Keith Ruezyl Tagarao"  // Placeholder for the name
+          margin="normal"
         />
         <TextField
-          label="Bio"
-          variant="outlined"
-          name="bio"
-          value={formData.bio || ''} // Add a bio property in formData state if needed
+          label="Email"
+          name="email"
+          value={formData.email}
           onChange={handleChange}
           fullWidth
-          multiline
-          rows={2}
-          placeholder="I live so high I'm way up in the sky"  // Placeholder for the bio
+          margin="normal"
         />
-      </Box>
-    </Box>
-  </Box>
+        <TextField
+          label="Phone"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Date of Birth"
+          name="birthdate"
+          value={formData.birthdate}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Civil Status"
+          name="civilstatus"
+          value={formData.civilstatus}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Job"
+          name="job"
+          value={formData.job}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Address"
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Zipcode"
+          name="zipcode"
+          value={formData.zipcode}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
 
-  <Divider style={{ margin: '20px 0' }} />
-  <Box
-    style={{
-      marginTop: '20px',
-      display: 'grid',
-      gap: '10px',
-      gridTemplateColumns: '1fr',
-    }}
-  >
-    <TextField
-      label="Username"
-      variant="outlined"
-      name="username"
-      value={formData.username}
-      onChange={handleChange}
-      fullWidth
-    />
-    <TextField
-      label="Email"
-      variant="outlined"
-      name="email"
-      value={formData.email}
-      onChange={handleChange}
-      fullWidth
-    />
-    <TextField
-      label="Phone"
-      variant="outlined"
-      name="phone"
-      value={formData.phone}
-      onChange={handleChange}
-      fullWidth
-    />
-    <TextField
-      label="Date of Birth"
-      variant="outlined"
-      name="birthdate"
-      value={formData.birthdate}
-      onChange={handleChange}
-      fullWidth
-    />
-    
-    <TextField
-      label="Civil Status"
-      variant="outlined"
-      name="civilstatus"
-      value={formData.civilstatus}
-      onChange={handleChange}
-      select
-      fullWidth
-    >
-      {/* Placeholder Option */}
-      <MenuItem value="" disabled>
-        {formData.civilstatus ? formData.civilstatus : "Select Civil Status"}
-      </MenuItem>
-
-      {/* Civil Status Options */}
-      <MenuItem value="single">Single</MenuItem>
-      <MenuItem value="married">Married</MenuItem>
-      <MenuItem value="divorced">Divorced</MenuItem>
-      <MenuItem value="widowed">Widowed</MenuItem>
-    </TextField>
-
-    <TextField
-      label="Job"
-      variant="outlined"
-      name="job"
-      value={formData.job}
-      onChange={handleChange}
-      fullWidth
-    />
-
-    {/* Address - Ensure proper multiline text input */}
-    <TextField
-      label="Address"
-      variant="outlined"
-      name="address"
-      value={formData.address}
-      onChange={handleChange}
-      multiline
-      rows={1}  // Set the number of lines for multiline text
-      fullWidth
-    />
-
-    <TextField
-      label="Zipcode"
-      variant="outlined"
-      name="zipcode"
-      value={formData.zipcode}
-      onChange={handleChange}
-      fullWidth
-    />
-  </Box>
-
-  {/* Action Buttons */}
-  <Box style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
-    <Button
-      variant="outlined" // Use outlined variant for hollow effect
-      onClick={handleDiscard}
-      style={{
-        marginLeft: '5px',
-        border: '1px solid #D32F2F', // Red border
-        color: '#D32F2F', // Red text color
-        backgroundColor: 'transparent', // Transparent background
-        padding: '8px 20px',
-      }}
-    >
-      DISCARD
-    </Button>
-
-    <Button
-      variant="contained"
-      onClick={handleSave}
-      style={{
-        backgroundColor: '#388E3C',
-        color: 'white',
-        padding: '8px 20px',
-      }}
-    >
-      SAVE
-    </Button>
-  </Box>
-</Card>
-
+        <Box mt={2} style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Button variant="outlined" onClick={handleDiscard}>
+            Discard
+          </Button>
+          <Button variant="contained" onClick={handleSave}>
+            Save
+          </Button>
+        </Box>
+      </Card>
 
       {/* Footer Section */}
       <Box style={styles.footer}>
