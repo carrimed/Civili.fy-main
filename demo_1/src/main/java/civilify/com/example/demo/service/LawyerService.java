@@ -3,10 +3,12 @@ package civilify.com.example.demo.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import civilify.com.example.demo.DTO.LawyerSearchCriteria;
 import civilify.com.example.demo.entity.ClientEntity;
 import civilify.com.example.demo.entity.LawyerEntity;
 import civilify.com.example.demo.repository.LawyerRepository;
@@ -110,5 +112,39 @@ public class LawyerService {
     
     public List<LawyerEntity> getLawyerByName(String name) {
         return lawyerRepo.findByName(name);
+    }
+    
+    public List<LawyerEntity> searchLawyers(LawyerSearchCriteria criteria) {
+        System.out.println("Filtering with criteria:");
+        System.out.println("Category: " + criteria.getCategory());
+        System.out.println("LawyerType: " + criteria.getLawyerType());
+        System.out.println("MinRate: " + criteria.getMinRate());
+        System.out.println("MaxRate: " + criteria.getMaxRate());
+
+        List<LawyerEntity> lawyers = lawyerRepo.findAll().stream()
+            .filter(lawyer -> {
+                boolean categoryMatch = criteria.getCategory() == null || 
+                                         lawyer.getSpecialization().equalsIgnoreCase(criteria.getCategory());
+                boolean lawyerTypeMatch = criteria.getLawyerType() == null || 
+                                          lawyer.getLawyerType() == null || 
+                                          lawyer.getLawyerType().equalsIgnoreCase(criteria.getLawyerType());
+                boolean minRateMatch = criteria.getMinRate() == null || lawyer.getHourlyRate() >= criteria.getMinRate();
+                boolean maxRateMatch = criteria.getMaxRate() == null || lawyer.getHourlyRate() <= criteria.getMaxRate();
+
+                System.out.println("Lawyer: " + lawyer.getName() + 
+                                   ", CategoryMatch: " + categoryMatch + 
+                                   ", LawyerTypeMatch: " + lawyerTypeMatch + 
+                                   ", MinRateMatch: " + minRateMatch + 
+                                   ", MaxRateMatch: " + maxRateMatch);
+
+                return categoryMatch && lawyerTypeMatch && minRateMatch && maxRateMatch;
+            })
+            .collect(Collectors.toList());
+
+        return lawyers;
+    }
+
+    public LawyerEntity saveLawyer(LawyerEntity lawyer) {
+        return lawyerRepo.save(lawyer);
     }
 }

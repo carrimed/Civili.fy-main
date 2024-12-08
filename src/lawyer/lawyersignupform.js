@@ -12,6 +12,9 @@ import {
   Grid,
   MenuItem,
   IconButton,
+  FormControl,
+  InputLabel,
+  Select,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -44,6 +47,7 @@ function LawyerSignupForm() {
   const [password, setPassword] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [lawyerType, setLawyerType] = useState('');
 
   // Snackbar states
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -52,6 +56,12 @@ function LawyerSignupForm() {
 
   // Loading state
   const [loading, setLoading] = useState(false);
+
+  const payload = {
+    // Include other form fields here
+    lawyerType,
+    profilePicture,
+  };
 
   const calculateAge = (birthdate) => {
     const today = new Date();
@@ -86,6 +96,7 @@ function LawyerSignupForm() {
         password,
         profilePicture,
         agreeToTerms,
+        lawyerType
     });
 
     // Check if any required field is empty
@@ -103,7 +114,8 @@ function LawyerSignupForm() {
       !consultationFee ||
       !hourlyRate ||
       !profilePicture ||
-      !agreeToTerms
+      !agreeToTerms ||
+      !lawyerType
     ) {
       setSnackbarMessage("Please fill in all required fields.");
       setIsSuccess(false);
@@ -132,6 +144,7 @@ function LawyerSignupForm() {
         hourlyRate,
         password,
         agreeToTerms,
+        lawyerType,
       };
 
       // Create the lawyer and get lawyerId from the response
@@ -356,6 +369,14 @@ function LawyerSignupForm() {
               size="small"
             />
           </Grid>
+
+          <FormControl fullWidth margin="normal">
+          <InputLabel>Lawyer Type</InputLabel>
+          <Select value={lawyerType} onChange={(e) => setLawyerType(e.target.value)} required>
+            <MenuItem value="Private">Private</MenuItem>
+            <MenuItem value="Exclusive">Exclusive</MenuItem>
+          </Select>
+        </FormControl>
 
           {/* Profile Picture Upload */}
           <Grid item xs={12}>

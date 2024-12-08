@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import civilify.com.example.demo.DTO.LawyerSearchCriteria;
 import civilify.com.example.demo.entity.ClientEntity;
 import civilify.com.example.demo.entity.LawyerEntity;
 import civilify.com.example.demo.service.LawyerService;
@@ -61,18 +62,6 @@ public class LawyerController {
         }
     }
     
-    
-    // Get Client by ID
-    @GetMapping("/findById/{lawyerId}")
-    public ResponseEntity<LawyerEntity> getLawyerById(@PathVariable int lawyerId) {
-        try {
-            LawyerEntity lawyer = lawyerService.getLawyerById(lawyerId);
-            return ResponseEntity.ok(lawyer);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-    
     @PostMapping("/uploadProfilePicture")
     public ResponseEntity<String> uploadProfilePicture(
             @RequestParam("profilePicture") MultipartFile file, 
@@ -124,6 +113,45 @@ public class LawyerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload profile picture");
         }
     }
+    
+ 
+    @CrossOrigin(origins = "*")
+    @GetMapping("/search")
+    public ResponseEntity<List<LawyerEntity>> searchLawyers(
+        @RequestParam(required = false) String category,
+        @RequestParam(required = false) String lawyerType,
+        @RequestParam(required = false) Integer minRate,
+        @RequestParam(required = false) Integer maxRate
+    ) {
+        
+        LawyerSearchCriteria criteria = new LawyerSearchCriteria();
+        criteria.setCategory(category);
+        criteria.setLawyerType(lawyerType);
+        criteria.setMinRate(minRate);
+        criteria.setMaxRate(maxRate);
+
+        List<LawyerEntity> lawyers = lawyerService.searchLawyers(criteria);
+
+        // Debugging: Log number of records found
+        System.out.println("Number of lawyers found: " + lawyers.size());
+
+        return lawyers.isEmpty() ? 
+               new ResponseEntity<>(HttpStatus.NO_CONTENT) : 
+               new ResponseEntity<>(lawyers, HttpStatus.OK);
+    }
+    
+    
+    // Get Client by ID
+    @GetMapping("/findById/{lawyerId}")
+    public ResponseEntity<LawyerEntity> getLawyerById(@PathVariable int lawyerId) {
+        try {
+            LawyerEntity lawyer = lawyerService.getLawyerById(lawyerId);
+            return ResponseEntity.ok(lawyer);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+    
     
     @GetMapping("/getProfilePicture/{lawyerId}")
     public ResponseEntity<String> getProfilePicture(@PathVariable int lawyerId) {

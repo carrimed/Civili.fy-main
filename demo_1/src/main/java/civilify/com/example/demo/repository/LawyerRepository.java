@@ -14,5 +14,5 @@ public interface LawyerRepository extends JpaRepository<LawyerEntity, Integer> {
 	public LawyerEntity findByEmail(String email);
     // Custom query method to find lawyers by name
     List<LawyerEntity> findByName(String name);
-    
+    List<LawyerEntity> findBySpecializationAndLawyerTypeAndHourlyRateBetween(String specialization, String lawyerType, int minRate, int maxRate);
 }

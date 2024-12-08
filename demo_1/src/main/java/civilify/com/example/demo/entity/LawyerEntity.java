@@ -48,9 +48,13 @@ public class LawyerEntity {
     @Column(name = "password", nullable = false)
     private String password;
     
+    @Column(name = "lawyer_type", nullable = false)
+    private String lawyerType; 
+    
     @Lob
     @Column(name = "profile_picture", columnDefinition = "LONGBLOB")  // Add column to store profile picture path or filename
     private byte[] profilePicture;
+   
 
     // Getters and Setters
     public int getLawyerId() {
@@ -163,5 +167,13 @@ public class LawyerEntity {
 
     public void setProfilePicture(byte[] profilePicture) {
         this.profilePicture = profilePicture;
+    }
+    
+    public String getLawyerType() {
+    	return lawyerType; 
+    }
+    
+    public void setLawyerType(String lawyerType) {
+    	this.lawyerType = lawyerType; 
     }
 }

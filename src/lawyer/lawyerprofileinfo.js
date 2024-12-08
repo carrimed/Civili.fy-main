@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, MenuItem, Menu, CircularProgress } from '@mui/material';
 import { FaUserTie, FaPhoneAlt, FaMapMarkerAlt, FaEnvelope, FaCalendarAlt, FaDollarSign } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { styled } from '@mui/system';
 import { FaClock, FaStar } from 'react-icons/fa';
@@ -13,7 +13,9 @@ function LawyerPersonalProfile() {
   const [error, setError] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
   const [lawyerDetails, setLawyerDetails] = useState(null);
-
+  const [userType, setUserType] = useState(null)
+  const { lawyerId } = useParams();
+  
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
@@ -30,6 +32,31 @@ function LawyerPersonalProfile() {
     width: '60%',
     margin: '5px',
   }));
+
+  const fetchLawyerDetailsById = async (lawyerId) => {
+    setLoading(true);
+    setError(null); // Reset error
+    try {
+      console.log('Fetching lawyer details for lawyerId:', lawyerId);
+      const response = await axios.get(`http://localhost:8080/api/lawyer/findById/${lawyerId}`);
+      console.log('Fetched Lawyer Details:', response.data);  // Debugging
+  
+      // Fetch profile picture
+      const profilePictureResponse = await axios.get(`http://localhost:8080/api/lawyer/getProfilePicture/${lawyerId}`);
+      console.log('Profile Picture Response:', profilePictureResponse.data);  // Debugging
+  
+      const profilePictureData = profilePictureResponse.data;
+      setLawyerDetails(response.data);
+  
+      // Assuming profile picture is Base64-encoded, set the image
+      setProfilePicture(`data:image/jpeg;base64,${profilePictureData}`);
+    } catch (error) {
+      console.error('Error fetching lawyer details:', error.response ? error.response.data : error.message);
+      setError('Failed to fetch lawyer details. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Fetch lawyer details using username and password stored in localStorage
   const fetchLawyerDetails = async (username, password) => {
@@ -80,13 +107,25 @@ function LawyerPersonalProfile() {
   useEffect(() => {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
+    const storedUserType = localStorage.getItem('userType'); 
 
-    if (username && password) {
+    if (lawyerId) {
+      fetchLawyerDetailsById(lawyerId);
+    } else if (username && password) {
       fetchLawyerDetails(username, password);
     } else {
-      setError('No login details found.');
+      setError('No lawyer ID or credentials available to fetch details.');
+      setLoading(false);
     }
-  }, []);
+  }, [lawyerId]);
+
+  if (loading) {
+    return <CircularProgress />;
+  }
+
+  if (error) {
+    return <Typography color="error">{error}</Typography>;
+  }
 
   // Handle logout
   const handleLogout = () => {
@@ -308,7 +347,7 @@ function LawyerPersonalProfile() {
         />
       </div>
     </Box>
-    <Typography style={styles.name}>lawyerDetails</Typography>
+    <Typography style={styles.name}>{lawyerDetails.name}</Typography>
     <Typography style={styles.bio}>{lawyerDetails.specialization}</Typography>
 
     <Box style={styles.infoContainer}>
@@ -362,9 +401,14 @@ function LawyerPersonalProfile() {
         </span>{' '}
         <span style={styles.infoText}>{lawyerDetails.consultationFee}</span>
       </Typography>
-      <StyledButton onClick={() => navigate('/civilify/lawyer-accountsettings-page')}>Edit Profile</StyledButton>
+      {userType === 'Lawyer' ? (
+        <StyledButton onClick={() => navigate('/civilify/lawyer-accountsettings-page')}>Edit Profile</StyledButton>
+      ) : (
+        <StyledButton onClick={() => navigate('/civilify/appointment')}>Book Appointment</StyledButton>
+      )}
     </Box>
   </Box>
+
 
  {/* Appointments Section */}
 <Box

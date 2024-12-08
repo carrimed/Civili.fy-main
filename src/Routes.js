@@ -44,7 +44,7 @@ function AppRoutes() {
       <Route path="/civilify/admin-login-page" element={<AdminLogin />}/>
       <Route path="/civilify/admin-home-page" element={<AdminHome />}/>
 
-      <Route path="/civilify/lawyer-profile-page" element={<LawyerProfileInfo />} />
+      <Route path="/civilify/lawyer-profile-page/:lawyerId" element={<LawyerProfileInfo />} />
       <Route path="/civilify/lawyer-sign-up-form" element={<LawyerSignUpForm />}/>
       <Route path="/civilify/lawyer-accountsettings-page" element={<LawyerAccount/>}/>
       <Route path="/civilify/lawyer-client-page" element={<LawyerClients/>}/>

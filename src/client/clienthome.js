@@ -10,22 +10,27 @@ import {
   Slider,
   Button,
   Autocomplete,
-  TextField
+  TextField,
+  CircularProgress
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import MessageIcon from '@mui/icons-material/Message';
 import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function ClientHome() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [category, setCategory] = useState('');
   const [lawyerType, setLawyerType] = useState('');
-  const [rateRange, setRateRange] = useState([3000, 75000]);
+  const [rateRange, setRateRange] = useState([2000, 75000]);
   const [loading, setLoading] = useState(false);
   const [expandedCard, setExpandedCard] = useState(null);
   const [userType, setUserType] = useState('');
+  const [error, setError] = useState(null);
+  const [lawyers, setLawyers] = useState([]);
+  const [showCardsSection, setShowCardsSection] = useState(true); // State to manage visibility of cards section
 
   useEffect(() => {
     const storedUserType = localStorage.getItem('userType'); // Retrieve from localStorage
@@ -53,41 +58,44 @@ function ClientHome() {
     handleClose();
   };
 
-  const handleProfileRedirect = () => {
-    if (userType === 'Client') {
-      navigate('/civilify/client-profile-page'); // Redirect to client profile
-    } else if (userType === 'Lawyer') {
-      navigate('/civilify/lawyer-profile-page'); // Redirect to lawyer profile
+  const handleProfileRedirect = (lawyerId) => {
+    navigate(`/civilify/lawyer-profile-page/${lawyerId}`);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
+    setShowCardsSection(false); // Hide the cards section
+
+    try {
+      console.log('Sending query params:', {
+        category,
+        lawyerType,
+        minRate: rateRange[0],
+        maxRate: rateRange[1]
+      });
+
+      const response = await axios.get('http://localhost:8080/api/lawyer/search', {
+        params: {
+          category,
+          lawyerType,
+          minRate: rateRange[0],
+          maxRate: rateRange[1]
+        }
+      });
+
+      if (Array.isArray(response.data)) {
+        setLawyers(response.data);
+      } else {
+        setError('Unexpected response format');
+      }
+    } catch (error) {
+      console.error('Error fetching lawyers:', error);
+      setError('Failed to fetch lawyers. Please try again later.');
+    } finally {
+      setLoading(false);
     }
-    handleClose(); // Closes the dropdown menu
-  };
-
-  const handleSearchSubmit = () => {
-    navigate(
-      `/civilify/browse-page?category=${encodeURIComponent(
-        category
-      )}&lawyerType=${encodeURIComponent(
-        lawyerType
-      )}&rateMin=${rateRange[0]}&rateMax=${rateRange[1]}`
-    );
-  };
-
-  const styles = {
-    footer: {
-      backgroundColor: '#41423A',
-      width: '100%',
-      height: '20px',
-      display: 'flex',
-      alignItems: 'left',
-      justifyContent: 'left',
-      paddingLeft: '10px',
-      color: 'white',
-      fontFamily: 'Faculty Glyphic',
-      fontSize: '10px',
-      position: 'fixed',
-      bottom: '0',
-      left: '0',
-    },
   };
 
   const sections = [
@@ -119,134 +127,85 @@ function ClientHome() {
     'Intellectual Property Law',
     'Family law',
     'International law',
-    'Corporate law',
-    'Health law',
-    'Property law',
-    'Tax law',
-    'Constitutional law',
-    'Immigration law',
-    'Business law',
-    'Administrative law',
-    'Education law',
-    'Animal law',
-    'Bankruptcy',
-    'Civil procedure',
-    'Alternative dispute resolution',
-    'Civil and political rights',
-    'Media law',
-    'Municipal law',
-    'Criminal law',
-    'Employment law',
-    'Banking laws',
-    'Criminal litigation',
-    'Labor law',
-    'Mergers and acquisitions',
-    'Real estate law',
-    'Litigation law',
-    'Legal ethics',
-    'Sports law',
-    'Environmental justice',
-    'Cybersecurity law',
-    'Privacy law',
-    'Regulatory law',
-    'Maritime law',
-    'Intellectual property litigation',
-    'Patent law',
-    'Trademark law',
-    'Copyright law',
-    'Trade secrets law',
-    'Franchise law',
-    'Investment law',
-    'Financial services law',
-    'Energy law',
-    'Utilities law',
-    'Competition law',
-    'Consumer protection law',
-    'Food and drug law',
-    'Health insurance law',
-    'Medical malpractice law',
-    'Personal injury law',
-    'Workers compensation law',
-    'Bankruptcy law',
-    'Estate planning law',
-    'Trust and estates law',
-    'Family business law',
-    'Child custody law',
-    'Divorce law',
-    'Adoption law',
-    'Guardianship law',
-    'Elder law',
-    'Wills and probate',
-    'Civil rights law',
-    'Homeland security law',
-    'Disability law',
-    'Public health law',
-    'Indigenous law',
-    'International trade law',
-    'Arbitration law',
-    'Securities law',
-    'Financial crimes law',
-    'Criminal defense law',
-    'White collar crime law',
-    'Defamation law',
-    'Taxation law',
-    'International human rights law',
-    'Military law',
-    'Health care fraud law',
-    'Public policy law',
-    'Pension law',
-    'Insurance law',
-    'Antitrust law',
-    'Immigration and nationality law',
-    'Patent litigation',
-    'Trademark litigation',
-    'Class action law',
-    'Debt collection law',
-    'Consumer finance law',
-    'Antitrust litigation',
-    'Environmental litigation',
-    'Securities litigation',
-    'Legal malpractice law',
-    'Real estate litigation',
-    'Construction law',
-    'Insurance litigation',
-    'Nonprofit law',
-    'Corporate governance law',
-    'Financial planning law',
-    'Cross-border legal issues',
-    'Bankruptcy litigation',
-    'Civil liberties law',
-    'Public international law',
-    'Tax fraud law',
-    'Alternative energy law',
-    'Humanitarian law',
-    'International investment law',
-    'Space law',
-    'Telecommunications law',
-    'Transportation law',
-    'Cyber law',
-    'Internet law',
-    'Data protection law',
-    'Smart contracts law',
-    'Legal technology law',
-    'Artificial intelligence law',
-    'Blockchain law',
-    'Social justice law',
-    'Non-compete agreements law',
-    'Real property law',
-    'Judicial review law',
-    'Land use law',
-    'Local government law',
-    'Zoning law',
-    'Public utility law',
-    'Cultural property law',
-    'International environmental law',
-    'Climate change law',
-    'Sustainable development law',
   ];
 
-      return (
-      <div
+  const styles = {
+    profileCard: {
+      backgroundColor: 'white', // Matches dark theme background
+      borderRadius: '8px',
+      padding: '16px',
+      color: 'black', // Text color for dark mode
+      fontFamily: 'Arial, sans-serif',
+      maxWidth: '800px', // Restricts the card width
+      margin: '0',
+      textAlign: 'left', // Align content to the left
+      cursor: 'pointer', // Make the card clickable
+    },
+    profilePicContainer: {
+      display: 'flex',
+      justifyContent: 'flex-start', // Align to the left
+      alignItems: 'center',
+      marginBottom: '16px',
+    },
+    profilePic: {
+      width: '80px',
+      height: '80px',
+      borderRadius: '50%',
+      overflow: 'hidden',
+      border: '2px solid #3A3B3C',
+    },
+    profilePicImage: {
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+    },
+    name: {
+      textAlign: 'left', // Align content to the left
+      fontSize: '16px',
+      fontWeight: '600',
+      marginBottom: '8px',
+    },
+    infoGroup: {
+      marginBottom: '8px',
+    },
+    infoText: {
+      fontSize: '14px',
+      color: 'black', // Slightly muted for readability
+      textAlign: 'left', // Align content to the left
+    },
+    divider: {
+      margin: '16px 0',
+      borderBottom: '1px solid #ddd',
+    },
+    footer: {
+      backgroundColor: '#41423A',
+      width: '100%',
+      height: '20px',
+      display: 'flex',
+      alignItems: 'left',
+      justifyContent: 'left',
+      paddingLeft: '10px',
+      color: 'white',
+      fontFamily: 'Faculty Glyphic',
+      fontSize: '10px',
+      position: 'fixed',
+      bottom: '0',
+      left: '0',
+    },
+    cardsSection: {
+      position: 'absolute',
+      bottom: '40px',
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      transition: 'transform 0.5s ease-in-out',
+      transform: showCardsSection ? 'translateY(0)' : 'translateY(100%)', // Slide out animation
+    },
+  };
+
+  return (
+    <div
       style={{
         position: 'relative',
         backgroundColor: '#F7F7F7',
@@ -260,7 +219,7 @@ function ClientHome() {
         flexDirection: 'column',
         alignItems: 'center',
       }}
-      >
+    >
       {/* Header Section */}
       <Box
         style={{
@@ -284,57 +243,57 @@ function ClientHome() {
           style={{ width: '40px', height: '40px', marginLeft: '30px' }}
         />
 
-      <Box style={{ display: 'flex', marginRight: '30px' }}>
-        <Typography
-          variant="body2"
-          style={{
-            color: '#212121',
-            fontFamily: 'Faculty Glyphic',
-            fontSize: '15px',
-            fontWeight: '500',
-            cursor: 'pointer',
-            marginLeft: '50px',
-            padding: '5px 15px', // Adding padding to create space around text
-            border: '1px solid #8E8E8E', // Border color for outline
-            borderRadius: '8px', // Rounded corners
-          }}
-        >
-          Support
-        </Typography>
-        <Typography
-          variant="body2"
-          style={{
-            color: '#212121',
-            fontFamily: 'Faculty Glyphic',
-            fontSize: '15px',
-            fontWeight: '500',
-            cursor: 'pointer',
-            marginLeft: '50px',
-            padding: '5px 15px', // Adding padding to create space around text
-            border: '1px solid #8E8E8E', // Border color for outline
-            borderRadius: '8px', // Rounded corners
-          }}
-        >
-          Requests
-        </Typography>
-        <Typography
-          variant="body2"
-          style={{
-            color: '#212121',
-            fontFamily: 'Faculty Glyphic',
-            fontSize: '15px',
-            fontWeight: '500',
-            cursor: 'pointer',
-            marginLeft: '50px',
-            padding: '5px 15px', // Adding padding to create space around text
-            border: '1px solid #8E8E8E', // Border color for outline
-            borderRadius: '8px', // Rounded corners
-          }}
-          onClick={handleProfileClick}
-        >
-          Profile
-        </Typography>
-      </Box>
+        <Box style={{ display: 'flex', marginRight: '30px' }}>
+          <Typography
+            variant="body2"
+            style={{
+              color: '#212121',
+              fontFamily: 'Faculty Glyphic',
+              fontSize: '15px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              marginLeft: '50px',
+              padding: '5px 15px', // Adding padding to create space around text
+              border: '1px solid #8E8E8E', // Border color for outline
+              borderRadius: '8px', // Rounded corners
+            }}
+          >
+            Support
+          </Typography>
+          <Typography
+            variant="body2"
+            style={{
+              color: '#212121',
+              fontFamily: 'Faculty Glyphic',
+              fontSize: '15px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              marginLeft: '50px',
+              padding: '5px 15px', // Adding padding to create space around text
+              border: '1px solid #8E8E8E', // Border color for outline
+              borderRadius: '8px', // Rounded corners
+            }}
+          >
+            Requests
+          </Typography>
+          <Typography
+            variant="body2"
+            style={{
+              color: '#212121',
+              fontFamily: 'Faculty Glyphic',
+              fontSize: '15px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              marginLeft: '50px',
+              padding: '5px 15px', // Adding padding to create space around text
+              border: '1px solid #8E8E8E', // Border color for outline
+              borderRadius: '8px', // Rounded corners
+            }}
+            onClick={handleProfileClick}
+          >
+            Profile
+          </Typography>
+        </Box>
       </Box>
 
       {/* Profile Dropdown Menu */}
@@ -367,20 +326,20 @@ function ClientHome() {
 
       {/* Search Form */}
       <Box display="flex" justifyContent="center" alignItems="center" gap="20px" marginTop="20px" width="80%">
-        {/* Hybrid Search and Dropdown for Category */}
+        {/* Dropdown for Category */}
         <Autocomplete
           options={categoryOptions}
           value={category}
           onChange={(event, newValue) => setCategory(newValue)}
-          inputValue={category || ''} // Make sure inputValue is never null
-          onInputChange={(event, newInputValue) => setCategory(newInputValue || '')} // Ensure it's a valid string
-          freeSolo // Allow free input, meaning users can type anything or leave it empty
+          inputValue={category || ''}
+          onInputChange={(event, newInputValue) => setCategory(newInputValue || '')}
+          freeSolo
           renderInput={(params) => (
             <TextField
               {...params}
               label="Category"
               variant="outlined"
-              error={!category && Boolean(category)} // Show error if the category is empty
+              error={!category && Boolean(category)}
             />
           )}
           style={{ width: '30%' }}
@@ -389,7 +348,10 @@ function ClientHome() {
         {/* Lawyer Type Selection */}
         <FormControl style={{ width: '20%' }}>
           <InputLabel>Lawyer Type</InputLabel>
-          <Select value={lawyerType} onChange={(e) => setLawyerType(e.target.value)}>
+          <Select
+            value={lawyerType}
+            onChange={(e) => setLawyerType(e.target.value)}
+          >
             {['Private', 'Exclusive'].map((type) => (
               <MenuItem key={type} value={type}>
                 {type}
@@ -405,7 +367,7 @@ function ClientHome() {
             value={rateRange}
             onChange={(e, newValue) => setRateRange(newValue)}
             valueLabelDisplay="auto"
-            min={3000}
+            min={2000}
             max={100000}
             step={1000}
             sx={{
@@ -419,27 +381,63 @@ function ClientHome() {
 
       <Button
         variant="contained"
-        onClick={handleSearchSubmit}
+        onClick={handleSubmit}
         style={{
           backgroundColor: '#D9641E',
           color: 'white',
           marginTop: '30px',
         }}
       >
-        SUBMIT
+        Search
       </Button>
 
-      {/* Cards Section */}
+      {/* Results Section */}
       <Box
         display="flex"
-        justifyContent="space-around"
+        flexDirection="column"
         alignItems="center"
-        width="100%"
-        style={{
-          position: 'absolute',
-          bottom: '40px',
-        }}
+        marginTop="20px"
       >
+        {loading && <CircularProgress />}
+        {error && <Typography color="error">{error}</Typography>}
+
+        {lawyers.length > 0 ? (
+          <Box display="flex" flexWrap="wrap" justifyContent="center" gap="20px">
+            {lawyers.map((lawyer, index) => (
+              <Box
+                key={lawyer.lawyerId}
+                style={{
+                  ...styles.profileCard,
+                  maxWidth: '300px',
+                  margin: '10px',
+                  flex: index < 3 ? '1 1 calc(33.33% - 20px)' : '1 1 calc(25% - 20px)', // Limit first row to 3 cards
+                }}
+                onClick={() => navigate(`/civilify/lawyer-profile-page/${lawyer.lawyerId}`)}
+              >
+                <Box style={styles.profilePicContainer}>
+                  <div style={styles.profilePic}>
+                    <img
+                      src={`data:image/jpeg;base64,${lawyer.profilePicture}`} // Dynamically set the profile picture URL
+                      alt="Profile"
+                      style={styles.profilePicImage}
+                    />
+                  </div>
+                </Box>
+                <div style={styles.divider}></div>
+                <Typography style={styles.name}>{lawyer.name}</Typography>
+                <Typography style={styles.infoText}>Specialization: {lawyer.specialization}</Typography>
+                <Typography style={styles.infoText}>Hourly Rate: {lawyer.hourlyRate} PHP</Typography>
+                <Typography style={styles.infoText}>Address: {lawyer.officeAddress}, {lawyer.zipcode}</Typography>
+              </Box>
+            ))}
+          </Box>
+        ) : (
+          <Typography>No results found</Typography>
+        )}
+      </Box>
+
+      {/* Cards Section */}
+      <Box style={styles.cardsSection}>
         {sections.map((section, index) => (
           <Box
             key={section.title}
@@ -463,7 +461,7 @@ function ClientHome() {
           >
             {section.icon}
             <Box
-                style={{
+              style={{
                 backgroundColor: '#FFEEE3',
                 borderRadius: '20px',
                 padding: '8px 16px',
