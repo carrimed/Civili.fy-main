@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppBar, Box, Container, Grid, Typography, TextField, Button, Toolbar, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const LandingPage = () => {
   const [activeSection, setActiveSection] = useState('hero');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchInput, setSearchInput] = useState('');
+  const [lawyers, setLawyers] = useState([]);
+  const [error, setError] = useState(null);
+  const [userType, setUserType] = useState('');
+
+  useEffect(() => {
+    const storedUserType = localStorage.getItem('userType'); // Retrieve from localStorage
+    if (storedUserType) {
+      setUserType(storedUserType);
+    } else {
+      navigate('/civilify/login-page'); // Redirect to login if no user type is found
+    }
+  }, [navigate]);
 
   const handleSectionChange = (section) => {
     setActiveSection(section);
@@ -40,12 +54,90 @@ const LandingPage = () => {
     }, 2000);
   }; 
 
+  const handleSearch = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.get(`http://localhost:8080/api/lawyer/getLawyerByName/${encodeURIComponent(searchInput)}`);
+      setLawyers(response.data);
+    } catch (error) {
+      setError('Failed to fetch lawyers.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProfileRedirect = (lawyerId) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate(`/civilify/lawyer-profile/${lawyerId}`);
+    } else {
+      navigate('/civilify/login-page');
+    }
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const styles = {
+    profileCard: {
+      backgroundColor: 'white', // Matches dark theme background
+      borderRadius: '8px',
+      padding: '16px',
+      color: 'black', // Text color for dark mode
+      fontFamily: 'Arial, sans-serif',
+      maxWidth: '800px', // Restricts the card width
+      margin: '0',
+      textAlign: 'left', // Align content to the left
+      cursor: 'pointer', // Make the card clickable
+    },
+    profilePicContainer: {
+      display: 'flex',
+      justifyContent: 'flex-start', // Align to the left
+      alignItems: 'center',
+      marginBottom: '16px',
+    },
+    profilePic: {
+      width: '80px',
+      height: '80px',
+      borderRadius: '50%',
+      overflow: 'hidden',
+      border: '2px solid #3A3B3C',
+    },
+    profilePicImage: {
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+    },
+    name: {
+      textAlign: 'left', // Align content to the left
+      fontSize: '16px',
+      fontWeight: '600',
+      marginBottom: '8px',
+    },
+    infoGroup: {
+      marginBottom: '8px',
+    },
+    infoText: {
+      fontSize: '14px',
+      color: 'black', // Slightly muted for readability
+      textAlign: 'left', // Align content to the left
+    },
+    divider: {
+      margin: '16px 0',
+      borderBottom: '1px solid #ddd',
+    },
+  };
+
   return (
     <div style={{ backgroundColor: '#F1F1F1', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
 
       {/* AppBar */}
-      <AppBar position="fixed" style={{ backgroundColor: 'white', boxShadow: 'none', padding: '0px 0', height: '0px 0'
-       }}>
+      <AppBar position="fixed" style={{ backgroundColor: 'white', boxShadow: 'none', padding: '0px 0', height: '0px 0' }}>
         <Toolbar>
           <img
             src="/images/logoiconblack.png"
@@ -112,6 +204,7 @@ const LandingPage = () => {
             opacity: 0.7,
           }}
         ></div>
+        
         <Container style={{ maxWidth: '800px', margin: '0 auto', zIndex: 2 }}>
           <img src="/images/logotextwhite.png" alt="Civilify" style={{ width: '300px', marginBottom: '30px' }} />
           <Typography variant="h1" style={{ fontSize: '28px', fontWeight: '700', marginBottom: '20px' }}>
@@ -122,10 +215,47 @@ const LandingPage = () => {
           </Typography>
           <TextField
             variant="outlined"
-            placeholder="john@email.com"
+            placeholder="Search lawyer by name"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyPress={handleKeyPress}
             style={{ backgroundColor: '#FFFFFF', borderRadius: '4px', width: '350px', marginBottom: '20px' }}
           />
-        </Container>
+
+      {/* Results */}
+      <Box display="flex" flexDirection="column" alignItems="center" marginTop="20px">
+        {loading && <CircularProgress />}
+        {error && <Typography color="error">{error}</Typography>}
+        {lawyers.map((lawyer) => (
+          <Box
+            key={lawyer.id}
+            style={{ ...styles.profileCard, margin: '10px', width: '80%' }}
+            onClick={() => handleProfileRedirect(lawyer.id)}
+          >
+            <Box style={styles.profilePicContainer}>
+              <div style={styles.profilePic}>
+                <img
+                  src={`data:image/jpeg;base64,${lawyer.profilePicture}`} // Dynamically set the profile picture URL
+                  alt="Profile"
+                  style={styles.profilePicImage}
+                />
+              </div>
+            </Box>
+            <div style={styles.divider}></div>
+            <Typography style={styles.name}>{lawyer.name}</Typography>
+            <Typography style={styles.bio}>{lawyer.specialization}</Typography>
+            <Typography>
+              <span style={styles.label}>Hourly Rate (PHP): </span>
+              <span style={styles.infoText}>{lawyer.hourlyRate}</span>
+            </Typography>
+            <Typography>
+              <span style={styles.label}>Office Address: </span>
+              <span style={styles.infoText}>{lawyer.officeAddress}, {lawyer.zipcode}</span>
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    </Container>
       </Box>
 
       {/* What is Civilify Section */}
@@ -315,12 +445,9 @@ const LandingPage = () => {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            padding: '20px',
-            borderRadius: '8px',
           }}
         >
-          <CircularProgress size={50} style={{ color: '#D9641E' }} />
+          <CircularProgress />
         </Box>
       )}
     </div>

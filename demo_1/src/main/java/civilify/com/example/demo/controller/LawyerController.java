@@ -138,8 +138,7 @@ public class LawyerController {
         // Return the Base64 string
         return ResponseEntity.ok(base64Image);
     }
-
-    // Read functionality (GET all lawyers)
+    
     @GetMapping("/getAllLawyers")
     public ResponseEntity<List<LawyerEntity>> getAllLawyers() {
         List<LawyerEntity> lawyers = lawyerService.getAllLawyers();
@@ -147,6 +146,23 @@ public class LawyerController {
                new ResponseEntity<>(HttpStatus.NO_CONTENT) : 
                new ResponseEntity<>(lawyers, HttpStatus.OK);
     }
+    
+    @GetMapping("/getLawyerByName/{name}")
+    public ResponseEntity<List<LawyerEntity>> getLawyerByName(@PathVariable String name) {
+        List<LawyerEntity> lawyers = lawyerService.getLawyerByName(name);
+        return lawyers.isEmpty() ? 
+               new ResponseEntity<>(HttpStatus.NO_CONTENT) : 
+               new ResponseEntity<>(lawyers, HttpStatus.OK);
+    }
+
+    // Read functionality (GET all lawyers)
+   /* @GetMapping("/getAllLawyers")
+    public ResponseEntity<List<LawyerEntity>> getAllLawyers() {
+        List<LawyerEntity> lawyers = lawyerService.getAllLawyers();
+        return lawyers.isEmpty() ? 
+               new ResponseEntity<>(HttpStatus.NO_CONTENT) : 
+               new ResponseEntity<>(lawyers, HttpStatus.OK);
+    } */
 
     // Update functionality (PUT) - Fixed to use @PathVariable for lawyer_id
     @PutMapping("/update/{lawyerId}")
@@ -176,4 +192,5 @@ public class LawyerController {
     public String deleteLawyerByName(@PathVariable String name) {
         return lawyerService.deleteLawyerByName(name);
     }
+    
     }

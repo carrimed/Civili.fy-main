@@ -107,4 +107,8 @@ public class LawyerService {
     public LawyerEntity save(LawyerEntity lawyer) {
         return lawyerRepo.save(lawyer); // Use the JpaRepository's save method
     }
+    
+    public List<LawyerEntity> getLawyerByName(String name) {
+        return lawyerRepo.findByName(name);
+    }
 }
