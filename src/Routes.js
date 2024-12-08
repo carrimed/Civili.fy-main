@@ -19,6 +19,8 @@ import ProtectedRoute from './utils/protectedroute';
 import LawyerAccount from './lawyer/lawyeraccount';
 import LawyerClients from './lawyer/lawyerclients';
 import LawyerSearch from './lawyersearch';
+import LawyerPP from './client/clientbook';
+import ClientViewLawyerProfile from './client/clientbook';
 
 
 function AppRoutes() {
@@ -46,6 +48,7 @@ function AppRoutes() {
       <Route path="/civilify/lawyer-sign-up-form" element={<LawyerSignUpForm />}/>
       <Route path="/civilify/lawyer-accountsettings-page" element={<LawyerAccount/>}/>
       <Route path="/civilify/lawyer-client-page" element={<LawyerClients/>}/>
+      <Route path="/civilify/client-lawyer-page" element={<ClientViewLawyerProfile/>}/>
 
     </Routes>
   );

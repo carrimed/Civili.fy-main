@@ -13,10 +13,8 @@ const StyledButton = styled(Button)(({ theme, colorType }) => ({
     },
     fontSize: '1rem',
     padding: '10px 20px',
-    marginTop: '20px',
     fontFamily: 'Outfit, sans-serif',
-    width: '45%', // For both buttons to align nicely
-    margin: '5px', // Add space between the buttons
+    width: '100%', // For both buttons to align nicely
 }));
 
 function ClientAppointmentForm() {
