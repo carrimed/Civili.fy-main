@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
+import { Box, TextField, Button, Typography, CircularProgress, Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -7,29 +7,34 @@ function AdminLogin() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false); // New state to track loading
-  const [error, setError] = useState(''); // State to track error message
+  const [loading, setLoading] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleLogin = async () => {
-    // Start loading
     setLoading(true);
-    setError(''); // Reset error message
+    setSnackbarMessage(''); // Reset message
+    setSnackbarOpen(false); // Close any open snackbars
 
     try {
-      // Make API request to backend
-      const response = await axios.post('https://localhost:8080/api/admin/login', { username, password });
+      const response = await axios.post('http://localhost:8080/api/admin/login', { username, password });
 
-      // If login is successful, navigate to the admin home page
-      if (response.data === "Login successful") {
+      if (response.data === 'Login successful') {
         navigate('/civilify/admin-home-page');
+      } else {
+        setSnackbarMessage(response.data); // Display error message from backend
+        setSnackbarOpen(true);
       }
     } catch (error) {
-      // Handle error (invalid credentials, etc.)
-      setError('Invalid username or password');
+      setSnackbarMessage('Unable to connect to server. Please try again later.');
+      setSnackbarOpen(true);
     } finally {
-      // Stop loading
       setLoading(false);
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -44,14 +49,12 @@ function AdminLogin() {
         backgroundPosition: 'center',
       }}
     >
-      {/* Logo Image */}
       <img
         src="/images/logotextblack.png"
         alt="Logo"
         style={{ width: '150px', marginBottom: '20px' }}
       />
 
-      {/* Admin Login Title */}
       <Typography
         variant="h4"
         style={{
@@ -63,7 +66,6 @@ function AdminLogin() {
         Admin Login
       </Typography>
 
-      {/* Login Form */}
       <Box
         style={{
           backgroundColor: 'white',
@@ -75,7 +77,6 @@ function AdminLogin() {
           width: '300px',
         }}
       >
-        {/* Username TextField */}
         <TextField
           label="Username"
           variant="outlined"
@@ -88,7 +89,6 @@ function AdminLogin() {
           }}
         />
 
-        {/* Password TextField */}
         <TextField
           label="Password"
           type="password"
@@ -102,21 +102,13 @@ function AdminLogin() {
           }}
         />
 
-        {/* Error Message */}
-        {error && (
-          <Typography color="error" style={{ marginBottom: '15px' }}>
-            {error}
-          </Typography>
-        )}
-
-        {/* Login Button */}
         <Button
           variant="contained"
           color="primary"
           fullWidth
           onClick={handleLogin}
           style={{
-            backgroundColor: '#D9641E', // Orange color
+            backgroundColor: '#D9641E',
             padding: '10px',
             fontSize: '16px',
             fontFamily: 'Outfit',
@@ -126,7 +118,6 @@ function AdminLogin() {
         </Button>
       </Box>
 
-      {/* Loading Spinner */}
       {loading && (
         <Box
           style={{
@@ -142,6 +133,14 @@ function AdminLogin() {
           <CircularProgress size={50} style={{ color: '#D9641E' }} />
         </Box>
       )}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        message={snackbarMessage}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      />
     </div>
   );
 }
