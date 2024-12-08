@@ -174,7 +174,7 @@ public class LawyerController {
     }
 
  // Delete functionality (DELETE by ID)
-    @DeleteMapping("/deleteById/{lawyerId}")
+    @DeleteMapping("/deleteById/{lawyer_id}")
     public ResponseEntity<String> deleteLawyer(@PathVariable int lawyerId) {
         try {
             lawyerService.deleteLawyer(lawyerId);

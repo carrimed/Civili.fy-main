@@ -143,7 +143,7 @@ public class ClientController {
     }
 
     // Delete Client
-    @DeleteMapping("/deleteById/{clientId}")
+    @DeleteMapping("/deleteById/{client_id}")
     public ResponseEntity<String> deleteClient(@PathVariable("client_id") int clientId) {
         String message = clientService.deleteClient(clientId);
         if (message.contains("NOT found")) {
