@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, MenuItem, Menu, CircularProgress } from '@mui/material';
+import { Box, Typography, Button, MenuItem, Menu, CircularProgress, TextField, Rating } from '@mui/material';
 import { FaUserTie, FaPhoneAlt, FaMapMarkerAlt, FaEnvelope, FaCalendarAlt, FaDollarSign } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -17,6 +17,14 @@ function ClientLawyerPov() {
   const [lawyerDetails, setLawyerDetails] = useState(null);
   const [userType, setUserType] = useState(null)
   const { lawyerId } = useParams();
+  const [rating, setRating] = useState(0); // Store the selected rating
+  const [reviewText, setReviewText] = useState(''); // Store the review text
+  const [reviews, setReviews] = useState([]); // Store submitted 
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [clientId, setClientId] = useState('');
   
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -36,6 +44,34 @@ function ClientLawyerPov() {
     width: '60%',
     margin: '5px',
   }));
+
+  useEffect(() => {
+    const fetchClientDetails = async () => {
+        const username = localStorage.getItem('username');
+        const password = localStorage.getItem('password');
+
+        if (!username || !password) {
+            setMessage('Username or password not found. Please log in again.');
+            setSnackbarOpen(true);
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:8080/api/client/login', {
+                loginField: username,
+                password: password,
+            });
+
+            const { clientId } = response.data;
+            setClientId(clientId);
+        } catch (error) {
+            setMessage('Failed to fetch client details. Please log in again.');
+            setSnackbarOpen(true);
+        }
+    };
+
+    fetchClientDetails();
+}, []);
 
   const fetchLawyerDetailsById = async (lawyerId) => {
     setLoading(true);
@@ -130,6 +166,59 @@ function ClientLawyerPov() {
   if (error) {
     return <Typography color="error">{error}</Typography>;
   }
+
+  const handleRatingClick = (rating) => {
+    setRating(rating);
+  };
+
+  const handleReviewTextChange = (event) => {
+    setReviewText(event.target.value);
+  };
+
+  //REVIEW SUBMISSION
+  const handleReviewSubmit = async () => {
+    if (rating === 0 || !reviewText) {
+      setMessage('Please provide a rating and review text.');
+      setSnackbarOpen(true);
+      return;
+    }
+
+    const username = localStorage.getItem('username');  // Get the logged-in username
+
+    if (!username) {
+      setMessage('Username not found. Please log in again.');
+      setSnackbarOpen(true);
+      return;
+    }
+
+    const reviewData = {
+      comment: reviewText,  // Review text
+      rating: rating,       // Rating
+      reviewerName: username, // Add the username to the review
+    };
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/review/postReview?clientId=${clientId}&lawyerId=${lawyerId}`,  // Query params in URL
+        reviewData, // Send review data in the request body
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // Update reviews list after successful submission
+      setReviews([...reviews, response.data]);  // Assuming the server returns the new review
+      setMessage('Review submitted successfully!');
+      setSnackbarOpen(true);
+      setReviewText('');  // Clear review text after submission
+      setRating(0);  // Reset rating after submission
+    } catch (error) {
+      setMessage('Error submitting review: ' + (error.response ? error.response.data.message : error.message));
+      setSnackbarOpen(true);
+    }
+};
 
   // Handle logout
   const handleLogout = () => {
@@ -266,24 +355,26 @@ function ClientLawyerPov() {
     },
   };
 
+  console.log(reviews);
+
   return (
     <div style={styles.outerContainer}>
       {/* Header */}
       <Box style={{
-          position: 'absolute',
-          top: 0,
-          width: '70%',
-          height: '60px',
-          backgroundColor: '#FFFFFF ',
-          borderBottomLeftRadius: '30px',
-          borderBottomRightRadius: '30px',
-          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '0 20px',
-        }}>
-       <img src="/images/logoiconblack.png" alt="Logo" style={{ width: '40px', height: '40px' }} />
+        position: 'absolute',
+        top: 0,
+        width: '70%',
+        height: '60px',
+        backgroundColor: '#FFFFFF',
+        borderBottomLeftRadius: '30px',
+        borderBottomRightRadius: '30px',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '0 20px',
+      }}>
+        <img src="/images/logoiconblack.png" alt="Logo" style={{ width: '40px', height: '40px' }} />
         <Box style={{ display: 'flex', marginRight: '30px' }}>
           <Typography
             variant="body2"
@@ -302,7 +393,6 @@ function ClientLawyerPov() {
           >
             Support
           </Typography>
-
           <Typography
             variant="body2"
             style={{
@@ -321,191 +411,199 @@ function ClientLawyerPov() {
           >
             Profile
           </Typography>
-          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-          <MenuItem
-              style={styles.menuItem}
-              onClick={() => navigate('/civilify/lawyer-profile-page')}
-            >
-              View Profile
-            </MenuItem>
-            <MenuItem style={styles.menuItem} onClick={handleClose}>
-              Deactivate Account
-            </MenuItem>
-            <MenuItem style={{ ...styles.menuItem, ...styles.logout }} onClick={handleLogout}>
-              Logout
-            </MenuItem>
-          </Menu>
         </Box>
       </Box>
 
-     {/* Main Content */}
-<Box style={{ ...styles.container, justifyContent: 'center' }}>
-  {/* Profile Section */}
-  <Box style={{ ...styles.profileCard, marginLeft: '20px', marginRight: '10px' }}>
-    <Box style={styles.profilePicContainer}>
-      <div style={styles.profilePic}>
-        <img
-          src={profilePicture} // Dynamically set the profile picture URL
-          alt="Profile"
-          style={styles.profilePicImage}
-        />
-      </div>
-    </Box>
-    <Typography style={styles.name}>{lawyerDetails.name}</Typography>
-    <Typography style={styles.bio}>{lawyerDetails.specialization}</Typography>
-
-    <Box style={styles.infoContainer}>
-      <Typography>
-        <span style={styles.label}>
-          <FaUserTie style={styles.icon} /> Name:
-        </span>{' '}
-        <span style={styles.infoText}>{lawyerDetails.name}</span>
-      </Typography>
-      <Typography>
-        <span style={styles.label}>
-          <FaUserTie style={styles.icon} /> Username:
-        </span>{' '}
-        <span style={styles.infoText}>{lawyerDetails.username}</span>
-      </Typography>
-      <Typography>
-        <span style={styles.label}>
-          <FaPhoneAlt style={styles.icon} /> Contact Number:
-        </span>{' '}
-        <span style={styles.infoText}>{lawyerDetails.contactNumber}</span>
-      </Typography>
-      <Typography>
-        <span style={styles.label}>
-          <FaMapMarkerAlt style={styles.icon} /> Address:
-        </span>{' '}
-        <span style={styles.infoText}>
-          {lawyerDetails.officeAddress}, {lawyerDetails.zipcode}
-        </span>
-      </Typography>
-      <Typography>
-        <span style={styles.label}>
-          <FaEnvelope style={styles.icon} /> Email:
-        </span>{' '}
-        <span style={styles.infoText}>{lawyerDetails.email}</span>
-      </Typography>
-      <Typography>
-        <span style={styles.label}>
-          <FaCalendarAlt style={styles.icon} /> Birthdate:
-        </span>{' '}
-        <span style={styles.infoText}>{lawyerDetails.birthdate}</span>
-      </Typography>
-      <Typography>
-        <span style={styles.label}>
-          <FaDollarSign style={styles.icon} /> Hourly Rate (PHP):
-        </span>{' '}
-        <span style={styles.infoText}>{lawyerDetails.hourlyRate}</span>
-      </Typography>
-      <Typography>
-        <span style={styles.label}>
-          <FaDollarSign style={styles.icon} /> Consultation Fee (PHP):
-        </span>{' '}
-        <span style={styles.infoText}>{lawyerDetails.consultationFee}</span>
-      </Typography>
-      <ClientAppointmentForm lawyerId={lawyerId} />
-    </Box>
-  </Box>
-
-<Box
-  style={{
-    ...styles.appointmentsCard,
-    marginTop: '0px',
-    marginRight: '20px',
-    padding: '30px',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '8px',
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
-  }}
->
-  <Typography
-    variant="h6"
-    style={{
-      marginBottom: '15px',
-      fontWeight: 'bold',
-      color: '#333',
-    }}
-  >
-    Client Reviews
-  </Typography>
-
-  {/* Review List */}
-  <Box
-    style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '20px',
-    }}
-  >
-    {/* Example Review */}
-    {[1, 2, 3].map((review, index) => (
-      <Box
-        key={index}
-        style={{
-          padding: '15px',
-          backgroundColor: '#ffffff',
-          borderRadius: '8px',
-          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        {/* Client Name */}
-        <Typography style={{ fontWeight: 'bold', marginBottom: '10px' }}>
-          Jane Doe
-        </Typography>
-
-        {/* Comment */}
-        <Typography
-          style={{
-            fontSize: '14px',
-            color: '#757575',
-            marginBottom: '10px',
-          }}
-        >
-          "The lawyer provided excellent advice and handled my case
-          professionally. Highly recommended!"
-        </Typography>
-
-        {/* Rating */}
-        <Box
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            marginBottom: '10px',
-          }}
-        >
-          <Typography style={{ fontWeight: 'bold', color: '#333' }}>
-            Rating:
-          </Typography>
-          <Box style={{ display: 'flex', gap: '5px' }}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <FaStar
-                key={star}
-                color={star <= 4 ? '#FFD700' : '#ccc'} // Example: 4/5 rating
-                size={16}
+      {/* Main Content */}
+      <Box style={{ ...styles.container, justifyContent: 'center' }}>
+        {/* Profile Section */}
+        <Box style={{ ...styles.profileCard, marginLeft: '20px', marginRight: '10px' }}>
+          <Box style={styles.profilePicContainer}>
+            <div style={styles.profilePic}>
+              <img
+                src={profilePicture} // Dynamically set the profile picture URL
+                alt="Profile"
+                style={styles.profilePicImage}
               />
-            ))}
+            </div>
+          </Box>
+          <Typography style={styles.name}>{lawyerDetails.name}</Typography>
+          <Typography style={styles.bio}>{lawyerDetails.specialization}</Typography>
+
+          <Box style={styles.infoContainer}>
+            <Typography>
+              <span style={styles.label}>Name:</span> <span style={styles.infoText}>{lawyerDetails.name}</span>
+            </Typography>
+            <Typography>
+              <span style={styles.label}>Username:</span> <span style={styles.infoText}>{lawyerDetails.username}</span>
+            </Typography>
+            <Typography>
+              <span style={styles.label}>Contact Number:</span> <span style={styles.infoText}>{lawyerDetails.contactNumber}</span>
+            </Typography>
+            <Typography>
+              <span style={styles.label}>Address:</span> <span style={styles.infoText}>{lawyerDetails.officeAddress}, {lawyerDetails.zipcode}</span>
+            </Typography>
+            <Typography>
+              <span style={styles.label}>Email:</span> <span style={styles.infoText}>{lawyerDetails.email}</span>
+            </Typography>
+            <Typography>
+              <span style={styles.label}>Birthdate:</span> <span style={styles.infoText}>{lawyerDetails.birthdate}</span>
+            </Typography>
+            <Typography>
+              <span style={styles.label}>Hourly Rate (PHP):</span> <span style={styles.infoText}>{lawyerDetails.hourlyRate}</span>
+            </Typography>
+            <Typography>
+              <span style={styles.label}>Consultation Fee (PHP):</span> <span style={styles.infoText}>{lawyerDetails.consultationFee}</span>
+            </Typography>
+            <ClientAppointmentForm lawyerId={lawyerId} />
           </Box>
         </Box>
 
-        {/* Recommendation */}
-        <Typography
+        {/* Client Reviews Section */}
+        <Box
           style={{
-            fontStyle: 'italic',
-            color: '#4caf50',
+            ...styles.appointmentsCard,
+            marginTop: '0px',
+            marginRight: '20px',
+            padding: '30px',
+            backgroundColor: '#f9f9f9',
+            borderRadius: '8px',
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
           }}
         >
-          Would recommend
-        </Typography>
+          <Typography
+            variant="h6"
+            style={{
+              marginBottom: '15px',
+              fontWeight: 'bold',
+              color: '#333',
+            }}
+          >
+            Submit a Review
+          </Typography>
+
+          {/* Review Form */}
+          <Box
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '15px',
+            }}
+          >
+            {/* Rating */}
+            <Box style={{ display: 'flex', gap: '10px' }}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FaStar
+                  key={star}
+                  color={star <= rating ? '#FFD700' : '#ccc'}
+                  size={24}
+                  onClick={() => handleRatingClick(star)}
+                  style={{ cursor: 'pointer' }}
+                />
+              ))}
+            </Box>
+
+            {/* Review Text */}
+            <TextField
+              value={reviewText}
+              onChange={handleReviewTextChange}
+              label="Write your review"
+              multiline
+              rows={4}
+              variant="outlined"
+              fullWidth
+              style={{ marginBottom: '20px' }}
+            />
+
+            {/* Submit Button */}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleReviewSubmit}
+              style={{
+                alignSelf: 'flex-start',
+                backgroundColor: '#D9641E',
+                color: '#fff',
+              }}
+            >
+              Submit Review
+            </Button>
+          </Box>
+
+          {/* Submitted Reviews */}
+          <Box
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+              marginTop: '30px',
+            }}
+          >
+            {reviews.length > 0 ? (
+              reviews.map((review, index) => (
+                <Box
+                  key={index}
+                  style={{
+                    padding: '15px',
+                    backgroundColor: '#ffffff',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                  }}
+                >
+                  {/* Client Name */}
+                  <Typography style={{ fontWeight: 'bold', marginBottom: '10px' }}>
+                    {review.client.username}
+                  </Typography>
+
+                  {/* Comment */}
+                  <Typography
+                    style={{
+                      fontSize: '14px',
+                      color: '#757575',
+                      marginBottom: '10px',
+                    }}
+                  >
+                    "{review.comment}"
+                  </Typography>
+
+                  {/* Rating */}
+                  <Box
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      marginBottom: '10px',
+                    }}
+                  >
+                    <Typography style={{ fontWeight: 'bold', color: '#333' }}>Rating:</Typography>
+                    <Box style={{ display: 'flex', gap: '5px' }}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <FaStar
+                          key={star}
+                          color={star <= review.rating ? '#FFD700' : '#ccc'}
+                          size={16}
+                        />
+                      ))}
+                    </Box>
+                  </Box>
+
+                  {/* Recommendation */}
+                  <Typography
+                    style={{
+                      fontStyle: 'italic',
+                      color: '#4caf50',
+                    }}
+                  >
+                    Would recommend
+                  </Typography>
+                </Box>
+              ))
+            ) : (
+              <Typography>No reviews yet. Be the first to submit a review!</Typography>
+            )}
+          </Box>
+        </Box>
       </Box>
-    ))}
-  </Box>
-</Box>
-
-</Box>
-
 
       {/* Footer */}
       <Box style={styles.footer}>© The Civilify Company, Cebu City</Box>
