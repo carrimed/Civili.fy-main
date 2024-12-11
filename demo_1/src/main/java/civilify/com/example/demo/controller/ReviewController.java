@@ -30,15 +30,21 @@ public class ReviewController {
         return reviewService.getAllReviews();
     }
 
+    // Get reviews by lawyer ID
+    @GetMapping("/getReviewsByLawyerId/{lawyerId}")
+    public List<ReviewEntity> getReviewsByLawyerId(@PathVariable("lawyerId") int lawyerId) {
+        return reviewService.getReviewsByLawyerId(lawyerId);
+    }
+
     // Update review details
     @PutMapping("/putReviewDetails")
-    public ReviewEntity updateReview(@RequestParam int reviewId, @RequestBody ReviewEntity newReviewDetails) {
+    public ReviewEntity updateReview(@RequestParam Long reviewId, @RequestBody ReviewEntity newReviewDetails) {
         return reviewService.updateReview(reviewId, newReviewDetails);
     }
 
     // Delete a review by ID
     @DeleteMapping("/deleteReview/{reviewId}")
-    public String deleteReview(@PathVariable("reviewId") int reviewId) {
+    public String deleteReview(@PathVariable("reviewId") Long reviewId) {
         reviewService.deleteReview(reviewId);
         return "Review with ID " + reviewId + " has been deleted.";
     }

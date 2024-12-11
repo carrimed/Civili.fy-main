@@ -7,6 +7,7 @@
   import { FaClock, FaStar } from 'react-icons/fa';
 
   function LawyerPersonalProfile() {
+    const [reviews, setReviews] = useState([]);
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -60,13 +61,35 @@
         fetchAppointments();
       }
     }, [lawyerDetails]);    
-    
+
+    useEffect(() => {
+      if (lawyerDetails?.lawyerId) {
+        fetchClientReviews(); // Fetch reviews when lawyer details are available
+      }
+    }, [lawyerDetails]);    
 
     useEffect(() => {
       if (lawyerId) {
         fetchAppointments();
       }
     }, [lawyerId]);
+
+    const fetchClientReviews = async () => {
+      if (!lawyerDetails?.lawyerId) return;
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/review/getReviewsByLawyerId/${lawyerDetails.lawyerId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          }
+        );
+        setReviews(response.data);
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      }
+    };
 
     const fetchLawyerDetailsById = async (lawyerId) => {
       setLoading(true);
@@ -569,8 +592,34 @@
       </Typography>
     </Box>
 
-   
   </Box>
+  <Box 
+  sx={{
+    backgroundColor: 'white',
+    padding: '16px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    marginTop: '16px'
+  }}
+>
+      {/* Client Reviews Section */}
+      <Typography variant="h6" sx={{ marginBottom: '16px' }}>Client Reviews</Typography>
+      {reviews.length > 0 ? (
+        reviews.map((review) => (
+          <Box key={review.id} sx={{ marginBottom: '16px' }}>
+            <Typography sx={{ fontWeight: 'bold' }}>{review.clientName}</Typography>
+            <Typography>{review.comment}</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <FaStar style={{ color: '#FFD700', marginRight: '4px' }} />
+              <Typography>{review.rating} / 5</Typography>
+            </Box>
+          </Box>
+        ))
+      ) : (
+        <Typography>No reviews yet.</Typography>
+      )}
+    </Box>
+
   </Box>
 
 
