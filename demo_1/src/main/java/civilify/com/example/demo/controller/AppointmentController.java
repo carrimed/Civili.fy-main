@@ -11,14 +11,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/appointment")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "*"})
 public class AppointmentController {
 
     @Autowired
     private AppointmentService appointmentService;
 
     // Create a new appointment with client and lawyer IDs
-    @SuppressWarnings("null")
-	@PostMapping("/create")
+	@PostMapping("/postAppointmentRecord")
     public ResponseEntity<AppointmentEntity> postAppointmentRecord(
             @RequestBody AppointmentEntity appointment,
             @RequestParam int clientId,
