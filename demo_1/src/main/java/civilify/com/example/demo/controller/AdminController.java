@@ -14,7 +14,7 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    // Create a new admin
+    // Create a new admi
     @PostMapping("/createAdmin")
     public AdminEntity createAdmin(@RequestBody AdminEntity admin) {
         return adminService.createAdmin(admin);

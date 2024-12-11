@@ -30,15 +30,15 @@ function ClientHome() {
   const [userType, setUserType] = useState('');
   const [error, setError] = useState(null);
   const [lawyers, setLawyers] = useState([]);
-  const [showCardsSection, setShowCardsSection] = useState(true); // State to manage visibility of cards section
+  const [showCardsSection, setShowCardsSection] = useState(true);
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
-  
   useEffect(() => {
-    const storedUserType = localStorage.getItem('userType'); // Retrieve from localStorage
+    const storedUserType = localStorage.getItem('userType');
     if (storedUserType) {
       setUserType(storedUserType);
     } else {
-      navigate('/civilify/login-page'); // Redirect to login if no user type is found
+      navigate('/civilify/login-page');
     }
   }, [navigate]);
 
@@ -51,7 +51,7 @@ function ClientHome() {
     localStorage.removeItem('username');
     localStorage.removeItem('password');
     localStorage.removeItem('userType');
-    localStorage.removeItem('token'); // Remove token if implemented later
+    localStorage.removeItem('token');
 
     setTimeout(() => {
       navigate('/civilify/login-page');
@@ -61,11 +61,11 @@ function ClientHome() {
 
   const handleProfileRedirect = () => {
     if (userType === 'Client') {
-      navigate('/civilify/client-profile-page'); // Redirect to client profile
+      navigate('/civilify/client-profile-page');
     } else if (userType === 'Lawyer') {
-      navigate('/civilify/lawyer-profile-page'); // Redirect to lawyer profile
+      navigate('/civilify/lawyer-profile-page');
     }
-    handleClose(); // Closes the dropdown menu
+    handleClose();
   };
 
   const handleCardRedirect = (lawyerId) => {
@@ -76,14 +76,15 @@ function ClientHome() {
     event.preventDefault();
     setLoading(true);
     setError(null);
-    setShowCardsSection(false); // Hide the cards section
+    setSearchPerformed(true); // Mark search as performed
+    setShowCardsSection(false);
 
     try {
       console.log('Sending query params:', {
         category,
         lawyerType,
         minRate: rateRange[0],
-        maxRate: rateRange[1]
+        maxRate: rateRange[1],
       });
 
       const response = await axios.get('http://localhost:8080/api/lawyer/search', {
@@ -91,14 +92,12 @@ function ClientHome() {
           category,
           lawyerType,
           minRate: rateRange[0],
-          maxRate: rateRange[1]
-        }
+          maxRate: rateRange[1],
+        },
       });
 
       if (Array.isArray(response.data)) {
         setLawyers(response.data);
-      } else {
-        setError('Unexpected response format');
       }
     } catch (error) {
       console.error('Error fetching lawyers:', error);
@@ -107,30 +106,6 @@ function ClientHome() {
       setLoading(false);
     }
   };
-
-  const sections = [
-    {
-      title: 'Search',
-      icon: <SearchIcon fontSize="large" />,
-      description: "Utilize Civilify's unique search system. Personalize your search to find exactly what you need.",
-      extendedDescription:
-        "Utilize Civilify's unique search system. Personalize your search to find exactly what you need. Civilify's algorithm will go through our entire database of practitioners with proven and verified track records, showing you the best of the best for your needs.",
-    },
-    {
-      title: 'Requests',
-      icon: <MessageIcon fontSize="large" />,
-      description: 'Track your outgoing and previous requests. Monitor the status of lawyer appointments.',
-      extendedDescription:
-        'Track your outgoing and previous requests. Monitor the status of lawyer appointments. Civilify helps you manage and track requests in real time, ensuring you never miss an update.',
-    },
-    {
-      title: 'Profile',
-      icon: <PersonIcon fontSize="large" />,
-      description: 'View and update your profile details.',
-      extendedDescription:
-        'View and update your profile details. Personalize your experience by adding preferences, adjusting privacy settings, and much more.',
-    },
-  ];
 
   const categoryOptions = [
     'Environmental law',
@@ -141,19 +116,19 @@ function ClientHome() {
 
   const styles = {
     profileCard: {
-      backgroundColor: 'white', // Matches dark theme background
+      backgroundColor: 'white',
       borderRadius: '8px',
       padding: '16px',
-      color: 'black', // Text color for dark mode
+      color: 'black',
       fontFamily: 'Arial, sans-serif',
-      maxWidth: '800px', // Restricts the card width
+      maxWidth: '800px',
       margin: '0',
-      textAlign: 'left', // Align content to the left
-      cursor: 'pointer', // Make the card clickable
+      textAlign: 'left',
+      cursor: 'pointer',
     },
     profilePicContainer: {
       display: 'flex',
-      justifyContent: 'flex-start', // Align to the left
+      justifyContent: 'flex-start',
       alignItems: 'center',
       marginBottom: '16px',
     },
@@ -170,7 +145,7 @@ function ClientHome() {
       objectFit: 'cover',
     },
     name: {
-      textAlign: 'left', // Align content to the left
+      textAlign: 'left',
       fontSize: '16px',
       fontWeight: '600',
       marginBottom: '8px',
@@ -180,8 +155,8 @@ function ClientHome() {
     },
     infoText: {
       fontSize: '14px',
-      color: 'black', // Slightly muted for readability
-      textAlign: 'left', // Align content to the left
+      color: 'black',
+      textAlign: 'left',
     },
     divider: {
       margin: '16px 0',
@@ -210,32 +185,34 @@ function ClientHome() {
       justifyContent: 'space-around',
       alignItems: 'center',
       transition: 'transform 0.5s ease-in-out',
-      transform: showCardsSection ? 'translateY(0)' : 'translateY(100%)', // Slide out animation
+      transform: showCardsSection ? 'translateY(0)' : 'translateY(100%)',
     },
   };
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        backgroundColor: '#F7F7F7',
-        backgroundSize: 'cover', // Ensure the image covers the entire background
-        backgroundRepeat: 'no-repeat', // Prevent the image from repeating
-        backgroundPosition: 'center', // Center the background image
-        width: '100vw',
-        height: '100vh',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
+      <Box
+        sx={{
+          position: 'relative',
+          backgroundColor: searchPerformed ? 'white' : '#F7F7F7', // Change background after search
+          backgroundImage: searchPerformed ? 'none' : 'url(/images/homepageimg1.png)', // Remove image after search
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          width: '100vw',
+          height: '100vh',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      > 
+
       {/* Header Section */}
       <Box
         style={{
           position: 'absolute',
           top: 0,
-          width: '70%',
+          width: '100%',
           height: '60px',
           backgroundColor: 'white',
           borderBottomLeftRadius: '30px',
@@ -247,65 +224,70 @@ function ClientHome() {
           padding: '0 20px',
         }}
       >
-        <img
+      <img
           src="/images/logoiconblack.png"
           alt="Logo"
           style={{ width: '40px', height: '40px', marginLeft: '30px' }}
         />
 
-        <Box style={{ display: 'flex', marginRight: '30px' }}>
-          <Typography
-            variant="body2"
-            style={{
-              color: '#212121',
-              fontFamily: 'Faculty Glyphic',
-              fontSize: '15px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              marginLeft: '50px',
-              padding: '5px 15px', // Adding padding to create space around text
-              border: '1px solid #8E8E8E', // Border color for outline
-              borderRadius: '8px', // Rounded corners
-            }}
-          >
-            Support
-          </Typography>
-          <Typography
-            variant="body2"
-            style={{
-              color: '#212121',
-              fontFamily: 'Faculty Glyphic',
-              fontSize: '15px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              marginLeft: '50px',
-              padding: '5px 15px', // Adding padding to create space around text
-              border: '1px solid #8E8E8E', // Border color for outline
-              borderRadius: '8px', // Rounded corners
-            }}
-          >
-            Requests
-          </Typography>
-          <Typography
-            variant="body2"
-            style={{
-              color: '#212121',
-              fontFamily: 'Faculty Glyphic',
-              fontSize: '15px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              marginLeft: '50px',
-              padding: '5px 15px', // Adding padding to create space around text
-              border: '1px solid #8E8E8E', // Border color for outline
-              borderRadius: '8px', // Rounded corners
-            }}
-            onClick={handleProfileClick}
-          >
-            Profile
-          </Typography>
-        </Box>
-      </Box>
-
+<Box style={{ display: 'flex', marginRight: '30px' }}>
+      <Typography
+        variant="body2"
+        style={{
+          color: '#212121',
+          fontFamily: 'Faculty Glyphic',
+          fontSize: '15px',
+          fontWeight: '500',
+          cursor: 'pointer',
+          marginLeft: '50px',
+          padding: '5px 15px',
+          border: '1px solid #8E8E8E',
+          borderRadius: '8px',
+        }}
+      >
+        Support
+      </Typography>
+      <Typography
+        variant="body2"
+        style={{
+          color: '#212121',
+          fontFamily: 'Faculty Glyphic',
+          fontSize: '15px',
+          fontWeight: '500',
+          cursor: 'pointer',
+          marginLeft: '50px',
+          padding: '5px 15px',
+          border: '1px solid #8E8E8E',
+          borderRadius: '8px',
+        }}
+        onClick={handleProfileClick}
+      >
+        Profile
+      </Typography>
+    </Box>
+  </Box>
+{/* Move Search Form to the Bottom Left of the Header */}
+<Box
+  style={{
+    position: 'absolute',
+    top: '20px',  // Adjust as needed
+    left: '20px',
+    display: searchPerformed ? 'none' : 'block',  // Hide after search
+  }}
+>
+  <Box
+    display="flex"
+    flexDirection="column"
+    gap="20px"
+    width="300px"
+    sx={{
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      padding: '20px',
+      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    }}
+  ></Box>
+  </Box>
       {/* Profile Dropdown Menu */}
       <Menu
         anchorEl={anchorEl}
@@ -321,97 +303,119 @@ function ClientHome() {
       </Menu>
 
       {/* Main Content */}
-      <Typography
-        variant="h4"
-        style={{
-          marginTop: '100px',
-          fontFamily: 'Faculty Glyphic',
-          color: '#212121',
-          marginBottom: '30px',
-          textAlign: 'center',
-        }}
-      >
-        The search for justice starts here
-      </Typography>
+{/* Search Form */}
+<Box display="flex" justifyContent="center" alignItems="center" marginTop="150px">
+  {!searchPerformed && (
+    <Typography
+      variant="h4"
+      style={{
+        fontFamily: 'Faculty Graphic',
+        color: 'white',
+        fontWeight: 'normal',
+        textAlign: 'left', // Change to 'left' for left alignment
+        maxWidth: '500px',
+        fontSize: '90px',
+        lineHeight: '1.3', // Optional, to adjust spacing between lines
+        marginRight: '300px',
+      }}
+    >
+      The search
+      <br />
+      for justice
+      <br />
+      starts here.
+    </Typography>
+  )}
 
-      {/* Search Form */}
-      <Box display="flex" justifyContent="center" alignItems="center" gap="20px" marginTop="20px" width="80%">
-        {/* Dropdown for Category */}
-        <Autocomplete
-          options={categoryOptions}
-          value={category}
-          onChange={(event, newValue) => setCategory(newValue)}
-          inputValue={category || ''}
-          onInputChange={(event, newInputValue) => setCategory(newInputValue || '')}
-          freeSolo
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Category"
-              variant="outlined"
-              error={!category && Boolean(category)}
-            />
-          )}
-          style={{ width: '30%' }}
+  {/* Search Form (Arranged Vertically) */}
+  <Box
+    display="flex"
+    flexDirection="column"
+    gap="20px"
+    width="300px"
+    sx={{
+      backgroundColor: 'white',  // Set background to white
+      borderRadius: '8px',       // Make the edges rounded
+      padding: '20px',           // Add some padding inside the box
+      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',  // Optional: Add subtle shadow for better visual
+    }}
+  >
+    {/* Dropdown for Category */}
+    <Autocomplete
+      options={categoryOptions}
+      value={category}
+      onChange={(event, newValue) => setCategory(newValue)}
+      inputValue={category || ''}
+      onInputChange={(event, newInputValue) => setCategory(newInputValue || '')}
+      freeSolo
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label="Category"
+          variant="outlined"
+          error={!category && Boolean(category)}
         />
+      )}
+    />
 
-        {/* Lawyer Type Selection */}
-        <FormControl style={{ width: '20%' }}>
-          <InputLabel>Lawyer Type</InputLabel>
-          <Select
-            value={lawyerType}
-            onChange={(e) => setLawyerType(e.target.value)}
-          >
-            {['Private', 'Exclusive'].map((type) => (
-              <MenuItem key={type} value={type}>
-                {type}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          {/* Lawyer Type Selection */}
+          <FormControl fullWidth>
+            <InputLabel>Lawyer Type</InputLabel>
+            <Select
+              value={lawyerType}
+              onChange={(e) => setLawyerType(e.target.value)}
+            >
+              {['Private', 'Exclusive'].map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-        {/* Rate Range Slider */}
-        <Box style={{ color: 'orange', width: '40%', fontFamily: 'Outfit' }}>
-          <Typography color="black">Rate per Hour: {rateRange[0]} - {rateRange[1]} PHP</Typography>
-          <Slider
-            value={rateRange}
-            onChange={(e, newValue) => setRateRange(newValue)}
-            valueLabelDisplay="auto"
-            min={2000}
-            max={100000}
-            step={1000}
+          {/* Rate Range Slider */}
+          <Box style={{ color: 'orange' }}>
+            <Typography color="black">Rate per Hour: [{rateRange[0]} - {rateRange[1]}] PHP</Typography>
+            <Slider
+              value={rateRange}
+              onChange={(e, newValue) => setRateRange(newValue)}
+              valueLabelDisplay="auto"
+              min={2000}
+              max={100000}
+              step={1000}
+              sx={{
+                '& .MuiSlider-thumb': { backgroundColor: '#D9641E' },
+                '& .MuiSlider-rail': { backgroundColor: '#D9641E' },
+                '& .MuiSlider-track': { backgroundColor: '#D9641E' },
+              }}
+            />
+          </Box>
+
+          {/* Submit Button */}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
             sx={{
-              '& .MuiSlider-thumb': { backgroundColor: '#D9641E' },
-              '& .MuiSlider-rail': { backgroundColor: '#D9641E' },
-              '& .MuiSlider-track': { backgroundColor: '#D9641E' },
+              backgroundColor: '#D9641E',
+              '&:hover': { backgroundColor: '#D9641E' },
             }}
-          />
+          >
+            Find Lawyers
+          </Button>
         </Box>
-      </Box>
 
-      <Button
-        variant="contained"
-        onClick={handleSubmit}
-        style={{
-          backgroundColor: '#D9641E',
-          color: 'white',
-          marginTop: '30px',
-        }}
-      >
-        Search
-      </Button>
+        {/* Results Section */}
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          marginTop="20px"
+        >
+          {loading && <CircularProgress />}
+          {error && <Typography color="error">{error}</Typography>}
 
-      {/* Results Section */}
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        marginTop="20px"
-      >
-        {loading && <CircularProgress />}
-        {error && <Typography color="error">{error}</Typography>}
-
-        {lawyers.length > 0 ? (
+          {lawyers.length > 0 ? (
           <Box display="flex" flexWrap="wrap" justifyContent="center" gap="20px">
             {lawyers.map((lawyer, index) => (
               <Box
@@ -441,65 +445,27 @@ function ClientHome() {
               </Box>
             ))}
           </Box>
-        ) : (
-          <Typography>No results found</Typography>
-        )}
-      </Box>
-
-      {/* Cards Section */}
-      <Box style={styles.cardsSection}>
-        {sections.map((section, index) => (
+        ) : searchPerformed && (
           <Box
-            key={section.title}
-            style={{
-              width: '30%',
-              textAlign: 'center',
-              padding: '20px',
-              backgroundColor: '#F7F7F7',
-              borderRadius: '12px',
-              cursor: 'pointer',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-              height: expandedCard === index ? '220px' : '200px',
-              transition: 'height 0.3s ease, transform 0.3s ease',
-              margin: '0 10px',
+            sx={{
               display: 'flex',
-              flexDirection: 'column',
+              justifyContent: 'center',
               alignItems: 'center',
+              width: '100%',
             }}
-            onMouseEnter={() => setExpandedCard(index)}
-            onMouseLeave={() => setExpandedCard(null)}
           >
-            {section.icon}
-            <Box
-              style={{
-                backgroundColor: '#FFEEE3',
-                borderRadius: '20px',
-                padding: '8px 16px',
-                marginTop: '10px',
-              }}
-            >
-              <Typography variant="h6" style={{ fontFamily: 'Faculty Glyphic', color: '#212121', fontWeight: '600' }}>
-                {section.title}
-              </Typography>
-            </Box>
-            <Typography
-              style={{
-                color: '#632F0F',
-                fontFamily: 'Faculty Glyphic',
-                marginTop: '10px',
-                fontSize: '14px',
-                lineHeight: '1.5',
-              }}
-            >
-              {expandedCard === index ? section.extendedDescription : section.description}
-            </Typography>
+            <Typography>No results found</Typography>
           </Box>
-        ))}
+        )}
+
+        </Box>
       </Box>
 
       {/* Footer Section */}
-      <Box style={styles.footer}>© The Civilify Company, Cebu City</Box>
-    </div>
+      <Box sx={styles.footer}>
+        © The Civilify Company, Cebu City 2024. All rights reserved.
+      </Box>
+    </Box>
   );
 }
 
