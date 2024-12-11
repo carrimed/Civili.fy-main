@@ -6,7 +6,7 @@ import axios from 'axios';
 import { styled } from '@mui/system';
 import { FaClock, FaStar } from 'react-icons/fa';
 
-function LawyerPersonalProfile() {
+function lawyerclientpov() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -108,6 +108,7 @@ function LawyerPersonalProfile() {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
     const storedUserType = localStorage.getItem('userType'); 
+    setUserType(storedUserType);
 
     if (lawyerId) {
       fetchLawyerDetailsById(lawyerId);
@@ -401,7 +402,11 @@ function LawyerPersonalProfile() {
         </span>{' '}
         <span style={styles.infoText}>{lawyerDetails.consultationFee}</span>
       </Typography>
-        <StyledButton onClick={() => navigate('/civilify/lawyer-accountsettings-page')}>Edit Profile</StyledButton> 
+      {userType === 'Lawyer' ? (
+        <StyledButton onClick={() => navigate('/civilify/lawyer-accountsettings-page')}>Edit Profile</StyledButton>
+      ) : (
+        <StyledButton onClick={() => navigate('/civilify/appointment')}>Book Appointment</StyledButton>
+      )}
     </Box>
   </Box>
 
@@ -631,4 +636,4 @@ function LawyerPersonalProfile() {
   );
 }
 
-export default LawyerPersonalProfile;
+export default lawyerclientpov;

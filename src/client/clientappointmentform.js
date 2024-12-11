@@ -6,10 +6,10 @@ import CloseIcon from '@mui/icons-material/Close';
 
 // For the Book Appointment Form
 const StyledButton = styled(Button)(({ theme, colorType }) => ({
-    backgroundColor: colorType === 'red' ? '#D32F2F' : colorType === 'green' ? '#388E3C' : '#000000',
+    backgroundColor: colorType === 'red' ? '#D32F2F' : colorType === 'green' ? '#388E3C' : colorType === 'orange' ? '#FFA500' : '#000000',
     color: '#F1F1F1',
     '&:hover': {
-        backgroundColor: colorType === 'red' ? '#C62828' : colorType === 'green' ? '#2C6B2F' : '#333333',
+        backgroundColor: colorType === 'red' ? '#C62828' : colorType === 'green' ? '#2C6B2F' : colorType === 'orange' ? '#FF8C00' : '#333333',
     },
     fontSize: '1rem',
     padding: '10px 20px',

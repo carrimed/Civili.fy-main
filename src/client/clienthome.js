@@ -32,6 +32,7 @@ function ClientHome() {
   const [lawyers, setLawyers] = useState([]);
   const [showCardsSection, setShowCardsSection] = useState(true); // State to manage visibility of cards section
 
+  
   useEffect(() => {
     const storedUserType = localStorage.getItem('userType'); // Retrieve from localStorage
     if (storedUserType) {
@@ -58,9 +59,18 @@ function ClientHome() {
     handleClose();
   };
 
-  const handleProfileRedirect = (lawyerId) => {
-    navigate(`/civilify/lawyer-profile-page/${lawyerId}`);
+  const handleProfileRedirect = () => {
+    if (userType === 'Client') {
+      navigate('/civilify/client-profile-page'); // Redirect to client profile
+    } else if (userType === 'Lawyer') {
+      navigate('/civilify/lawyer-profile-page'); // Redirect to lawyer profile
+    }
+    handleClose(); // Closes the dropdown menu
   };
+
+  const handleCardRedirect = (lawyerId) => {
+    navigate(`/civilify/client-lawyer-page/${lawyerId}`);
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -412,7 +422,7 @@ function ClientHome() {
                   margin: '10px',
                   flex: index < 3 ? '1 1 calc(33.33% - 20px)' : '1 1 calc(25% - 20px)', // Limit first row to 3 cards
                 }}
-                onClick={() => navigate(`/civilify/lawyer-profile-page/${lawyer.lawyerId}`)}
+                onClick={() => handleCardRedirect(lawyer.lawyerId)}
               >
                 <Box style={styles.profilePicContainer}>
                   <div style={styles.profilePic}>
