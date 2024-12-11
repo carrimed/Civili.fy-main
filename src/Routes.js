@@ -15,11 +15,9 @@ import LandingPage from './landingpage';
 import AdminLogin from './admin/adminlogin';
 import AdminHome from './admin/adminhome';
 
-import ProtectedRoute from './utils/protectedroute';
 import LawyerAccount from './lawyer/lawyeraccount';
 import LawyerClients from './lawyer/lawyerclients';
 import LawyerSearch from './lawyersearch';
-import LawyerPP from './client/clientbook';
 import ClientViewLawyerProfile from './client/clientbook';
 
 

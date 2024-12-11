@@ -13,9 +13,6 @@ import {
   TextField,
   CircularProgress
 } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import MessageIcon from '@mui/icons-material/Message';
-import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -26,7 +23,6 @@ function ClientHome() {
   const [lawyerType, setLawyerType] = useState('');
   const [rateRange, setRateRange] = useState([2000, 75000]);
   const [loading, setLoading] = useState(false);
-  const [expandedCard, setExpandedCard] = useState(null);
   const [userType, setUserType] = useState('');
   const [error, setError] = useState(null);
   const [lawyers, setLawyers] = useState([]);
@@ -47,7 +43,7 @@ function ClientHome() {
 
   const handleLogout = () => {
     setLoading(true);
-    // Clear localStorage
+
     localStorage.removeItem('username');
     localStorage.removeItem('password');
     localStorage.removeItem('userType');
@@ -70,13 +66,13 @@ function ClientHome() {
 
   const handleCardRedirect = (lawyerId) => {
     navigate(`/civilify/client-lawyer-page/${lawyerId}`);
-  }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
-    setSearchPerformed(true); // Mark search as performed
+    setSearchPerformed(true);
     setShowCardsSection(false);
 
     try {
@@ -125,6 +121,29 @@ function ClientHome() {
       margin: '0',
       textAlign: 'left',
       cursor: 'pointer',
+    },
+    searchFormContainer: {
+      position: 'absolute',
+      top: '20px',
+      left: '20px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
+      width: '300px',
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      padding: '20px',
+      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    },
+    searchResultsContainer: {
+      position: 'absolute',
+      top: '20px',
+      left: '340px', // Adjust this value to control the spacing
+      width: 'calc(100% - 360px)', // Adjust this value to control the width
+      display: 'flex',
+      flexWrap: 'wrap',
+      justifyContent: 'space-around',
+      alignItems: 'center',
     },
     profilePicContainer: {
       display: 'flex',
@@ -190,22 +209,22 @@ function ClientHome() {
   };
 
   return (
-      <Box
-        sx={{
-          position: 'relative',
-          backgroundColor: searchPerformed ? 'white' : '#F7F7F7', // Change background after search
-          backgroundImage: searchPerformed ? 'none' : 'url(/images/homepageimg1.png)', // Remove image after search
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-          width: '100vw',
-          height: '100vh',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      > 
+    <Box
+      sx={{
+        position: 'relative',
+        backgroundColor: searchPerformed ? 'white' : '#F7F7F7',
+        backgroundImage: searchPerformed ? 'none' : 'url(/images/homepageimg1.png)',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
 
       {/* Header Section */}
       <Box
@@ -224,139 +243,103 @@ function ClientHome() {
           padding: '0 20px',
         }}
       >
-      <img
+        <img
           src="/images/logoiconblack.png"
           alt="Logo"
           style={{ width: '40px', height: '40px', marginLeft: '30px' }}
         />
 
-<Box style={{ display: 'flex', marginRight: '30px' }}>
-      <Typography
-        variant="body2"
-        style={{
-          color: '#212121',
-          fontFamily: 'Faculty Glyphic',
-          fontSize: '15px',
-          fontWeight: '500',
-          cursor: 'pointer',
-          marginLeft: '50px',
-          padding: '5px 15px',
-          border: '1px solid #8E8E8E',
-          borderRadius: '8px',
-        }}
-      >
-        Support
-      </Typography>
-      <Typography
-        variant="body2"
-        style={{
-          color: '#212121',
-          fontFamily: 'Faculty Glyphic',
-          fontSize: '15px',
-          fontWeight: '500',
-          cursor: 'pointer',
-          marginLeft: '50px',
-          padding: '5px 15px',
-          border: '1px solid #8E8E8E',
-          borderRadius: '8px',
-        }}
-        onClick={handleProfileClick}
-      >
-        Profile
-      </Typography>
-    </Box>
-  </Box>
-{/* Move Search Form to the Bottom Left of the Header */}
-<Box
-  style={{
-    position: 'absolute',
-    top: '20px',  // Adjust as needed
-    left: '20px',
-    display: searchPerformed ? 'none' : 'block',  // Hide after search
-  }}
->
-  <Box
-    display="flex"
-    flexDirection="column"
-    gap="20px"
-    width="300px"
-    sx={{
-      backgroundColor: 'white',
-      borderRadius: '8px',
-      padding: '20px',
-      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-    }}
-  ></Box>
-  </Box>
-      {/* Profile Dropdown Menu */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        <MenuItem onClick={handleProfileRedirect}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>Settings</MenuItem>
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
-      </Menu>
+        <Box style={{ display: 'flex', marginRight: '30px' }}>
+          <Typography
+            variant="body2"
+            style={{
+              color: '#212121',
+              fontFamily: 'Faculty Glyphic',
+              fontSize: '15px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              marginLeft: '50px',
+              padding: '5px 15px',
+              border: '1px solid #8E8E8E',
+              borderRadius: '8px',
+            }}
+          >
+            Support
+          </Typography>
+          <Typography
+            variant="body2"
+            style={{
+              color: '#212121',
+              fontFamily: 'Faculty Glyphic',
+              fontSize: '15px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              marginLeft: '50px',
+              padding: '5px 15px',
+              border: '1px solid #8E8E8E',
+              borderRadius: '8px',
+            }}
+            onClick={handleProfileClick}
+          >
+            Profile
+          </Typography>
+        </Box>
+      </Box>
 
-      {/* Main Content */}
-{/* Search Form */}
-<Box display="flex" justifyContent="center" alignItems="center" marginTop="150px">
-  {!searchPerformed && (
-    <Typography
-      variant="h4"
-      style={{
-        fontFamily: 'Faculty Graphic',
-        color: 'white',
-        fontWeight: 'normal',
-        textAlign: 'left', // Change to 'left' for left alignment
-        maxWidth: '500px',
-        fontSize: '90px',
-        lineHeight: '1.3', // Optional, to adjust spacing between lines
-        marginRight: '300px',
-      }}
-    >
-      The search
-      <br />
-      for justice
-      <br />
-      starts here.
-    </Typography>
-  )}
+      {/* Search Form */}
+      <Box display="flex" justifyContent="center" alignItems="center" marginTop="150px">
+        {!searchPerformed && (
+          <Typography
+            variant="h4"
+            style={{
+              fontFamily: 'Faculty Graphic',
+              color: 'white',
+              fontWeight: 'normal',
+              textAlign: 'left',
+              maxWidth: '500px',
+              fontSize: '90px',
+              lineHeight: '1.3',
+              marginRight: '300px',
+            }}
+          >
+            The search
+            <br />
+            for justice
+            <br />
+            starts here.
+          </Typography>
+        )}
 
-  {/* Search Form (Arranged Vertically) */}
-  <Box
-    display="flex"
-    flexDirection="column"
-    gap="20px"
-    width="300px"
-    sx={{
-      backgroundColor: 'white',  // Set background to white
-      borderRadius: '8px',       // Make the edges rounded
-      padding: '20px',           // Add some padding inside the box
-      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',  // Optional: Add subtle shadow for better visual
-    }}
-  >
-    {/* Dropdown for Category */}
-    <Autocomplete
-      options={categoryOptions}
-      value={category}
-      onChange={(event, newValue) => setCategory(newValue)}
-      inputValue={category || ''}
-      onInputChange={(event, newInputValue) => setCategory(newInputValue || '')}
-      freeSolo
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label="Category"
-          variant="outlined"
-          error={!category && Boolean(category)}
-        />
-      )}
-    />
+        {/* Search Form (Arranged Vertically) */}
+        <Box
+          display="flex"
+          flexDirection="column"
+          gap="20px"
+          width="300px"
+          sx={{
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            padding: '20px',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          {/* Dropdown for Category */}
+          <Autocomplete
+            options={categoryOptions}
+            value={category}
+            onChange={(event, newValue) => setCategory(newValue)}
+            inputValue={category || ''}
+            onInputChange={(event, newInputValue) => setCategory(newInputValue || '')}
+            freeSolo
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Category"
+                variant="outlined"
+                error={!category && Boolean(category)}
+              />
+            )}
+          />
 
           {/* Lawyer Type Selection */}
           <FormControl fullWidth>
@@ -404,47 +387,44 @@ function ClientHome() {
             Find Lawyers
           </Button>
         </Box>
+      </Box>
 
-        {/* Results Section */}
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          marginTop="20px"
-        >
-          {loading && <CircularProgress />}
-          {error && <Typography color="error">{error}</Typography>}
+      {/* Results Section */}
+      <Box display="flex" flexDirection="column" alignItems="center" marginTop="20px">
+        {loading && <CircularProgress />}
+        {error && <Typography color="error">{error}</Typography>}
 
-          {lawyers.length > 0 ? (
-          <Box display="flex" flexWrap="wrap" justifyContent="center" gap="20px">
-            {lawyers.map((lawyer, index) => (
-              <Box
-                key={lawyer.lawyerId}
-                style={{
-                  ...styles.profileCard,
-                  maxWidth: '300px',
-                  margin: '10px',
-                  flex: index < 3 ? '1 1 calc(33.33% - 20px)' : '1 1 calc(25% - 20px)', // Limit first row to 3 cards
-                }}
-                onClick={() => handleCardRedirect(lawyer.lawyerId)}
-              >
-                <Box style={styles.profilePicContainer}>
-                  <div style={styles.profilePic}>
-                    <img
-                      src={`data:image/jpeg;base64,${lawyer.profilePicture}`} // Dynamically set the profile picture URL
-                      alt="Profile"
-                      style={styles.profilePicImage}
-                    />
-                  </div>
-                </Box>
-                <div style={styles.divider}></div>
-                <Typography style={styles.name}>{lawyer.name}</Typography>
-                <Typography style={styles.infoText}>Specialization: {lawyer.specialization}</Typography>
-                <Typography style={styles.infoText}>Hourly Rate: {lawyer.hourlyRate} PHP</Typography>
-                <Typography style={styles.infoText}>Address: {lawyer.officeAddress}, {lawyer.zipcode}</Typography>
+        {lawyers.length > 0 ? (
+          <Box display="flex" flexWrap="nowrap" justifyContent="flex-start" gap="20px" overflow="auto">
+          {lawyers.map((lawyer, index) => (
+            <Box
+              key={lawyer.lawyerId}
+              style={{
+                ...styles.profileCard,
+                maxWidth: '300px',
+                margin: '10px',
+                flex: 'none', // Ensures that the items don't shrink or grow
+              }}
+              onClick={() => handleCardRedirect(lawyer.lawyerId)}
+            >
+              <Box style={styles.profilePicContainer}>
+                <div style={styles.profilePic}>
+                  <img
+                    src={`data:image/jpeg;base64,${lawyer.profilePicture}`}
+                    alt="Profile"
+                    style={styles.profilePicImage}
+                  />
+                </div>
               </Box>
-            ))}
-          </Box>
+              <div style={styles.divider}></div>
+              <Typography style={styles.name}>{lawyer.name}</Typography>
+              <Typography style={styles.infoText}>Specialization: {lawyer.specialization}</Typography>
+              <Typography style={styles.infoText}>Hourly Rate: {lawyer.hourlyRate} PHP</Typography>
+              <Typography style={styles.infoText}>Address: {lawyer.officeAddress}, {lawyer.zipcode}</Typography>
+            </Box>
+          ))}
+        </Box>
+        
         ) : searchPerformed && (
           <Box
             sx={{
@@ -457,8 +437,6 @@ function ClientHome() {
             <Typography>No results found</Typography>
           </Box>
         )}
-
-        </Box>
       </Box>
 
       {/* Footer Section */}
