@@ -422,7 +422,7 @@ function ClientHome() {
                   margin: '10px',
                   flex: index < 3 ? '1 1 calc(33.33% - 20px)' : '1 1 calc(25% - 20px)', // Limit first row to 3 cards
                 }}
-                onClick={() => handleCardRedirect(`/civilify/client-lawyer-page/${lawyer.lawyerId}`)}
+                onClick={() => handleCardRedirect(lawyer.lawyerId)}
               >
                 <Box style={styles.profilePicContainer}>
                   <div style={styles.profilePic}>
