@@ -86,7 +86,7 @@ public class LawyerController {
         }
     }
     
-    @PostMapping("/updateProfilePicture/{lawyer_id}")
+    @PutMapping("/updateProfilePicture/{lawyer_id}")
     public ResponseEntity<String> updateProfilePicture(
             @PathVariable int lawyerId,
             @RequestParam("profilePicture") MultipartFile file) {
