@@ -60,7 +60,7 @@ function ClientAppointmentForm() {
 
     return (
         <>
-            <StyledButton onClick={() => setOpen(true)}>Book Appointment</StyledButton>
+            <StyledButton colorType="orange" onClick={() => setOpen(true)}>Book Appointment</StyledButton>
 
             <Modal open={open} onClose={() => setOpen(false)}>
                 <Box sx={{
@@ -109,7 +109,6 @@ function ClientAppointmentForm() {
                                     fullWidth
                                     onChange={handleInputChange}
                                     InputLabelProps={{ shrink: true }}
-
                                 />
                             </Grid>
                         </Grid>
@@ -133,7 +132,7 @@ function ClientAppointmentForm() {
                         </Box>
 
                         {/* Positioning DISCARD and BOOK Buttons at the Bottom */}
-                        <Box sx={{ display: 'flex', justifyContent: 'center'}}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                             <StyledButton onClick={handleDiscard} colorType="red" sx={{ width: '100%' }}>DISCARD</StyledButton>
                             <StyledButton onClick={handleSubmit} colorType="green" sx={{ width: '100%' }} disabled={!termsAccepted}>BOOK</StyledButton>
                         </Box>
