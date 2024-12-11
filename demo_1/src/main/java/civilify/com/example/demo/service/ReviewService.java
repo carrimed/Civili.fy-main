@@ -40,10 +40,15 @@ public class ReviewService {
     // Method to get all reviews
     public List<ReviewEntity> getAllReviews() {
         return reviewRepo.findAll();
+    }//sd
+
+    // Method to get reviews by lawyer ID
+    public List<ReviewEntity> getReviewsByLawyerId(int lawyerId) {
+        return reviewRepo.findByLawyer_LawyerId(lawyerId);
     }
 
     // Method to update review details
-    public ReviewEntity updateReview(int reviewId, ReviewEntity newReviewDetails) {
+    public ReviewEntity updateReview(Long reviewId, ReviewEntity newReviewDetails) {
         ReviewEntity review = reviewRepo.findById(reviewId)
                 .orElseThrow(() -> new NoSuchElementException("Review with ID " + reviewId + " not found"));
 
@@ -54,7 +59,7 @@ public class ReviewService {
     }
 
     // Method to delete a review by ID
-    public String deleteReview(int reviewId) {
+    public String deleteReview(Long reviewId) {
         if (reviewRepo.existsById(reviewId)) {
             reviewRepo.deleteById(reviewId);
             return "Review with ID " + reviewId + " successfully deleted!";
