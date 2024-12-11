@@ -108,7 +108,9 @@ function LawyerPersonalProfile() {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
     const storedUserType = localStorage.getItem('userType'); 
+    setUserType(storedUserType);
 
+    const lawyerId = localStorage.getItem('lawyerId');
     if (lawyerId) {
       fetchLawyerDetailsById(lawyerId);
     } else if (username && password) {

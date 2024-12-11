@@ -142,6 +142,7 @@ public class LawyerController {
     
     
     // Get Client by ID
+    @CrossOrigin(origins = "*")
     @GetMapping("/findById/{lawyerId}")
     public ResponseEntity<LawyerEntity> getLawyerById(@PathVariable int lawyerId) {
         try {
