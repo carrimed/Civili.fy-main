@@ -18,7 +18,8 @@ public class AppointmentController {
     private AppointmentService appointmentService;
 
     // Create a new appointment with client and lawyer IDs
-	@PostMapping("/postAppointmentRecord")
+    @CrossOrigin(origins = "*")
+    @PostMapping("/postAppointmentRecord")
     public ResponseEntity<AppointmentEntity> postAppointmentRecord(
             @RequestBody AppointmentEntity appointment,
             @RequestParam int clientId,

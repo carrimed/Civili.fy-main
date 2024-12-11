@@ -42,13 +42,15 @@ function Login() {
       const response = await axios.post(endpoint, { loginField: username, password });
 
       // Extract token and user details from the response
-      const { token, userType } = response.data; // Backend should provide a token and userType
+      const { token, userType} = response.data; // Backend should provide a token and userType
 
       // Save token and user details in localStorage
       localStorage.setItem('username', username);
       localStorage.setItem('password', password); // For now (remove when token is fully implemented)
       localStorage.setItem('userType', userType || loginMode);
       localStorage.setItem('token', token || ''); // Token stored for future implementation
+      
+      
 
       setLoading(false);
 

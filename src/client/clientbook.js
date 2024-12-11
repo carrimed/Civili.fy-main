@@ -7,6 +7,7 @@ import { styled } from '@mui/system';
 import { FaClock, FaStar } from 'react-icons/fa';
 import ClientAppointmentForm from './clientappointmentform';
 
+
 function ClientLawyerPov() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -404,7 +405,7 @@ function ClientLawyerPov() {
         </span>{' '}
         <span style={styles.infoText}>{lawyerDetails.consultationFee}</span>
       </Typography>
-      <ClientAppointmentForm open={formOpen} setOpen={setFormOpen} />
+      <ClientAppointmentForm lawyerId={lawyerId} />
     </Box>
   </Box>
 

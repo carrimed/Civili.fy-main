@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, TextField, Button, Typography, Paper, Box, Grid, Snackbar, Alert, Checkbox } from '@mui/material';
 import { styled } from '@mui/system';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CloseIcon from '@mui/icons-material/Close';
+import axios from 'axios';
 
 // For the Book Appointment Form
 const StyledButton = styled(Button)(({ theme, colorType }) => ({
@@ -17,37 +18,99 @@ const StyledButton = styled(Button)(({ theme, colorType }) => ({
     width: '100%', // For both buttons to align nicely
 }));
 
-function ClientAppointmentForm() {
+function ClientAppointmentForm({ lawyerId }) {
     const [open, setOpen] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [appointmentDetails, setAppointmentDetails] = useState({ date: '', time: '', message: '' });
+    const [appointmentDetails, setAppointmentDetails] = useState({ date: '', time: ''});
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [termsAccepted, setTermsAccepted] = useState(false); // Track checkbox state
+    const [clientId, setClientId] = useState('');
+    const [appointmentDate, setAppointmentDate] = useState('');
+    const [appointmentTime, setAppointmentTime] = useState('');
+
+    useEffect(() => {
+        const fetchClientDetails = async () => {
+            const username = localStorage.getItem('username');
+            const password = localStorage.getItem('password');
+
+            if (!username || !password) {
+                setMessage('Username or password not found. Please log in again.');
+                setSnackbarOpen(true);
+                return;
+            }
+
+            try {
+                const response = await axios.post('http://localhost:8080/api/client/login', {
+                    loginField: username,
+                    password: password,
+                });
+
+                const { clientId } = response.data;
+                setClientId(clientId);
+            } catch (error) {
+                setMessage('Failed to fetch client details. Please log in again.');
+                setSnackbarOpen(true);
+            }
+        };
+
+        fetchClientDetails();
+    }, []);
 
     const handleInputChange = (e) => {
-        setAppointmentDetails({ ...appointmentDetails, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        if (name === 'date') {
+            setAppointmentDate(value);
+        } else if (name === 'time') {
+            setAppointmentTime(value);
+        }
     };
+    
 
-    const handleSubmit = () => {
-        if (!appointmentDetails.date || !appointmentDetails.time || !appointmentDetails.message || !termsAccepted) {
-            setMessage('Please fill in all fields and accept the terms');
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Format date and time
+        const formattedDate = appointmentDate; // Date already in 'yyyy-mm-dd' format
+        const formattedTime = `${appointmentTime}:00`; // Append seconds to the time (HH:mm:ss)
+
+        const appointmentData = {
+            date: formattedDate,  // Send formatted date
+            time: formattedTime,  // Send formatted time with seconds
+        };
+
+        if (!clientId || !lawyerId) {
+            setMessage('Client or lawyer ID not found.');
             setSnackbarOpen(true);
             return;
         }
-        setSubmitted(true);
-        setMessage('Appointment Request Sent!');
-        setSnackbarOpen(true);
-        setTimeout(() => {
-            setSubmitted(false);
-            setOpen(false); // Close the form after a brief confirmation
-        }, 3000);  // Show success message briefly
+
+        try {
+            const response = await axios.post(
+                'http://localhost:8080/api/appointment/postAppointmentRecord',
+                appointmentData,
+                {
+                    params: {
+                        clientId: clientId,
+                        lawyerId: lawyerId,
+                    },
+                }
+            );
+
+            console.log(response.data); // Handle success
+            setMessage('Appointment successfully created!');
+            setSnackbarOpen(true);
+        } catch (error) {
+            console.error('Error posting appointment:', error.response.data);
+            setMessage('Error posting appointment');
+            setSnackbarOpen(true);
+        }
     };
 
     const handleDiscard = () => {
-        setAppointmentDetails({ date: '', time: '', message: '' }); // Clear form fields
-        setTermsAccepted(false); // Reset checkbox
-        setOpen(false); // Close the modal
+        setAppointmentDetails({ date: '', time: ''});
+        setTermsAccepted(false);
+        setOpen(false);
     };
 
     const handleCloseSnackbar = () => {
@@ -55,7 +118,7 @@ function ClientAppointmentForm() {
     };
 
     const handleCheckboxChange = (e) => {
-        setTermsAccepted(e.target.checked); // Update checkbox state
+        setTermsAccepted(e.target.checked);
     };
 
     return (
@@ -65,7 +128,7 @@ function ClientAppointmentForm() {
             <Modal open={open} onClose={() => setOpen(false)}>
                 <Box sx={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    minHeight: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.6)'
+                    minHeight: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.6)',
                 }}>
                     <Paper elevation={3} sx={{
                         padding: '30px', width: '450px', minHeight: '400px', textAlign: 'center', backgroundColor: '#F1F1F1',
@@ -73,7 +136,7 @@ function ClientAppointmentForm() {
                     }}>
                         <Box display="flex" justifyContent="space-between" alignItems="center">
                             <Typography variant="h6" sx={{ color: '#41423A', fontWeight: 600 }}>
-                                Booking appointment for: James Bond
+                                Booking appointment:
                             </Typography>
                             <Button onClick={() => setOpen(false)} sx={{ minWidth: 0, padding: 0 }}>
                                 <CloseIcon sx={{ color: '#D9641E' }} />
@@ -86,6 +149,7 @@ function ClientAppointmentForm() {
                                     label="Select Date"
                                     type="date"
                                     fullWidth
+                                    value={appointmentDate}
                                     onChange={handleInputChange}
                                     InputLabelProps={{ shrink: true }}
                                 />
@@ -96,6 +160,7 @@ function ClientAppointmentForm() {
                                     label="Select Time"
                                     type="time"
                                     fullWidth
+                                    value={appointmentTime}
                                     onChange={handleInputChange}
                                     InputLabelProps={{ shrink: true }}
                                 />
@@ -107,7 +172,8 @@ function ClientAppointmentForm() {
                                     multiline
                                     rows={6}  // Adjusted height for the message field
                                     fullWidth
-                                    onChange={handleInputChange}
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
                                     InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
@@ -134,7 +200,9 @@ function ClientAppointmentForm() {
                         {/* Positioning DISCARD and BOOK Buttons at the Bottom */}
                         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                             <StyledButton onClick={handleDiscard} colorType="red" sx={{ width: '100%' }}>DISCARD</StyledButton>
-                            <StyledButton onClick={handleSubmit} colorType="green" sx={{ width: '100%' }} disabled={!termsAccepted}>BOOK</StyledButton>
+                            <StyledButton onClick={handleSubmit} colorType="green" sx={{ width: '100%' }} disabled={!termsAccepted}>
+                                BOOK
+                            </StyledButton>
                         </Box>
 
                         {submitted && (
@@ -159,6 +227,6 @@ function ClientAppointmentForm() {
             </Snackbar>
         </>
     );
-}
+};
 
 export default ClientAppointmentForm;
