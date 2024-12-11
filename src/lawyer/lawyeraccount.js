@@ -16,6 +16,13 @@ import { useNavigate } from 'react-router-dom';
 import { AccountCircle } from '@mui/icons-material';
 import axios from 'axios';
 
+const specializationOptions = [
+  "Environmental law", "Intellectual Property Law", "Family law", "International law", "Corporate law", "Health law",
+  "Property law", "Tax law", "Constitutional law", "Immigration law", "Business law", "Administrative law", "Education law",
+  "Animal law", "Bankruptcy", "Civil procedure", "Alternative dispute resolution", "Civil and political rights", "Media law",
+  "Municipal law", "Criminal law", "Employment law", "Banking laws", "Criminal litigation",
+];
+
 function LawyerAccount() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -31,26 +38,26 @@ function LawyerAccount() {
     consultationFee: '',
     hourlyRate: '',
     password: '',
-    profilePicture: '', // To store profile photo
-    lawyerType: '', // Added field for lawyer type
+    profilePicture: '',
+    lawyerType: '',
   });
 
   useEffect(() => {
     const fetchLawyerData = async () => {
       const username = localStorage.getItem('username');
       const password = localStorage.getItem('password');
-  
+
       if (username && password) {
         try {
           const response = await axios.post('http://localhost:8080/api/lawyer/login', {
             loginField: username,
             password: password,
           });
-  
+
           const lawyerId = response.data.lawyerId;
           const lawyerDetailsResponse = await axios.get(`http://localhost:8080/api/lawyer/findById/${lawyerId}`);
           const profilePictureResponse = await axios.get(`http://localhost:8080/api/lawyer/getProfilePicture/${lawyerId}`);
-  
+
           const profilePictureData = profilePictureResponse.data;
           setFormData({
             ...lawyerDetailsResponse.data,
@@ -75,19 +82,20 @@ function LawyerAccount() {
 
   const handleSave = async () => {
     try {
+      const lawyerId = formData.lawyerId;
       const response = await axios.put(
-        `http://localhost:8080/api/lawyer/updateProfile`, // Endpoint to update lawyer profile
+        `http://localhost:8080/api/lawyer/update/${lawyerId}`,
         formData
       );
       console.log('Lawyer profile updated successfully:', response.data);
-      navigate('/civilify/lawyer-profile-page'); // Navigate back after save
+      navigate('/civilify/lawyer-profile-page');
     } catch (error) {
       console.error('Error updating profile:', error.response ? error.response : error);
     }
   };
 
   const handleDiscard = () => {
-    setFormData({ ...formData }); // Reset to original data
+    setFormData({ ...formData });
     navigate('/civilify/lawyer-profile-page');
   };
 
@@ -154,20 +162,6 @@ function LawyerAccount() {
           alt="Logo"
           style={{ width: '50px', height: '50px' }}
         />
-        <Box display="flex" alignItems="center" marginLeft="auto">
-          <IconButton onClick={handleProfileClick} style={{ color: 'black' }}>
-            <AccountCircle />
-          </IconButton>
-          <Typography
-            variant="body1"
-            style={{ cursor: 'pointer', marginLeft: '15px' }}
-            onClick={handleSignOut}
-            onMouseEnter={(e) => (e.target.style.color = 'orange')}
-            onMouseLeave={(e) => (e.target.style.color = 'black')}
-          >
-            Sign out
-          </Typography>
-        </Box>
       </Box>
 
       <Card style={styles.card}>
@@ -211,14 +205,21 @@ function LawyerAccount() {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              label="Specialization"
-              name="specialization"
-              value={formData.specialization}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="specialization-label">Specialization</InputLabel>
+              <Select
+                labelId="specialization-label"
+                name="specialization"
+                value={formData.specialization}
+                onChange={handleChange}
+              >
+                {specializationOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -275,6 +276,7 @@ function LawyerAccount() {
             <TextField
               label="Consultation Fee"
               name="consultationFee"
+              type="number"
               value={formData.consultationFee}
               onChange={handleChange}
               fullWidth
@@ -285,6 +287,7 @@ function LawyerAccount() {
             <TextField
               label="Hourly Rate"
               name="hourlyRate"
+              type="number"
               value={formData.hourlyRate}
               onChange={handleChange}
               fullWidth
@@ -310,7 +313,6 @@ function LawyerAccount() {
                 name="lawyerType"
                 value={formData.lawyerType}
                 onChange={handleChange}
-                fullWidth
               >
                 <MenuItem value="Private">Private</MenuItem>
                 <MenuItem value="Corporate">Corporate</MenuItem>

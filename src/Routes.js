@@ -21,6 +21,7 @@ import LawyerClients from './lawyer/lawyerclients';
 import LawyerSearch from './lawyersearch';
 import LawyerPP from './client/clientbook';
 import ClientViewLawyerProfile from './client/clientbook';
+import LawyerResults from './client/lawyerresults';
 
 
 function AppRoutes() {
@@ -40,6 +41,7 @@ function AppRoutes() {
       <Route path="/civilify/client-review-page" element={<ClientReview />}/>
       <Route path="/civilify/client-appointment" element={<ClientAppointmentForm />}/>
       <Route path="/civilify/client-update-profile-page" element={<ClientUpdateProfile />}/>
+      <Route path="/civilify/lawyer-results-page" element={<LawyerResults />} />
 
       <Route path="/civilify/admin-login-page" element={<AdminLogin />}/>
       <Route path="/civilify/admin-home-page" element={<AdminHome />}/>
