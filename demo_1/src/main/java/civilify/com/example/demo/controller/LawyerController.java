@@ -184,17 +184,8 @@ public class LawyerController {
                new ResponseEntity<>(lawyers, HttpStatus.OK);
     }
 
-    // Read functionality (GET all lawyers)
-   /* @GetMapping("/getAllLawyers")
-    public ResponseEntity<List<LawyerEntity>> getAllLawyers() {
-        List<LawyerEntity> lawyers = lawyerService.getAllLawyers();
-        return lawyers.isEmpty() ? 
-               new ResponseEntity<>(HttpStatus.NO_CONTENT) : 
-               new ResponseEntity<>(lawyers, HttpStatus.OK);
-    } */
-
     // Update functionality (PUT) - Fixed to use @PathVariable for lawyer_id
-    @PutMapping("/update/{lawyerId}")
+    @PutMapping("/update/{lawyer_id}")
     public ResponseEntity<LawyerEntity> updateLawyer(@PathVariable int lawyerId, @RequestBody LawyerEntity updatedLawyer) {
         LawyerEntity lawyer = lawyerService.updateLawyer(lawyerId, updatedLawyer);
         return lawyer != null ? 
@@ -215,7 +206,6 @@ public class LawyerController {
         }
     }
     
-    // New Delete
     // Delete functionality (DELETE by name)
     @DeleteMapping("/deleteLawyerByName/{name}")
     public String deleteLawyerByName(@PathVariable String name) {

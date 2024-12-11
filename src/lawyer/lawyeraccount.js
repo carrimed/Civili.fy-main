@@ -315,7 +315,6 @@ function LawyerAccount() {
                 onChange={handleChange}
               >
                 <MenuItem value="Private">Private</MenuItem>
-                <MenuItem value="Corporate">Corporate</MenuItem>
                 <MenuItem value="Public">Public</MenuItem>
               </Select>
             </FormControl>

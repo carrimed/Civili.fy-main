@@ -24,7 +24,7 @@ public class LawyerEntity {
     @Column(name = "specialization", nullable = false)
     private String specialization;
 
-    @Column(name = "contact_number", nullable = false)
+    @Column(name = "contact_number", nullable = true)
     private String contactNumber;
 
     @Column(name = "office_address", nullable = false)
