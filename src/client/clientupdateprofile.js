@@ -7,39 +7,68 @@ import {
   Card,
   TextField,
   Button,
+  Select,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function ClientUpdateProfile() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
-
   const [formData, setFormData] = useState({
+    clientId: '',
     name: '',
     username: '',
     email: '',
-    phone: '',
+    contactNumber: '',
     birthdate: '',
-    civilstatus: '',
-    job: '',
+    civilStatus: '',
+    occupation: '',
     address: '',
     zipcode: '',
     profilePicture: '', // To store profile photo
   });
+  const [newProfilePicture, setNewProfilePicture] = useState(null); // To store new profile photo
 
-  // Fetch profile data from localStorage when component loads
+  // Fetch current profile data
   useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem('profileData')) || {};
-    setFormData(storedData);
+    const fetchClientData = async () => {
+      const username = localStorage.getItem('username');
+      const password = localStorage.getItem('password');
+
+      if (username && password) {
+        try {
+          const response = await axios.post('http://localhost:8080/api/client/login', {
+            loginField: username,
+            password: password,
+          });
+          
+          const clientId = response.data.clientId;
+          const clientDetailsResponse = await axios.get(`http://localhost:8080/api/client/findById/${clientId}`);
+          const profilePictureResponse = await axios.get(`http://localhost:8080/api/client/getProfilePicture/${clientId}`);
+
+          const profilePictureData = profilePictureResponse.data;
+          setFormData({
+            ...clientDetailsResponse.data,
+            profilePicture: `data:image/jpeg;base64,${profilePictureData}`,
+          });
+        } catch (error) {
+          console.error("Error fetching client data:", error);
+        }
+      }
+    };
+    fetchClientData();
   }, []);
 
   const handleProfileClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
   const handleLogout = () => {
-    setTimeout(() => {
-      navigate('/civilify/login-page');
-    }, 2000);
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
+    navigate('/civilify/login-page');
     handleClose();
   };
 
@@ -54,20 +83,64 @@ function ClientUpdateProfile() {
       const reader = new FileReader();
       reader.onload = () => {
         setFormData((prev) => ({ ...prev, profilePicture: reader.result }));
+        setNewProfilePicture(file); // Store the new profile picture
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSave = () => {
-    localStorage.setItem('profileData', JSON.stringify(formData));
-    console.log('Profile saved:', formData);
-    navigate('/civilify/client-profile-page');
+  const handleSave = async () => {
+    const clientId = formData.clientId;
+  
+    // Log the form data to check its contents
+    console.log('Form Data:', formData);
+  
+    // Construct the data object for the request, adding the clientId
+    const dataToSend = {
+      ...formData, // client details
+      clientId: clientId, // Explicitly pass clientId if necessary (for RequestParam usage)
+    };
+  
+    // Update client details
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/api/client/putClientDetails`, // Note that clientId is passed as a part of the body if needed
+        dataToSend
+      );
+      console.log('Client updated successfully:', response.data);
+  
+      // If there's a new profile picture, update it
+      if (newProfilePicture) {
+        const formDataForProfilePicture = new FormData();
+        formDataForProfilePicture.append('profilePicture', newProfilePicture);
+        console.log('Profile Picture Data:', formDataForProfilePicture);
+  
+        const profilePictureResponse = await axios.put(
+          `http://localhost:8080/api/client/updateProfilePicture/${clientId}`, // Assuming clientId is part of the URL for the profile picture update
+          formDataForProfilePicture,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+        console.log('Profile picture updated:', profilePictureResponse.data);
+      }
+  
+      // Navigate back to profile page after save
+      navigate('/civilify/client-profile-page');
+    } catch (error) {
+      // Log the detailed error response from the backend
+      console.error('Error updating profile:', error.response ? error.response : error);
+    }
   };
+  
+  
+  
 
   const handleDiscard = () => {
-    const storedData = JSON.parse(localStorage.getItem('profileData')) || {};
-    setFormData(storedData); // Reset to the stored profile data
+    setFormData({ ...formData }); // Reset to original data
+    navigate('/civilify/client-profile-page');
   };
 
   const styles = {
@@ -120,51 +193,12 @@ function ClientUpdateProfile() {
 
   return (
     <div>
-      {/* Header Section */}
       <Box style={styles.header}>
         <img
           src="/images/logoiconblack.png"
           alt="Logo"
           style={{ width: '50px', height: '50px' }}
         />
-        <Box style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          {['Support', 'Requests', 'Profile'].map((item) => (
-            <Typography
-              key={item}
-              variant="body2"
-              style={{
-                color: '#632F0F',
-                fontSize: '14px',
-                cursor: 'pointer',
-                padding: '8px 15px',
-                border: '1px solid #ccc',
-                borderRadius: '8px',
-                backgroundColor: '#fff',
-                fontWeight: '500',
-              }}
-              onClick={item === 'Profile' ? handleProfileClick : undefined}
-            >
-              {item}
-            </Typography>
-          ))}
-        </Box>
-      </Box>
-
-      {/* Profile Dropdown Menu */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        MenuListProps={{ 'aria-labelledby': 'basic-button' }}
-      >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>Settings</MenuItem>
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
-      </Menu>
-
-      {/* Profile Form */}
-      <Box style={{ padding: '20px', backgroundColor: '#f4f4f4', marginTop: '100px' }}>
-        <Typography variant="h5">Update Profile</Typography>
       </Box>
 
       <Card style={styles.card}>
@@ -213,9 +247,9 @@ function ClientUpdateProfile() {
           margin="normal"
         />
         <TextField
-          label="Phone"
-          name="phone"
-          value={formData.phone}
+          label="Contact Number"
+          name="contactNumber"
+          value={formData.contactNumber}
           onChange={handleChange}
           fullWidth
           margin="normal"
@@ -223,23 +257,31 @@ function ClientUpdateProfile() {
         <TextField
           label="Date of Birth"
           name="birthdate"
+          type="date"
           value={formData.birthdate}
           onChange={handleChange}
           fullWidth
           margin="normal"
         />
+        <FormControl fullWidth margin="normal">
+          <InputLabel id="civilStatus-label">Civil Status</InputLabel>
+          <Select
+            labelId="civilstatus-label"
+            name="civilStatus"
+            value={formData.civilStatus}
+            onChange={handleChange}
+            fullWidth
+          >
+            <MenuItem value="Single">Single</MenuItem>
+            <MenuItem value="Married">Married</MenuItem>
+            <MenuItem value="Widowed">Widowed</MenuItem>
+            <MenuItem value="Divorced">Divorced</MenuItem>
+          </Select>
+        </FormControl>
         <TextField
-          label="Civil Status"
-          name="civilstatus"
-          value={formData.civilstatus}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Job"
-          name="job"
-          value={formData.job}
+          label="Occupation"
+          name="occupation"
+          value={formData.occupation}
           onChange={handleChange}
           fullWidth
           margin="normal"
@@ -271,7 +313,6 @@ function ClientUpdateProfile() {
         </Box>
       </Card>
 
-      {/* Footer Section */}
       <Box style={styles.footer}>
         <span>© The Civilify Company, 2024 | All Rights Reserved</span>
       </Box>
