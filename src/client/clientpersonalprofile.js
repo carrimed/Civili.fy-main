@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Menu, MenuItem, Divider, Card, TextField, Button } from '@mui/material';
+import { Box, Select, Typography, Menu, MenuItem, Divider, Card, TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/AccountCircle';
 import EmailIcon from '@mui/icons-material/Email';
@@ -9,6 +9,7 @@ import MaritalStatusIcon from '@mui/icons-material/Person';
 import WorkIcon from '@mui/icons-material/Work';
 import PlaceIcon from '@mui/icons-material/Place';
 import axios from 'axios';
+
 
 const ClientPersonalProfile = () => {
   const [loading, setLoading] = useState(true);
@@ -74,8 +75,15 @@ const ClientPersonalProfile = () => {
   };
 
   const handleEditProfileRedirect = () => {
-    setEditMode(true);
-    handleClose();
+
+    navigate('/civilify/client-update-profile-page'); // Navigate to the desired route
+  };
+
+  const handleDateChange = (date) => {
+    setUpdatedDetails((prevDetails) => ({
+      ...prevDetails,
+      birthdate: date,
+    }));
   };
 
   const handleUpdateProfile = async () => {
@@ -83,7 +91,7 @@ const ClientPersonalProfile = () => {
     setError(null);
     try {
       const clientId = clientDetails.clientId;
-      const updateResponse = await axios.put(`http://localhost:8080/api/client/update/${clientId}`, updatedDetails);
+      const updateResponse = await axios.put(`http://localhost:8080/api/client/putClientDetails/${clientId}`, updatedDetails);
 
       if (newProfilePicture) {
         const formData = new FormData();
@@ -117,6 +125,7 @@ const ClientPersonalProfile = () => {
       [name]: value,
     }));
   };
+
 
   const handleProfilePictureChange = (e) => {
     const file = e.target.files[0];
@@ -278,6 +287,7 @@ const ClientPersonalProfile = () => {
 
       <Typography style={styles.profileHeaderText}>Quick Actions</Typography>
 
+  
       <Card style={styles.card}>
         <Box
           style={{
@@ -328,83 +338,6 @@ const ClientPersonalProfile = () => {
             </Box>
           </Box>
         </Box>
-
-        {editMode && (
-          <Box style={styles.profileDetails}>
-            <TextField
-              label="Full Name"
-              name="fullName"
-              value={updatedDetails.fullName || clientDetails.fullName}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Username"
-              name="username"
-              value={updatedDetails.username || clientDetails.username}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Email"
-              name="email"
-              value={updatedDetails.email || clientDetails.email}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Contact Number"
-              name="contactNumber"
-              value={updatedDetails.contactNumber || clientDetails.contactNumber}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Date of Birth"
-              name="birthdate"
-              value={updatedDetails.birthdate || clientDetails.birthdate}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Marital Status"
-              name="civilStatus"
-              value={updatedDetails.civilStatus || clientDetails.civilStatus}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Occupation"
-              name="occupation"
-              value={updatedDetails.occupation || clientDetails.occupation}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Address"
-              name="address"
-              value={updatedDetails.address || clientDetails.address}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleUpdateProfile}
-              style={{ marginTop: '20px' }}
-            >
-              Update Profile
-            </Button>
-          </Box>
-        )}
 
         <Divider style={{ margin: '20px 0' }} />
         <Box style={{ marginTop: '20px' }}>
