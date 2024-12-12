@@ -5,7 +5,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 
-// For the Book Appointment Form
+
 const StyledButton = styled(Button)(({ theme, colorType }) => ({
     backgroundColor: colorType === 'red' ? '#D32F2F' : colorType === 'green' ? '#388E3C' : colorType === 'orange' ? '#FFA500' : '#000000',
     color: '#F1F1F1',
@@ -15,7 +15,7 @@ const StyledButton = styled(Button)(({ theme, colorType }) => ({
     fontSize: '1rem',
     padding: '10px 20px',
     fontFamily: 'Outfit, sans-serif',
-    width: '100%', // For both buttons to align nicely
+    width: '100%', 
 }));
 
 function ClientAppointmentForm({ lawyerId }) {
@@ -24,7 +24,7 @@ function ClientAppointmentForm({ lawyerId }) {
     const [appointmentDetails, setAppointmentDetails] = useState({ date: '', time: ''});
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [message, setMessage] = useState('');
-    const [termsAccepted, setTermsAccepted] = useState(false); // Track checkbox state
+    const [termsAccepted, setTermsAccepted] = useState(false); 
     const [clientId, setClientId] = useState('');
     const [appointmentDate, setAppointmentDate] = useState('');
     const [appointmentTime, setAppointmentTime] = useState('');
@@ -70,13 +70,12 @@ function ClientAppointmentForm({ lawyerId }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Format date and time
-        const formattedDate = appointmentDate; // Date already in 'yyyy-mm-dd' format
-        const formattedTime = `${appointmentTime}:00`; // Append seconds to the time (HH:mm:ss)
+        const formattedDate = appointmentDate;
+        const formattedTime = `${appointmentTime}:00`; 
 
         const appointmentData = {
-            date: formattedDate,  // Send formatted date
-            time: formattedTime,  // Send formatted time with seconds
+            date: formattedDate,  
+            time: formattedTime,  
         };
 
         if (!clientId || !lawyerId) {
@@ -97,7 +96,7 @@ function ClientAppointmentForm({ lawyerId }) {
                 }
             );
 
-            console.log(response.data); // Handle success
+            console.log(response.data);
             setMessage('Appointment successfully created!');
             setSnackbarOpen(true);
         } catch (error) {
@@ -183,9 +182,9 @@ function ClientAppointmentForm({ lawyerId }) {
                         <Box sx={{
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',  // Center the checkbox and text horizontally
-                            marginTop: '5px',  // Reduced top margin
-                            marginBottom: '5px', // Reduced bottom margin
+                            justifyContent: 'center',  
+                            marginTop: '5px',  
+                            marginBottom: '5px',
                         }}>
                             <Checkbox
                                 checked={termsAccepted}

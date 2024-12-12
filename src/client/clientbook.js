@@ -17,11 +17,9 @@ function ClientLawyerPov() {
   const [lawyerDetails, setLawyerDetails] = useState(null);
   const [userType, setUserType] = useState(null)
   const { lawyerId } = useParams();
-  const [rating, setRating] = useState(0); // Store the selected rating
-  const [reviewText, setReviewText] = useState(''); // Store the review text
-  const [reviews, setReviews] = useState([]); // Store submitted 
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [rating, setRating] = useState(0); 
+  const [reviewText, setReviewText] = useState(''); 
+  const [reviews, setReviews] = useState([]); 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [clientId, setClientId] = useState('');
@@ -75,20 +73,20 @@ function ClientLawyerPov() {
 
   const fetchLawyerDetailsById = async (lawyerId) => {
     setLoading(true);
-    setError(null); // Reset error
+    setError(null); 
     try {
       console.log('Fetching lawyer details for lawyerId:', lawyerId);
       const response = await axios.get(`http://localhost:8080/api/lawyer/findById/${lawyerId}`);
-      console.log('Fetched Lawyer Details:', response.data);  // Debugging
+      console.log('Fetched Lawyer Details:', response.data); 
   
-      // Fetch profile picture
+      
       const profilePictureResponse = await axios.get(`http://localhost:8080/api/lawyer/getProfilePicture/${lawyerId}`);
-      console.log('Profile Picture Response:', profilePictureResponse.data);  // Debugging
+      console.log('Profile Picture Response:', profilePictureResponse.data); 
   
       const profilePictureData = profilePictureResponse.data;
       setLawyerDetails(response.data);
   
-      // Assuming profile picture is Base64-encoded, set the image
+   
       setProfilePicture(`data:image/jpeg;base64,${profilePictureData}`);
     } catch (error) {
       console.error('Error fetching lawyer details:', error.response ? error.response.data : error.message);
@@ -98,52 +96,52 @@ function ClientLawyerPov() {
     }
   };
 
-  // Fetch lawyer details using username and password stored in localStorage
+ 
   const fetchLawyerDetails = async (username, password) => {
     setLoading(true);
-    setError(null); // Reset error
+    setError(null); 
     try {
       console.log('Fetching lawyer details for username:', username);
   
-      // Fetch lawyer details based on stored username and password
+      
       const lawyerDetailsResponse = await axios.post('http://localhost:8080/api/lawyer/login', {
         loginField: username,
         password: password,
       });
   
-      // Check if lawyerId exists in the response
+  
       const lawyerId = lawyerDetailsResponse.data.lawyerId;
   
       if (lawyerId) {
-        console.log('Lawyer ID:', lawyerId);  // Debugging
+        console.log('Lawyer ID:', lawyerId); 
   
-        // Fetch the actual profile details using the lawyerId
+        
         const lawyerDetails = await axios.get(`http://localhost:8080/api/lawyer/findById/${lawyerId}`);
-        console.log('Fetched Lawyer Details:', lawyerDetails.data);  // Debugging
+        console.log('Fetched Lawyer Details:', lawyerDetails.data); 
   
-        // Fetch profile picture
+  
         const profilePictureResponse = await axios.get(`http://localhost:8080/api/lawyer/getProfilePicture/${lawyerId}`);
-        console.log('Profile Picture Response:', profilePictureResponse.data);  // Debugging
+        console.log('Profile Picture Response:', profilePictureResponse.data); 
   
         const profilePictureData = profilePictureResponse.data;
         setLawyerDetails(lawyerDetails.data);
   
-        // Assuming profile picture is Base64-encoded, set the image
+        
         setProfilePicture(`data:image/jpeg;base64,${profilePictureData}`);
       } else {
-        // Handle the case where the lawyerId is not found
+        
         setError('Failed to fetch lawyer details. Invalid credentials or no data returned.');
       }
     } catch (error) {
       console.error('Error fetching lawyer details:', error.response ? error.response.data : error.message);
-      // Displaying a more descriptive error message
+      
       setError('Failed to load lawyer details. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch details when component loads
+  
   useEffect(() => {
     const username = localStorage.getItem('username');
     const password = localStorage.getItem('password');
@@ -175,7 +173,7 @@ function ClientLawyerPov() {
     setReviewText(event.target.value);
   };
 
-  //REVIEW SUBMISSION
+  
   const handleReviewSubmit = async () => {
     if (rating === 0 || !reviewText) {
       setMessage('Please provide a rating and review text.');
@@ -183,7 +181,7 @@ function ClientLawyerPov() {
       return;
     }
 
-    const username = localStorage.getItem('username');  // Get the logged-in username
+    const username = localStorage.getItem('username'); 
 
     if (!username) {
       setMessage('Username not found. Please log in again.');
@@ -192,15 +190,15 @@ function ClientLawyerPov() {
     }
 
     const reviewData = {
-      comment: reviewText,  // Review text
-      rating: rating,       // Rating
-      reviewerName: username, // Add the username to the review
+      comment: reviewText,  
+      rating: rating,      
+      reviewerName: username, 
     };
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/review/postReview?clientId=${clientId}&lawyerId=${lawyerId}`,  // Query params in URL
-        reviewData, // Send review data in the request body
+        `http://localhost:8080/api/review/postReview?clientId=${clientId}&lawyerId=${lawyerId}`,  
+        reviewData, 
         {
           headers: {
             'Content-Type': 'application/json',
@@ -208,19 +206,19 @@ function ClientLawyerPov() {
         }
       );
 
-      // Update reviews list after successful submission
-      setReviews([...reviews, response.data]);  // Assuming the server returns the new review
+      
+      setReviews([...reviews, response.data]); 
       setMessage('Review submitted successfully!');
       setSnackbarOpen(true);
-      setReviewText('');  // Clear review text after submission
-      setRating(0);  // Reset rating after submission
+      setReviewText('');
+      setRating(0);  
     } catch (error) {
       setMessage('Error submitting review: ' + (error.response ? error.response.data.message : error.message));
       setSnackbarOpen(true);
     }
 };
 
-  // Handle logout
+ 
   const handleLogout = () => {
     localStorage.removeItem('username');
     localStorage.removeItem('password');
@@ -230,7 +228,7 @@ function ClientLawyerPov() {
     handleClose();
   };
 
-  // Handle profile edit redirect
+ 
   const handleEditProfileRedirect = () => {
     navigate('/civilify/lawyer-update-profile-page');
     handleClose();

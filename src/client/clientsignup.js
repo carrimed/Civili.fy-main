@@ -47,16 +47,6 @@ function ClientSignup() {
     setAge(calculatedAge);
   };
 
-  {/*const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file.size > MAX_FILE_SIZE) {
-      setSnackbarMessage("File is too large. Please upload an image smaller than 10MB.");
-      setOpenSnackbar(true);
-      return; // Don't proceed with the upload
-    } else {
-      setProfilePicture(file);
-    }
-  }; */}
 
   const handleRegisterClick = async () => {
     if (!name || !username || !email || !password || 
@@ -71,9 +61,8 @@ function ClientSignup() {
   
     try {
       let profilePicturePath = null;
-      let clientId = null;  // Declare clientId here
+      let clientId = null;  
   
-      // Prepare the payload for client creation
       const payload = {
         name,
         username,
@@ -88,19 +77,17 @@ function ClientSignup() {
         password,
       };
   
-      // Create the client and get clientId from the response
       const response = await axios.post("http://localhost:8080/api/client/postClientRecord", payload);
       const { clientId: responseClientId, message } = response.data;
-      clientId = responseClientId;  // Assign the clientId from the response
-      console.log(message);  // Log the success message
+      clientId = responseClientId;  
+      console.log(message);  
   
-      // Now, proceed with uploading the profile picture if provided
       if (profilePicture) {
         const formData = new FormData();
-        formData.append('profilePicture', profilePicture); // 'profilePicture' is the selected image file
-        formData.append('clientId', clientId);  // Now clientId is properly initialized
+        formData.append('profilePicture', profilePicture); 
+        formData.append('clientId', clientId);  
   
-        // Perform the file upload via fetch
+        
         await fetch('http://localhost:8080/api/client/uploadProfilePicture', {
           method: 'POST',
           body: formData,
@@ -109,20 +96,17 @@ function ClientSignup() {
         .then(data => console.log(data))
         .catch(error => console.error('Error:', error));
   
-        // Assuming server returns the path or success message, capture it here
-        profilePicturePath = "path_or_data_returned_from_server"; // Adjust based on your response
+        
+        profilePicturePath = "path_or_data_returned_from_server"; 
       }
   
-      // Update the payload with the profile picture path
+      
       const updatedPayload = {
         ...payload,
-        profilePicture: profilePicturePath, // Include the profile picture path if uploaded
+        profilePicture: profilePicturePath, 
       };
   
-      // Optionally send the updated payload to update the client (if needed)
-      // const updateResponse = await axios.post("http://localhost:8080/api/client/update", updatedPayload);
-  
-      localStorage.setItem("clientId", clientId); // Or store in a session if using session management
+      localStorage.setItem("clientId", clientId); 
   
       setSnackbarMessage("Successfully registered!");
       setIsSuccess(true);
@@ -149,17 +133,17 @@ function ClientSignup() {
 
   const handleNextClick = () => {
     if (step === 1) {
-      setStep(2); // Move to the second step
+      setStep(2); 
     } else {
-      handleRegisterClick(); // Register when the user is on the second step
+      handleRegisterClick(); 
     }
   };
 
   const handleBackClick = () => {
     if (step === 1) {
-      navigate('/civilify/login-page'); // Navigate to login page if in step 1
+      navigate('/civilify/login-page'); 
     } else {
-      setStep(1); // Set the step back to 1 if not in step 1
+      setStep(1);
     }
   };
 
@@ -204,10 +188,10 @@ function ClientSignup() {
             justifyContent: 'center',
             alignItems: 'center',
             width: '500px',
-            height: '650px', // Set a fixed height
+            height: '650px', 
             boxSizing: 'border-box',
             zIndex: 1,
-            overflow: 'hidden', // Prevent overflow outside the box
+            overflow: 'hidden', 
           }}
         >
           <IconButton

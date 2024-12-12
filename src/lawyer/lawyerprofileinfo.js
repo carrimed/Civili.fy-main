@@ -16,7 +16,7 @@
     const [lawyerDetails, setLawyerDetails] = useState(null);
     const [userType, setUserType] = useState(null)
     const { lawyerId } = useParams();
-    const [appointments, setAppointments] = useState([]); // State to store appointments
+    const [appointments, setAppointments] = useState([]); 
 
     const handleClick = (event) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
@@ -36,19 +36,19 @@
     }));
 
     const fetchAppointments = async () => {
-      if (!lawyerDetails?.lawyerId) return; // Wait for lawyer details to load
+      if (!lawyerDetails?.lawyerId) return; 
     
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/appointment/getAll?lawyerId=${lawyerDetails.lawyerId}`, // Use lawyerId from lawyerDetails
+          `http://localhost:8080/api/appointment/getAll?lawyerId=${lawyerDetails.lawyerId}`, 
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming JWT token
+              Authorization: `Bearer ${localStorage.getItem('token')}`, 
             },
           }
         );
     
-        setAppointments(response.data); // Update appointments state
+        setAppointments(response.data); 
       } catch (error) {
         console.error('Error fetching appointments:', error);
         setError('Failed to fetch appointments.');
@@ -64,7 +64,7 @@
 
     useEffect(() => {
       if (lawyerDetails?.lawyerId) {
-        fetchClientReviews(); // Fetch reviews when lawyer details are available
+        fetchClientReviews(); 
       }
     }, [lawyerDetails]);    
 
@@ -93,20 +93,20 @@
 
     const fetchLawyerDetailsById = async (lawyerId) => {
       setLoading(true);
-      setError(null); // Reset error
+      setError(null); 
       try {
         console.log('Fetching lawyer details for lawyerId:', lawyerId);
         const response = await axios.get(`http://localhost:8080/api/lawyer/findById/${lawyerId}`);
-        console.log('Fetched Lawyer Details:', response.data);  // Debugging
+        console.log('Fetched Lawyer Details:', response.data);  
     
-        // Fetch profile picture
+        
         const profilePictureResponse = await axios.get(`http://localhost:8080/api/lawyer/getProfilePicture/${lawyerId}`);
-        console.log('Profile Picture Response:', profilePictureResponse.data);  // Debugging
+        console.log('Profile Picture Response:', profilePictureResponse.data); 
     
         const profilePictureData = profilePictureResponse.data;
         setLawyerDetails(response.data);
     
-        // Assuming profile picture is Base64-encoded, set the image
+        
         setProfilePicture(`data:image/jpeg;base64,${profilePictureData}`);
       } catch (error) {
         console.error('Error fetching lawyer details:', error.response ? error.response.data : error.message);
@@ -116,52 +116,52 @@
       }
     };
 
-    // Fetch lawyer details using username and password stored in localStorage
+    
     const fetchLawyerDetails = async (username, password) => {
       setLoading(true);
-      setError(null); // Reset error
+      setError(null); 
       try {
         console.log('Fetching lawyer details for username:', username);
     
-        // Fetch lawyer details based on stored username and password
+       
         const lawyerDetailsResponse = await axios.post('http://localhost:8080/api/lawyer/login', {
           loginField: username,
           password: password,
         });
     
-        // Check if lawyerId exists in the response
+       
         const lawyerId = lawyerDetailsResponse.data.lawyerId;
     
         if (lawyerId) {
-          console.log('Lawyer ID:', lawyerId);  // Debugging
+          console.log('Lawyer ID:', lawyerId); 
     
-          // Fetch the actual profile details using the lawyerId
+          
           const lawyerDetails = await axios.get(`http://localhost:8080/api/lawyer/findById/${lawyerId}`);
-          console.log('Fetched Lawyer Details:', lawyerDetails.data);  // Debugging
+          console.log('Fetched Lawyer Details:', lawyerDetails.data); 
     
-          // Fetch profile picture
+
           const profilePictureResponse = await axios.get(`http://localhost:8080/api/lawyer/getProfilePicture/${lawyerId}`);
-          console.log('Profile Picture Response:', profilePictureResponse.data);  // Debugging
+          console.log('Profile Picture Response:', profilePictureResponse.data);  
     
           const profilePictureData = profilePictureResponse.data;
           setLawyerDetails(lawyerDetails.data);
     
-          // Assuming profile picture is Base64-encoded, set the image
+          
           setProfilePicture(`data:image/jpeg;base64,${profilePictureData}`);
         } else {
-          // Handle the case where the lawyerId is not found
+          
           setError('Failed to fetch lawyer details. Invalid credentials or no data returned.');
         }
       } catch (error) {
         console.error('Error fetching lawyer details:', error.response ? error.response.data : error.message);
-        // Displaying a more descriptive error message
+        
         setError('Failed to load lawyer details. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
 
-    // Fetch details when component loads
+   
     useEffect(() => {
       const username = localStorage.getItem('username');
       const password = localStorage.getItem('password');
@@ -187,7 +187,7 @@
       return <Typography color="error">{error}</Typography>;
     }
 
-    // Handle logout
+    
     const handleLogout = () => {
       localStorage.removeItem('username');
       localStorage.removeItem('password');
@@ -197,11 +197,8 @@
       handleClose();
     };
 
-    // Handle profile edit redirect
-    const handleEditProfileRedirect = () => {
-      navigate('/civilify/lawyer-update-profile-page');
-      handleClose();
-    };
+    
+ 
 
     if (loading) return <CircularProgress />;
     if (error) return <Typography>Error: {error}</Typography>;
@@ -450,7 +447,7 @@
       <Box style={styles.profilePicContainer}>
         <div style={styles.profilePic}>
           <img
-            src={profilePicture} // Dynamically set the profile picture URL
+            src={profilePicture} 
             alt="Profile"
             style={styles.profilePicImage}
           />
@@ -522,7 +519,7 @@
       marginRight: '10px',
       width: '50%',
       background: '#fff',
-      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
+      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
       borderRadius: '8px',
       padding: '20px',
     }}
@@ -560,7 +557,7 @@
         justifyContent: 'center',
         gap: '20px',
         marginBottom: '20px',
-        borderBottom: '2px solid #eee', // Divider for tabs
+        borderBottom: '2px solid #eee', 
         paddingBottom: '10px',
       }}
     >

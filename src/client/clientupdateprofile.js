@@ -28,11 +28,11 @@ function ClientUpdateProfile() {
     occupation: '',
     address: '',
     zipcode: '',
-    profilePicture: '', // To store profile photo
+    profilePicture: '', 
   });
-  const [newProfilePicture, setNewProfilePicture] = useState(null); // To store new profile photo
+  const [newProfilePicture, setNewProfilePicture] = useState(null); 
 
-  // Fetch current profile data
+  
   useEffect(() => {
     const fetchClientData = async () => {
       const username = localStorage.getItem('username');
@@ -62,15 +62,7 @@ function ClientUpdateProfile() {
     fetchClientData();
   }, []);
 
-  const handleProfileClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
-
-  const handleLogout = () => {
-    localStorage.removeItem('username');
-    localStorage.removeItem('password');
-    navigate('/civilify/login-page');
-    handleClose();
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,7 +75,7 @@ function ClientUpdateProfile() {
       const reader = new FileReader();
       reader.onload = () => {
         setFormData((prev) => ({ ...prev, profilePicture: reader.result }));
-        setNewProfilePicture(file); // Store the new profile picture
+        setNewProfilePicture(file); 
       };
       reader.readAsDataURL(file);
     }
@@ -92,31 +84,29 @@ function ClientUpdateProfile() {
   const handleSave = async () => {
     const clientId = formData.clientId;
   
-    // Log the form data to check its contents
     console.log('Form Data:', formData);
   
-    // Construct the data object for the request, adding the clientId
     const dataToSend = {
-      ...formData, // client details
-      clientId: clientId, // Explicitly pass clientId if necessary (for RequestParam usage)
+      ...formData, 
+      clientId: clientId,
     };
   
-    // Update client details
+    
     try {
       const response = await axios.put(
-        `http://localhost:8080/api/client/putClientDetails`, // Note that clientId is passed as a part of the body if needed
+        `http://localhost:8080/api/client/putClientDetails`, 
         dataToSend
       );
       console.log('Client updated successfully:', response.data);
   
-      // If there's a new profile picture, update it
+  
       if (newProfilePicture) {
         const formDataForProfilePicture = new FormData();
         formDataForProfilePicture.append('profilePicture', newProfilePicture);
         console.log('Profile Picture Data:', formDataForProfilePicture);
   
         const profilePictureResponse = await axios.put(
-          `http://localhost:8080/api/client/updateProfilePicture/${clientId}`, // Assuming clientId is part of the URL for the profile picture update
+          `http://localhost:8080/api/client/updateProfilePicture/${clientId}`,
           formDataForProfilePicture,
           {
             headers: {
@@ -127,10 +117,8 @@ function ClientUpdateProfile() {
         console.log('Profile picture updated:', profilePictureResponse.data);
       }
   
-      // Navigate back to profile page after save
       navigate('/civilify/client-profile-page');
     } catch (error) {
-      // Log the detailed error response from the backend
       console.error('Error updating profile:', error.response ? error.response : error);
     }
   };
@@ -139,7 +127,7 @@ function ClientUpdateProfile() {
   
 
   const handleDiscard = () => {
-    setFormData({ ...formData }); // Reset to original data
+    setFormData({ ...formData }); 
     navigate('/civilify/client-profile-page');
   };
 

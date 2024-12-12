@@ -138,8 +138,8 @@ function ClientHome() {
     searchResultsContainer: {
       position: 'absolute',
       top: '20px',
-      left: '340px', // Adjust this value to control the spacing
-      width: 'calc(100% - 360px)', // Adjust this value to control the width
+      left: '340px', 
+      width: 'calc(100% - 360px)', 
       display: 'flex',
       flexWrap: 'wrap',
       justifyContent: 'space-around',
@@ -403,7 +403,7 @@ function ClientHome() {
                 ...styles.profileCard,
                 maxWidth: '300px',
                 margin: '10px',
-                flex: 'none', // Ensures that the items don't shrink or grow
+                flex: 'none', 
               }}
               onClick={() => handleCardRedirect(lawyer.lawyerId)}
             >

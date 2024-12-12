@@ -136,7 +136,7 @@ function ClientReview() {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      fontFamily: 'Outfit, sans-serif' // Applying Outfit globally
+      fontFamily: 'Outfit, sans-serif'
     }}>
       {/* Review Form */}
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh" flexDirection="column">
@@ -194,7 +194,7 @@ function ClientReview() {
             </Button>
             <Button
               variant="contained"
-              color="success" // Green button
+              color="success"
               onClick={handleSubmit}
               fullWidth
               style={{

@@ -32,7 +32,6 @@ const specializationOptions = [
 function LawyerSignupForm() {
   const navigate = useNavigate();
 
-  // Form states
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -49,16 +48,15 @@ function LawyerSignupForm() {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [lawyerType, setLawyerType] = useState('');
 
-  // Snackbar states
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Loading state
+  
   const [loading, setLoading] = useState(false);
 
   const payload = {
-    // Include other form fields here
+    
     lawyerType,
     profilePicture,
   };
@@ -80,7 +78,7 @@ function LawyerSignupForm() {
   };
 
   const handleRegisterClick = async () => {
-    // Log form data to check if all values are being updated
+    
     console.log({
         name,
         username,
@@ -99,7 +97,7 @@ function LawyerSignupForm() {
         lawyerType
     });
 
-    // Check if any required field is empty
+    
     if (
       !name ||
       !username ||
@@ -127,9 +125,9 @@ function LawyerSignupForm() {
 
     try {
       let profilePicturePath = null;
-      let lawyerId = null;  // Declare lawyerId here
+      let lawyerId = null;  
 
-      // Prepare the payload for lawyer creation
+      
       const payload = {
         name,
         username,
@@ -147,19 +145,19 @@ function LawyerSignupForm() {
         lawyerType,
       };
 
-      // Create the lawyer and get lawyerId from the response
+      
       const response = await axios.post("http://localhost:8080/api/lawyer/create", payload);
       const { lawyerId: responseLawyerId, message } = response.data;
-      lawyerId = responseLawyerId;  // Assign the lawyerId from the response
-      console.log(message);  // Log the success message
+      lawyerId = responseLawyerId;  
+      console.log(message);  
 
-      // Now, proceed with uploading the profile picture if provided
+     
       if (profilePicture) {
         const formData = new FormData();
-        formData.append('profilePicture', profilePicture); // 'profilePicture' is the selected image file
-        formData.append('lawyerId', lawyerId);  // Now lawyerId is properly initialized
+        formData.append('profilePicture', profilePicture);
+        formData.append('lawyerId', lawyerId);  
 
-        // Perform the file upload via fetch
+        
         await fetch('http://localhost:8080/api/lawyer/uploadProfilePicture', {
           method: 'POST',
           body: formData,
@@ -168,20 +166,19 @@ function LawyerSignupForm() {
         .then(data => console.log(data))
         .catch(error => console.error('Error:', error));
 
-        // Assuming server returns the path or success message, capture it here
-        profilePicturePath = "path_or_data_returned_from_server"; // Adjust based on your response
+       
+        profilePicturePath = "path_or_data_returned_from_server";
       }
 
-      // Update the payload with the profile picture path
+      
       const updatedPayload = {
         ...payload,
-        profilePicture: profilePicturePath, // Include the profile picture path if uploaded
+        profilePicture: profilePicturePath, 
       };
 
-      // Optionally send the updated payload to update the lawyer (if needed)
-      // const updateResponse = await axios.post("http://localhost:8080/api/lawyer/update", updatedPayload);
+     
 
-      localStorage.setItem("lawyerId", lawyerId); // Or store in a session if using session management
+      localStorage.setItem("lawyerId", lawyerId); 
 
       setSnackbarMessage("Successfully registered!");
       setIsSuccess(true);

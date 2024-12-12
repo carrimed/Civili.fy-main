@@ -33,10 +33,10 @@ function ClientAccount() {
   });
   const [originalUsername, setOriginalUsername] = useState('');
 
-  // Fetch user data function
+
   const fetchUserData = async () => {
     const username = localStorage.getItem('username');
-    if (!username) return; // Guard clause to ensure username exists
+    if (!username) return; 
     try {
       const response = await axios.get(`http://localhost:8080/api/Client/getCurrentAccount?username=${username}`);
       if (response.data) {
@@ -50,7 +50,7 @@ function ClientAccount() {
   };
 
   useEffect(() => {
-    fetchUserData(); // Call the function to fetch user data when the component mounts
+    fetchUserData(); 
   }, []);
 
   const handleInputChange = (e) => {
@@ -64,17 +64,17 @@ function ClientAccount() {
   const handleSaveClick = async () => {
     if (!userData.id) {
       alert('User ID is missing. Please ensure you are logged in.');
-      return; // Exit if ID is not set
+      return; 
     }
 
     const updatedData = { ...userData };
 
     try {
-      // Update user data in the database
+      
       const response = await axios.put(`http://localhost:8080/api/Client/putClientDetails/${userData.id}`, updatedData);
       if (response.status === 200) {
         setSuccess(true);
-        // Update local storage username if changed
+       
         if (userData.username !== originalUsername) {
           localStorage.setItem('username', userData.username);
         }
@@ -104,7 +104,7 @@ function ClientAccount() {
     try {
       await axios.delete(`http://localhost:8080/api/Client/deleteClient/${userData.id}`);
       localStorage.removeItem('username'); 
-      navigate('/client-login-page'); // Navigate to login page after deletion
+      navigate('/client-login-page'); 
     } catch (error) {
       console.error('Error deleting account:', error);
       alert('An error occurred while deleting the account. Please try again.');

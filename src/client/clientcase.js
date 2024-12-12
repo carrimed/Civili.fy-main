@@ -23,7 +23,7 @@ function ClientCase({ caseDetail, onUpdate, onDelete }) {
   };
 
   const handleDelete = () => {
-    onDelete(caseData.id); // Call the delete function passed from the parent
+    onDelete(caseData.id); 
   };
 
   return (

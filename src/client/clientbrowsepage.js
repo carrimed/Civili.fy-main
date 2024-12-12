@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, TextField, Box, IconButton, Menu, MenuItem, Card, CardContent, Avatar } from '@mui/material';
+import { AppBar, Toolbar, Typography, TextField, Box, Menu, MenuItem, Card, CardContent, Avatar } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -24,12 +24,11 @@ function BrowsePage() {
   ];
 
   useEffect(() => {
-    // Extract the query from the URL
+   
     const params = new URLSearchParams(location.search);
     const query = params.get('search') || '';
     setSearchQuery(query);
     
-    // Filter the lawyers based on the query
     const results = lawyerProfiles.filter(
       (lawyer) =>
         lawyer.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -47,7 +46,6 @@ function BrowsePage() {
         lawyer.specialization.toLowerCase().includes(query)
     );
     setFilteredLawyers(results);
-    // Update the URL with the new search query
     navigate(`/browse?search=${query}`);
   };
 
@@ -114,7 +112,7 @@ function BrowsePage() {
     style={{
       position: 'fixed',
       left: '35%',
-      top: `${150 + index * 150}px`, // Adjust cards' position dynamically
+      top: `${150 + index * 150}px`, 
       width: '500px',
       margin: '10px auto',
       display: 'flex',
