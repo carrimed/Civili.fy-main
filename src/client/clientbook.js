@@ -44,6 +44,15 @@ function ClientLawyerPov() {
   }));
 
   useEffect(() => {
+    const storedUserType = localStorage.getItem('userType');
+    if (storedUserType) {
+      setUserType(storedUserType);
+    } else {
+      navigate('/civilify/login-page');
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     const fetchClientDetails = async () => {
         const username = localStorage.getItem('username');
         const password = localStorage.getItem('password');
@@ -234,6 +243,15 @@ function ClientLawyerPov() {
     handleClose();
   };
 
+  const handleProfileRedirect = () => {
+    if (userType === 'Client') {
+      navigate('/civilify/client-profile-page');
+    } else if (userType === 'Lawyer') {
+      navigate('/civilify/lawyer-profile-page');
+    }
+    handleClose();
+  };
+
   if (loading) return <CircularProgress />;
   if (error) return <Typography>Error: {error}</Typography>;
   if (!lawyerDetails) return <Typography>No user data available. Please try logging in again.</Typography>;
@@ -405,7 +423,7 @@ function ClientLawyerPov() {
               border: '2px solid #D9641E',
               borderRadius: '8px',
             }}
-            onClick={handleClick}
+            onClick={handleProfileRedirect}
           >
             Profile
           </Typography>

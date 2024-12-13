@@ -279,7 +279,7 @@ function ClientHome() {
               border: '1px solid #8E8E8E',
               borderRadius: '8px',
             }}
-            onClick={handleProfileClick}
+            onClick={handleProfileRedirect}
           >
             Profile
           </Typography>
