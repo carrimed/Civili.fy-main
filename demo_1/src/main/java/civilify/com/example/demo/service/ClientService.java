@@ -68,12 +68,14 @@ public class ClientService {
     }
 
     // Delete client by ID
-    public String deleteClient(int clientId) {
-        if (clientRepository.existsById(clientId)) {
+    public void deleteClient(int clientId) {
+        Optional<ClientEntity> client = clientRepository.findById(clientId);
+        if (client.isPresent()) {
+            System.out.println("Deleting client with ID: " + clientId);
             clientRepository.deleteById(clientId);
-            return "Client with ID " + clientId + " successfully deleted!";
         } else {
-            return "Client with ID " + clientId + " NOT found!";
+            System.out.println("Client with ID " + clientId + " not found.");
+            throw new NoSuchElementException("Client with ID " + clientId + " not found.");
         }
     }
     

@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
-    // Custom query method to find reviews by lawyer ID
+   
     List<ReviewEntity> findByLawyer_LawyerId(int lawyerId);
 }

@@ -40,7 +40,7 @@ public class ReviewService {
     // Method to get all reviews
     public List<ReviewEntity> getAllReviews() {
         return reviewRepo.findAll();
-    }//sd
+    }//
 
     // Method to get reviews by lawyer ID
     public List<ReviewEntity> getReviewsByLawyerId(int lawyerId) {

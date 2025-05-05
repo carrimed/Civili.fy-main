@@ -143,13 +143,18 @@ public class ClientController {
     }
 
     // Delete Client
-    @DeleteMapping("/deleteById/{client_id}")
-    public ResponseEntity<String> deleteClient(@PathVariable("client_id") int clientId) {
-        String message = clientService.deleteClient(clientId);
-        if (message.contains("NOT found")) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);  // Client not found
+    @DeleteMapping("/deleteById/{clientId}")
+    public ResponseEntity<String> deleteClient(@PathVariable int clientId) {
+        try {
+            clientService.deleteClient(clientId);
+            return ResponseEntity.ok("Client with ID " + clientId + " successfully deleted.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client with ID " + clientId + " not found.");
+        } catch (Exception e) {
+            // Log the exception
+            System.err.println("Error while deleting client: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the client.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(message);  // Client successfully deleted
     }
     
     //Endpoint to get all clients

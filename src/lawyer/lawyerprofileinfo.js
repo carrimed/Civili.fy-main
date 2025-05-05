@@ -119,43 +119,28 @@
     
     const fetchLawyerDetails = async (username, password) => {
       setLoading(true);
-      setError(null); 
+      setError(null);
       try {
-        console.log('Fetching lawyer details for username:', username);
-    
-       
-        const lawyerDetailsResponse = await axios.post('http://localhost:8080/api/lawyer/login', {
+        const response = await axios.post('http://localhost:8080/api/lawyer/login', {
           loginField: username,
           password: password,
         });
-    
-       
-        const lawyerId = lawyerDetailsResponse.data.lawyerId;
-    
+  
+        const lawyerId = response.data.lawyerId;
+  
         if (lawyerId) {
-          console.log('Lawyer ID:', lawyerId); 
-    
-          
-          const lawyerDetails = await axios.get(`http://localhost:8080/api/lawyer/findById/${lawyerId}`);
-          console.log('Fetched Lawyer Details:', lawyerDetails.data); 
-    
-
+          const lawyerDetailsResponse = await axios.get(`http://localhost:8080/api/lawyer/findById/${lawyerId}`);
           const profilePictureResponse = await axios.get(`http://localhost:8080/api/lawyer/getProfilePicture/${lawyerId}`);
-          console.log('Profile Picture Response:', profilePictureResponse.data);  
-    
+  
           const profilePictureData = profilePictureResponse.data;
-          setLawyerDetails(lawyerDetails.data);
-    
-          
+          setLawyerDetails(lawyerDetailsResponse.data);
           setProfilePicture(`data:image/jpeg;base64,${profilePictureData}`);
         } else {
-          
-          setError('Failed to fetch lawyer details. Invalid credentials or no data returned.');
+          setError('Failed to fetch lawyer details.');
         }
       } catch (error) {
-        console.error('Error fetching lawyer details:', error.response ? error.response.data : error.message);
-        
-        setError('Failed to load lawyer details. Please try again later.');
+        console.error('Error fetching lawyer details:', error);
+        setError('Failed to load lawyer details.');
       } finally {
         setLoading(false);
       }
@@ -165,19 +150,14 @@
     useEffect(() => {
       const username = localStorage.getItem('username');
       const password = localStorage.getItem('password');
-      const storedUserType = localStorage.getItem('userType'); 
-      setUserType(storedUserType);
-
-      const lawyerId = localStorage.getItem('lawyerId');
-      if (lawyerId) {
-        fetchLawyerDetailsById(lawyerId);
-      } else if (username && password) {
+  
+      if (username && password) {
         fetchLawyerDetails(username, password);
       } else {
-        setError('No lawyer ID or credentials available to fetch details.');
+        setError('No login details found.');
         setLoading(false);
       }
-    }, [lawyerId]);
+    }, []);
 
     if (loading) {
       return <CircularProgress />;
@@ -196,6 +176,8 @@
       }, 2000);
       handleClose();
     };
+
+    
 
     
  
@@ -540,7 +522,7 @@
                     </Typography>
                   </Box>
                   <Typography style={styles.appointmentViewDetails} onClick={() => console.log('View details clicked')}>
-                    View Details
+                
                   </Typography>
                 </Box>
               ))}
